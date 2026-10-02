@@ -156,7 +156,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.6.1</span>
+        <span id="header-version-label">v2.6.2</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -223,8 +223,8 @@
       </button>
     </div>
 
-    <!-- Center Active Brush Status Indicator -->
-    <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-gray-300 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+    <!-- Center Active Brush Status Indicator (انقر لفتح مكتبة الفُرش) -->
+    <div id="header-brush-indicator" role="button" title="انقر لفتح مكتبة الفُرش واختيار نوع الخط" class="hidden lg:flex items-center gap-2 text-xs font-semibold text-gray-300 bg-white/5 hover:bg-white/10 cursor-pointer px-3 py-1.5 rounded-full border border-white/10 transition active:scale-95">
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
       <span id="header-active-brush-title">فرشاة خط النسخ (Naskh)</span>
       <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono" id="header-geometry-badge">72° / 12%</span>
@@ -1169,7 +1169,7 @@
     <!-- ========================================== -->
     <!-- BRUSH LIBRARY POPOVER                      -->
     <!-- ========================================== -->
-    <div id="brush-library-popover" class="fixed top-16 left-3 sm:left-28 w-84 sm:w-96 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
+    <div id="brush-library-popover" class="fixed top-16 left-3 sm:left-24 md:left-40 w-84 sm:w-96 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden flex flex-col gap-3 shadow-2xl">
       <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
         <div class="flex items-center gap-2">
           <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
@@ -1524,7 +1524,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.6.1</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.6.2</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -1593,7 +1593,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.6.1</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.6.2</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -1633,9 +1633,10 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.6.1):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.6.2):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
+              <li><strong class="text-white">إظهار مكتبة الفُرش والخطوط:</strong> ربط النقر المباشر على زر الفرشاة ومؤشر الخط واختصار (B) لفتح قائمة أقلام الخط العربي فوراً مع الإغلاق الذكي عند بدء الرسم.</li>
               <li><strong class="text-white">محاذاة النوافذ وقرص الألوان (RTL):</strong> فتح قرص الألوان والطبقات والممحاة مباشرة في أقصى اليسار تحت أزرارها بدقة، ومحاذاة نافذة الأدوات لليمين.</li>
               <li><strong class="text-white">إلغاء ثقل الكتابة:</strong> محرك فائق السرعة ومحاذاة 120Hz/240Hz منخفضة التأخير وخوارزمية التنعيم التكيفي مع السرعة.</li>
               <li><strong class="text-white">أزرار مخصصة للممحاة:</strong> أزرار مباشرة (+ / -) لتكبير وتصغير حجم الممحاة مع نافذة استوديو مخصصة وحفظ مستقل لحجم الممحاة.</li>
@@ -1651,7 +1652,7 @@
             <div class="bg-white/5 p-2 rounded-xl">
               <span class="block text-gray-500">حالة التخزين غير المتصل:</span>
               <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
-                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v4 + LocalStorage
+                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v6 + LocalStorage
               </span>
             </div>
             <div class="bg-white/5 p-2 rounded-xl">
@@ -1950,6 +1951,11 @@
       };
     }
 
+    /**
+     * بدء رسم ضربة القلم أو الممحاة على اللوحة
+     * يُغلق تلقائياً أي نوافذ منبثقة مفتوحة لضمان تجربة رسم انسيابية غير محجوبة
+     * @param {PointerEvent|TouchEvent|MouseEvent} e - حدث اللمس أو المؤشر
+     */
     function startStroke(e) {
       e.preventDefault();
       const activeLayer = getActiveLayer();
@@ -1957,6 +1963,11 @@
         showToast('الطبقة المحددة غير مرئية!');
         return;
       }
+
+      // إغلاق أي نوافذ منبثقة مفتوحة عند بدء الرسم لتفريغ مساحة الرؤية
+      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover, eraserStudioPopover].forEach(p => {
+        if (p && !p.classList.contains('hidden')) p.classList.add('hidden');
+      });
 
       state.isDrawing = true;
       state.currentStrokeDist = 0;
@@ -4672,9 +4683,19 @@
       setText('val-streamline', `${Math.round(state.nibSmoothness * 100)}%`);
     }
 
+    /**
+     * تطبيق نمط الفرشاة المحدد وتحديث كافة المعايير الهندسية لرأس القلم
+     * ويقوم بتفعيل أداة الفرشاة تلقائياً إذا كان المستخدم في وضع الممحاة أو الدمج
+     * @param {string} key - مفتاح قلم الخط (naskh, reqaa, diwani, thuluth, farsi)
+     */
     function applyPreset(key) {
       const preset = SCRIPT_METRICS[key];
       if (!preset) return;
+
+      // تفعيل أداة الفرشاة تلقائياً لضمان الرسم المباشر بالقلم المحدد
+      if (state.tool !== 'brush') {
+        selectTool('brush');
+      }
 
       state.activePresetKey = key;
       state.nibAngleDeg = preset.angleDeg;
@@ -4894,8 +4915,16 @@
       if (val) val.textContent = `${v}%`;
     });
 
+    /**
+     * تحديد أداة الرسم والتفاعل مع أدوات شريط التحكم
+     * - فرشاة الرسم (brush): تفعيل رأس القصبة ومزامنة شريط الحجم
+     * - أداة التلطيخ (smudge): تفعيل دمج ومزج الألوان
+     * - الممحاة (eraser): تفعيل الممحاة ومزامنة حجمها المستقل
+     * @param {string} toolName - اسم الأداة المراد تفعيلها ('brush' | 'smudge' | 'eraser')
+     */
     function selectTool(toolName) {
       const isAlreadyEraser = (state.tool === 'eraser' && toolName === 'eraser');
+      const isAlreadyBrush = (state.tool === 'brush' && toolName === 'brush');
       state.tool = toolName;
       [toolBrushBtn, toolSmudgeBtn, toolEraserBtn].forEach(b => {
         if (b) b.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition';
@@ -4943,7 +4972,7 @@
           badge.textContent = state.eraserSize;
           badge.classList.remove('hidden');
         }
-        // If clicking eraser button when already active, toggle its options popover
+        // عند النقر على الممحاة وهي نشطة، يتم تبديل إظهار لوحة خياراتها
         if (isAlreadyEraser) {
           togglePopover(eraserStudioPopover);
         } else {
@@ -4952,7 +4981,20 @@
       }
     }
 
-    if (toolBrushBtn) toolBrushBtn.addEventListener('click', () => selectTool('brush'));
+    // النقر على زر أداة الفرشاة: تفعيل الفرشاة وإظهار/إخفاء مكتبة الفُرش
+    if (toolBrushBtn) {
+      toolBrushBtn.addEventListener('click', () => {
+        selectTool('brush');
+        togglePopover(brushLibraryPopover);
+      });
+    }
+
+    // النقر على مؤشر اسم الفرشاة في شريط الأدوات العلوي يفتح مكتبة الفُرش أيضاً
+    safeBind('header-brush-indicator', 'click', () => {
+      selectTool('brush');
+      togglePopover(brushLibraryPopover);
+    });
+
     if (toolSmudgeBtn) toolSmudgeBtn.addEventListener('click', () => selectTool('smudge'));
     if (toolEraserBtn) toolEraserBtn.addEventListener('click', () => selectTool('eraser'));
 
@@ -5005,6 +5047,11 @@
       }
     });
 
+    /**
+     * تبديل إظهار وإخفاء القوائم المنبثقة للأدوات (Procreate Popovers)
+     * مع إغلاق النوافذ الأخرى لضمان عدم تداخل القوائم على الشاشة
+     * @param {HTMLElement} panel - عنصر النافذة المراد تبديل ظهورها
+     */
     function togglePopover(panel) {
       if (!panel) return;
       const isHidden = panel.classList.contains('hidden');
@@ -5311,6 +5358,7 @@
         redo();
       } else if (e.key.toLowerCase() === 'b') {
         selectTool('brush');
+        togglePopover(brushLibraryPopover);
       } else if (e.key.toLowerCase() === 'e') {
         selectTool('eraser');
       } else if (e.key.toLowerCase() === 's' && !e.ctrlKey) {
@@ -5486,7 +5534,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.6.1';
+    const APP_VERSION = '2.6.2';
     const BUILD_DATE = '2026-10-02';
 
     const UpdateManager = {

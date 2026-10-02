@@ -1,5 +1,5 @@
 // Procreate Web Studio - Progressive Web App Service Worker
-const CACHE_NAME = 'procreate-web-studio-v5';
+const CACHE_NAME = 'procreate-web-studio-v6';
 
 const STATIC_ASSETS = [
   './',
