@@ -156,7 +156,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.6.2</span>
+        <span id="header-version-label">v2.7.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -209,6 +209,11 @@
       <button id="tape-recorder-btn" title="مسجل الكلمات والخط كأزرار المسجل (Tape Recorder)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600/25 to-red-600/25 hover:from-rose-600/35 hover:to-red-600/35 border border-rose-500/40 text-rose-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5 shadow-sm">
         <i class="fa-solid fa-record-vinyl text-xs text-rose-400 animate-pulse"></i>
         <span class="hidden sm:inline">مسجل الخط (Tape Deck)</span>
+      </button>
+
+      <!-- Reed Pen Authentic Sound Toggle Button (صرير القصبة) -->
+      <button id="reed-sound-btn" title="صوت صرير قصبة الخط العربي الأصيل (مفعّل)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 hover:bg-white/10 active:scale-95 text-amber-400 hover:text-amber-300 transition flex items-center justify-center border border-white/10 shadow-sm">
+        <i class="fa-solid fa-volume-high text-xs" id="reed-sound-icon"></i>
       </button>
 
       <!-- PWA Install Button -->
@@ -496,12 +501,24 @@
 
           </div>
 
-          <!-- Secondary Actions: Save Word, Clear -->
-          <div class="flex items-center gap-2">
+          <!-- Secondary Actions: Save Word, Export Video, Share Link, Clear -->
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <!-- Export Video Timelapse Button (تصدير فيديو ومتحركة للخط) -->
+            <button id="tape-btn-export-video" title="تصدير فيديو ومتحركة للخط (Timelapse Video) لمشاركته" class="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/40 hover:to-teal-600/40 border border-emerald-500/40 text-emerald-200 font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
+              <i class="fa-solid fa-video text-emerald-400" id="tape-export-video-icon"></i>
+              <span class="hidden sm:inline" id="tape-export-video-label">تصدير فيديو</span>
+            </button>
+
+            <!-- Share via Link Button (مشاركة الرابط) -->
+            <button id="tape-btn-share-link" title="نسخ رابط مباشر للمخطوطة ليفتحها أي شخص ويرى الكلمة تُكتب أمامه" class="px-2.5 sm:px-3 py-2 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 font-bold text-xs flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-share-nodes text-blue-400"></i>
+              <span class="hidden md:inline">مشاركة</span>
+            </button>
+
             <!-- Save Word Button (حفظ الكلمة) -->
-            <button id="tape-btn-save-word" title="حفظ الكلمة المسجلة في المكتبة والذاكرة الدائمة" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600/30 to-orange-600/30 hover:from-amber-600/40 hover:to-orange-600/40 border border-amber-500/40 text-amber-200 font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
+            <button id="tape-btn-save-word" title="حفظ الكلمة المسجلة في المكتبة والذاكرة الدائمة" class="px-3 py-2 rounded-xl bg-gradient-to-r from-amber-600/30 to-orange-600/30 hover:from-amber-600/40 hover:to-orange-600/40 border border-amber-500/40 text-amber-200 font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
               <i class="fa-solid fa-floppy-disk text-amber-400"></i>
-              <span>حفظ الكلمة</span>
+              <span class="hidden sm:inline">حفظ الكلمة</span>
             </button>
 
             <!-- Clear Buffer -->
@@ -1284,12 +1301,41 @@
 
       <div id="layers-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1"></div>
 
-      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/5 border border-white/10">
-        <div class="flex items-center gap-2">
-          <input type="color" id="bg-color-picker" value="#f8fafc" class="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0">
-          <span class="text-xs font-medium text-gray-300">لون خلفية الورق</span>
+      <!-- Paper Textures & Materials Selection -->
+      <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-bold text-gray-300 flex items-center gap-1.5">
+            <i class="fa-solid fa-scroll text-amber-400"></i>
+            <span>خامة الورق واللوحة (Paper Material)</span>
+          </span>
+          <span class="text-[10px] text-amber-300/80 font-mono" id="current-paper-label">مقهر عتيق</span>
         </div>
-        <span class="text-[10px] text-gray-400 font-mono">Artboard</span>
+        
+        <div class="grid grid-cols-5 gap-1.5 pt-1" id="paper-texture-chips">
+          <button class="paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-amber-500/20 border-amber-500/50 text-amber-200" data-paper="ahar" title="الورق المقهر المصقول بالعقيق">
+            مقهر
+          </button>
+          <button class="paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-white/5 border-white/10 text-gray-300 hover:text-white" data-paper="parchment" title="رق المخطوطات والجلد القديم">
+            رق
+          </button>
+          <button class="paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-white/5 border-white/10 text-gray-300 hover:text-white" data-paper="papyrus" title="ورق البردي النباتي">
+            بردي
+          </button>
+          <button class="paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-white/5 border-white/10 text-gray-300 hover:text-white" data-paper="slate" title="لوح الحجر الأسود للكتابة بالذهب والأبيض">
+            أسود
+          </button>
+          <button class="paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-white/5 border-white/10 text-gray-300 hover:text-white" data-paper="white" title="ورق أبيض رقمي ناصع">
+            أبيض
+          </button>
+        </div>
+
+        <div class="flex items-center justify-between pt-1 border-t border-white/5">
+          <div class="flex items-center gap-2">
+            <input type="color" id="bg-color-picker" value="#FAF6EE" class="w-6 h-6 rounded-lg cursor-pointer bg-transparent border-0">
+            <span class="text-[11px] font-medium text-gray-400">تخصيص درجة اللون يدوياً</span>
+          </div>
+          <span class="text-[10px] text-gray-500 font-mono">Custom</span>
+        </div>
       </div>
     </div>
 
@@ -1524,7 +1570,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.6.2</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.7.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -1593,12 +1639,12 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.6.2</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.7.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
                 <i class="fa-solid fa-calendar-day text-[10px]"></i>
-                <span id="modal-build-date">تاريخ الإصدار: 2 أكتوبر 2026</span>
+                <span id="modal-build-date">تاريخ الإصدار: 3 أكتوبر 2026</span>
               </div>
             </div>
             <!-- Check Button inside card -->
@@ -1633,17 +1679,17 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.6.2):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.7.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
-              <li><strong class="text-white">إظهار مكتبة الفُرش والخطوط:</strong> ربط النقر المباشر على زر الفرشاة ومؤشر الخط واختصار (B) لفتح قائمة أقلام الخط العربي فوراً مع الإغلاق الذكي عند بدء الرسم.</li>
-              <li><strong class="text-white">محاذاة النوافذ وقرص الألوان (RTL):</strong> فتح قرص الألوان والطبقات والممحاة مباشرة في أقصى اليسار تحت أزرارها بدقة، ومحاذاة نافذة الأدوات لليمين.</li>
-              <li><strong class="text-white">إلغاء ثقل الكتابة:</strong> محرك فائق السرعة ومحاذاة 120Hz/240Hz منخفضة التأخير وخوارزمية التنعيم التكيفي مع السرعة.</li>
-              <li><strong class="text-white">أزرار مخصصة للممحاة:</strong> أزرار مباشرة (+ / -) لتكبير وتصغير حجم الممحاة مع نافذة استوديو مخصصة وحفظ مستقل لحجم الممحاة.</li>
-              <li><strong class="text-white">مسجل أشرطة الخط العربي (Tape Deck):</strong> لوحة كاسيت فيزيائية بمؤشرات وبكرات تدور لتسجيل وتشغيل وتبطيء وتسريع المحاكاة مع شريط تمرير زمني.</li>
-              <li><strong class="text-white">محاكاة وتسجيل الكلمات المتصلة:</strong> دعم كتابة الكلمات العربية ككتلة متصلة وحفظها بدقة وتوسيطها تلقائياً.</li>
-              <li><strong class="text-white">مكتبة الكلمات الجاهزة:</strong> نماذج كلاسيكية مثل (بسم الله، محمد ﷺ، سلام، الحمد لله...) مع إمكانية حفظ كلماتك الخاصة.</li>
-              <li><strong class="text-white">نظام التحقق من التحديثات:</strong> فحص فوري للتحديثات وتثبيتها دون الحاجة لإعادة التثبيت اليدوي.</li>
+              <li><strong class="text-white">صوت صرير القصبة الأصيل:</strong> محاكي صوتي فيزيائي ديناميكي (Web Audio API) يتجاوب بدقة متناهية مع سرعة حركة القلم وضغط اليد مع زر تشغيل/كتم سريع في الشريط العلوي.</li>
+              <li><strong class="text-white">خامات الورق المقهر والتراثي:</strong> دعم 5 خامات تاريخية حقيقية (الورق المقهر التقليدي، المخطوطات الأثرية، ورق البردي، الحجر الأردوازي، الأبيض النقي) مع رندرة إجرائية فائقة السلاسة.</li>
+              <li><strong class="text-white">أحبار المخطوطات والخط العربي التاريخية:</strong> باليت ألوان تاريخية تراثية أصيلة بـ 16 صبغة معتمدة لدى كبار الخطاطين (حبر دمشقي، جوهر نيل كرماني، سبج كوفي، ذهب عياري، زعفران...).</li>
+              <li><strong class="text-white">فيزياء تدفق ونفاذ الحبر التناقصي:</strong> محاكاة نفاذ قطرات الحبر تدريجياً مع طول السكتة المتصلة وإعادة غمس القصبة تلقائياً عند رفع القلم.</li>
+              <li><strong class="text-white">تصدير فيديو ومتحركة Timelapse:</strong> تسجيل وتصدير فيديو بجودة عالية لمراحل تخطيط الكلمات من خلال مسجل الكاسيت التناظري لمشاركته على شبكات التواصل.</li>
+              <li><strong class="text-white">مشاركة المخطوطات برابط فوري مشفر:</strong> زر مخصص لنسخ رابط مباشر يحتوي على بيانات المخطوطة وتشغيلها فوراً وبشكل تلقائي عند فتحه في أي متصفح.</li>
+              <li><strong class="text-white">محرك كتابة فائق الخفة:</strong> إلغاء أي ثقل في الكتابة ودعم شاشات 120Hz/240Hz بدون تأخير مع حفظ تلقائي وسرعة استجابة مذهلة.</li>
+              <li><strong class="text-white">أزرار مخصصة للممحاة:</strong> أزرار مباشرة (+ / -) لتكبير وتصغير حجم الممحاة ونافذة خاصة بها وحفظ مستقل لحجمها.</li>
             </ul>
           </div>
 
@@ -1652,7 +1698,7 @@
             <div class="bg-white/5 p-2 rounded-xl">
               <span class="block text-gray-500">حالة التخزين غير المتصل:</span>
               <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
-                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v6 + LocalStorage
+                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v7 + LocalStorage
               </span>
             </div>
             <div class="bg-white/5 p-2 rounded-xl">
@@ -1794,7 +1840,13 @@
       activeLayerId: null,
       canvasWidth: 1600,
       canvasHeight: 1200,
-      backgroundColor: '#f8fafc'
+      backgroundColor: '#FAF6EE',
+
+      // Natural Ink Flow & Reed Physics
+      inkFlowPhysics: true,
+      currentInkLevel: 1.0,
+      soundEnabled: true,
+      paperTexture: 'ahar' // 'ahar', 'parchment', 'papyrus', 'slate', 'white'
     };
 
     // Safe element lookups (with hardware-accelerated desynchronized canvas context)
@@ -1839,6 +1891,147 @@
       if (el) {
         el.addEventListener(event, handler);
       }
+    }
+
+    // ----------------------------------------------------
+    // 2.B REED PEN AUDIO SYNTHESIZER (صوت صرير القصبة والورق)
+    // ----------------------------------------------------
+    /**
+     * محاكي صوت احتكاك القصبة بالورق المقهر (Web Audio API)
+     * يعتمد على مرشح تمرير نطاقي (Bandpass Filter) وضوضاء احتكاكية خشبية
+     * يتفاعل ديناميكياً مع سرعة وضغط القلم على الشاشة
+     */
+    const ReedAudioEngine = {
+      ctx: null,
+      noiseNode: null,
+      filterNode: null,
+      gainNode: null,
+      initialized: false,
+
+      init() {
+        if (this.initialized) return;
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          this.ctx = new AudioContextClass();
+
+          const bufferSize = this.ctx.sampleRate * 2;
+          const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.99765 * b0 + white * 0.0990460;
+            b1 = 0.96300 * b1 + white * 0.2965164;
+            b2 = 0.57000 * b2 + white * 1.0526913;
+            output[i] = (b0 + b1 + b2 + white * 0.1848) * 0.11;
+          }
+
+          this.noiseNode = this.ctx.createBufferSource();
+          this.noiseNode.buffer = noiseBuffer;
+          this.noiseNode.loop = true;
+
+          // Bandpass filter centered at 2150Hz with sharp Q for woody reed scratch
+          this.filterNode = this.ctx.createBiquadFilter();
+          this.filterNode.type = 'bandpass';
+          this.filterNode.frequency.value = 2150;
+          this.filterNode.Q.value = 3.8;
+
+          this.gainNode = this.ctx.createGain();
+          this.gainNode.gain.setValueAtTime(0, this.ctx.currentTime);
+
+          this.noiseNode.connect(this.filterNode);
+          this.filterNode.connect(this.gainNode);
+          this.gainNode.connect(this.ctx.destination);
+
+          this.noiseNode.start(0);
+          this.initialized = true;
+        } catch (e) {
+          console.warn('Reed audio engine init notice:', e);
+        }
+      },
+
+      start() {
+        if (!state.soundEnabled) return;
+        if (!this.initialized) this.init();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+
+      update(velocity, pressure) {
+        if (!state.soundEnabled || !this.gainNode || !this.ctx) return;
+        const speedFactor = Math.min(1.0, velocity / 45);
+        const presFactor = pressure || 0.65;
+        const targetVol = Math.min(0.24, speedFactor * presFactor * 0.22);
+        
+        if (this.filterNode) {
+          const freq = 1850 + speedFactor * 850;
+          this.filterNode.frequency.setTargetAtTime(freq, this.ctx.currentTime, 0.035);
+        }
+        this.gainNode.gain.setTargetAtTime(targetVol, this.ctx.currentTime, 0.03);
+      },
+
+      stop() {
+        if (!this.gainNode || !this.ctx) return;
+        this.gainNode.gain.setTargetAtTime(0, this.ctx.currentTime, 0.04);
+      }
+    };
+
+    // ----------------------------------------------------
+    // 2.C HISTORICAL PAPER TEXTURES (خامات الورق المقهر والتراثي)
+    // ----------------------------------------------------
+    /**
+     * رسم خامة الورق التراثي على خلفية اللوحة بدقة هندسية عالية
+     * @param {CanvasRenderingContext2D} ctx - سياق العرض
+     * @param {number} w - عرض مساحة اللوحة
+     * @param {number} h - ارتفاع مساحة اللوحة
+     */
+    function renderPaperTexture(ctx, w, h) {
+      const mode = state.paperTexture || 'ahar';
+      
+      if (mode === 'ahar') {
+        // الورق المقهر المصقول بالعقيق: لون عاجي دافئ مع هالة ناعمة في المركز
+        const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.15, w / 2, h / 2, w * 0.85);
+        grad.addColorStop(0, '#FEFCF7');
+        grad.addColorStop(0.55, '#FAF5E8');
+        grad.addColorStop(1, '#F3EAD5');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        return;
+      }
+
+      if (mode === 'parchment') {
+        // رق المخطوطات والجلد العتيق: أرضية كهرمانية دافئة مع تظليل حواف خفيف
+        const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.82);
+        grad.addColorStop(0, '#F8F0DE');
+        grad.addColorStop(0.65, '#EFE0C5');
+        grad.addColorStop(1, '#DFC9A7');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        return;
+      }
+
+      if (mode === 'papyrus') {
+        // ورق البردي النباتي: أرضية بيج متناسقة
+        ctx.fillStyle = '#EFE4CE';
+        ctx.fillRect(0, 0, w, h);
+        return;
+      }
+
+      if (mode === 'slate') {
+        // لوح الحجر الأسود للكتابة بالذهب والألوان الفاتحة
+        const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.25, w / 2, h / 2, w * 0.8);
+        grad.addColorStop(0, '#1E1E26');
+        grad.addColorStop(1, '#111116');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        return;
+      }
+
+      // أبيض ناصع أو لون مخصص
+      ctx.fillStyle = state.backgroundColor || '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
     }
 
     // ----------------------------------------------------
@@ -1896,7 +2089,11 @@
       const dist = Math.hypot(dx, dy);
 
       ctx.fillStyle = customColor || state.color;
-      ctx.globalAlpha = customOpacity !== null ? customOpacity : state.opacity;
+      let effectiveAlpha = customOpacity !== null ? customOpacity : state.opacity;
+      if (state.inkFlowPhysics && customOpacity === null && state.tool === 'brush') {
+        effectiveAlpha *= (0.88 + 0.12 * (state.currentInkLevel || 1.0));
+      }
+      ctx.globalAlpha = effectiveAlpha;
 
       if (dist < 0.6) {
         ctx.beginPath();
@@ -1971,11 +2168,17 @@
 
       state.isDrawing = true;
       state.currentStrokeDist = 0;
+      state.currentInkLevel = 1.0;
       cachedCanvasRect = displayCanvas.getBoundingClientRect();
       const pos = getPointerPos(e);
       state.rawPoints = [pos];
       state.filteredPoints = [pos];
       state.lastDrawnPos = { x: pos.x, y: pos.y, pressure: pos.pressure };
+
+      // تشغيل محاكي صوت صرير القصبة عند بدء الرسم
+      if (state.tool === 'brush') {
+        ReedAudioEngine.start();
+      }
 
       // Pre-set context styles for the stroke
       if (state.tool === 'brush') {
@@ -2050,6 +2253,14 @@
       const dist = Math.hypot(smoothedPos.x - state.lastDrawnPos.x, smoothedPos.y - state.lastDrawnPos.y);
       state.currentStrokeDist += dist;
 
+      // تحديث صوت صرير القصبة ونفاذ الحبر الطبيعي
+      if (state.tool === 'brush') {
+        ReedAudioEngine.update(dist, smoothedPos.pressure);
+        if (state.inkFlowPhysics) {
+          state.currentInkLevel = Math.max(0.38, state.currentInkLevel - dist * 0.00012);
+        }
+      }
+
       // Smart step size: Avoids heavy micro-step overdraw that caused lag/sluggishness
       const activeSize = state.tool === 'eraser' ? state.eraserSize : state.size;
       const minStep = Math.max(10, activeSize * 0.3);
@@ -2073,6 +2284,10 @@
       state.isDrawing = false;
       cachedCanvasRect = null;
       
+      // إيقاف صوت القصبة وتجديد الحبر في رأس القلم
+      ReedAudioEngine.stop();
+      state.currentInkLevel = 1.0;
+
       // Studio Tape Recorder hook
       if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.isRecording) {
         StudioTapeRecorder.onStrokeEnd();
@@ -3183,6 +3398,8 @@
         safeBind('tape-btn-rewind', 'click', () => this.rewind());
         safeBind('tape-btn-speed', 'click', () => this.cycleSpeed());
         safeBind('tape-btn-loop', 'click', () => this.toggleLoop());
+        safeBind('tape-btn-export-video', 'click', () => this.exportVideoTimelapse());
+        safeBind('tape-btn-share-link', 'click', () => this.shareSessionLink());
         safeBind('tape-btn-save-word', 'click', () => this.openSaveDialog());
         safeBind('tape-btn-clear', 'click', () => this.clearSession());
         safeBind('tape-words-lib-btn', 'click', () => this.openWordsLibrary());
@@ -3204,6 +3421,141 @@
           this.sliderEl.addEventListener('input', (e) => {
             this.onScrub(parseFloat(e.target.value));
           });
+        }
+      },
+
+      /**
+       * تصدير فيديو ومتحركة Timelapse للخط بالزمن الحقيقي
+       */
+      async exportVideoTimelapse() {
+        if (this.recordedStrokes.length === 0) {
+          showToast('لا توجد ضربات قلم مسجلة لتصديرها! اختر كلمة أو اكتب وسجل أولاً 🔴');
+          return;
+        }
+
+        const btn = document.getElementById('tape-btn-export-video');
+        const icon = document.getElementById('tape-export-video-icon');
+        const label = document.getElementById('tape-export-video-label');
+
+        if (!window.MediaRecorder) {
+          showToast('تنبيه: متصفحك الحالي لا يدعم MediaRecorder لتصدير الفيديو مباشرة');
+          return;
+        }
+
+        try {
+          if (btn) btn.classList.add('opacity-75', 'pointer-events-none');
+          if (icon) icon.className = 'fa-solid fa-spinner fa-spin text-emerald-400';
+          if (label) label.textContent = 'جاري التصدير...';
+
+          showToast('بدء تصدير فيديو المخطوطة... جاري تسجيل الحركة 🎬');
+
+          const stream = displayCanvas.captureStream ? displayCanvas.captureStream(30) : null;
+          if (!stream) {
+            showToast('تعذر التقاط شاشة الرسم');
+            if (btn) btn.classList.remove('opacity-75', 'pointer-events-none');
+            return;
+          }
+
+          let mimeType = 'video/webm;codecs=vp9';
+          if (!MediaRecorder.isTypeSupported(mimeType)) {
+            mimeType = 'video/webm';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
+          }
+
+          const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+          const recordedChunks = [];
+
+          recorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+          };
+
+          recorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: mimeType || 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            const safeName = (this.currentTitle || 'calligraphy_timelapse').replace(/[^a-zA-Z0-9_\u0600-\u06FF]/g, '_');
+            a.download = `${safeName}_${Date.now()}.webm`;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }, 100);
+
+            if (btn) btn.classList.remove('opacity-75', 'pointer-events-none');
+            if (icon) icon.className = 'fa-solid fa-video text-emerald-400';
+            if (label) label.textContent = 'تصدير فيديو';
+            showToast('تم تصدير وتحميل فيديو الخط بنجاح! 🎬✨');
+          };
+
+          recorder.start();
+
+          // تجهيز اللوحة والتشغيل من البداية
+          this.rewind();
+          const activeLayer = getActiveLayer();
+          if (activeLayer) activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+          renderComposite();
+
+          this.play();
+
+          const checkFinished = setInterval(() => {
+            if (!this.isPlaying) {
+              clearInterval(checkFinished);
+              setTimeout(() => {
+                try { recorder.stop(); } catch(e) {}
+              }, 600);
+            }
+          }, 250);
+
+        } catch (err) {
+          console.error('Video export error:', err);
+          if (btn) btn.classList.remove('opacity-75', 'pointer-events-none');
+          if (icon) icon.className = 'fa-solid fa-video text-emerald-400';
+          if (label) label.textContent = 'تصدير فيديو';
+          showToast('حدث خطأ أثناء تصدير الفيديو');
+        }
+      },
+
+      /**
+       * مشاركة الكلمة أو المخطوطة عبر رابط فوري
+       */
+      shareSessionLink() {
+        if (this.recordedStrokes.length === 0) {
+          showToast('لا توجد ضربات قلم لمشاركتها! اختر كلمة أو اكتب وسجل خطاً أولاً');
+          return;
+        }
+
+        try {
+          let shareUrl = window.location.origin + window.location.pathname;
+          const matchKey = Object.keys(learnedGlyphsMemory).find(k => {
+            const item = learnedGlyphsMemory[k];
+            return item && (item.label === this.currentTitle.replace('كلمة: ', '') || item.char === this.currentTitle.replace('كلمة: ', ''));
+          });
+
+          if (matchKey) {
+            shareUrl += `#word=${encodeURIComponent(matchKey)}`;
+          } else {
+            const payload = {
+              title: this.currentTitle,
+              preset: state.activePresetKey,
+              size: state.size,
+              strokes: this.recordedStrokes.map(s => s.points ? s.points.map(p => ({ x: Math.round(p.x), y: Math.round(p.y), pressure: Math.round((p.pressure || 0.7) * 100) / 100 })) : [])
+            };
+            const jsonStr = JSON.stringify(payload);
+            const base64 = btoa(unescape(encodeURIComponent(jsonStr)));
+            shareUrl += `#play=${base64}`;
+          }
+
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast('تم نسخ رابط المشاركة إلى الحافظة بنجاح! 🔗✨');
+          }).catch(() => {
+            prompt('انسخ رابط المخطوطة:', shareUrl);
+          });
+        } catch(e) {
+          console.error('Share link error:', e);
+          showToast('تعذر توليد رابط المشاركة');
         }
       },
 
@@ -4258,8 +4610,7 @@
     function renderComposite() {
       if (!displayCtx) return;
       displayCtx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
-      displayCtx.fillStyle = state.backgroundColor;
-      displayCtx.fillRect(0, 0, state.canvasWidth, state.canvasHeight);
+      renderPaperTexture(displayCtx, state.canvasWidth, state.canvasHeight);
 
       for (let i = state.layers.length - 1; i >= 0; i--) {
         const layer = state.layers[i];
@@ -5245,24 +5596,114 @@
       setColor(hex);
     }
 
-    const traditionalInks = [
-      '#111827', '#1e293b', '#3b0764', '#1e1b4b', '#7c2d12', '#831843', '#064e3b', '#b45309',
-      '#000000', '#1f2937', '#4b5563', '#991b1b', '#1e40af', '#065f46', '#92400e', '#ffffff'
+    /**
+     * أحبار المخطوطات والخط العربي التاريخية الأصيلة
+     * تشمل الحبر الكربوني، حبر الجوز، ماء الذهب، اللازورد، الزنجار، والشنجرف
+     */
+    const historicalInks = [
+      { name: 'حبر السناج الكربوني (Carbon Black)', hex: '#111827' },
+      { name: 'حبر الدوكار العثماني (Deep Charcoal)', hex: '#1E293B' },
+      { name: 'حبر الجوز التراثي (Walnut Sepia)', hex: '#451A03' },
+      { name: 'ماء الذهب عيار 24 (Liquid Gold Leaf)', hex: '#D4AF37' },
+      { name: 'أزرق اللازورد الملوكي (Royal Lapis)', hex: '#1E3A8A' },
+      { name: 'الأخضر الزنجاري القديم (Verdigris)', hex: '#064E3B' },
+      { name: 'الشنجرف القرمزي الكلاسيكي (Vermilion)', hex: '#991B1B' },
+      { name: 'الحبر الزعفراني الإيراني (Saffron)', hex: '#B45309' },
+      { name: 'أرجواني دمشقي (Damascus Purple)', hex: '#3B0764' },
+      { name: 'حبر الرمان العتيق (Pomegranate Ink)', hex: '#831843' },
+      { name: 'بني الطين الأندلسي (Andalusian Umber)', hex: '#7C2D12' },
+      { name: 'نحاسي عتيق مذهب (Antique Copper)', hex: '#92400E' },
+      { name: 'رمادي صخري تخطيطي (Graphite Sketch)', hex: '#4B5563' },
+      { name: 'أسود مطلق معتم (Pitch Black)', hex: '#000000' },
+      { name: 'أزرق نايلي كوفي (Kufic Indigo)', hex: '#1E1B4B' },
+      { name: 'أبيض عاجي للتصحيح والزخرفة (Pearl White)', hex: '#FFFFFF' }
     ];
 
     const swatchesContainer = document.getElementById('color-swatches');
     if (swatchesContainer) {
-      traditionalInks.forEach(c => {
+      swatchesContainer.innerHTML = '';
+      historicalInks.forEach(ink => {
         const btn = document.createElement('button');
-        btn.className = 'w-6 h-6 rounded-md border border-white/20 active:scale-90 transition';
-        btn.style.backgroundColor = c;
+        btn.className = 'w-6 h-6 rounded-md border border-white/20 active:scale-90 transition hover:scale-110 shadow-sm relative group';
+        btn.style.backgroundColor = ink.hex;
+        btn.title = ink.name;
         btn.addEventListener('click', () => {
-          setColor(c);
+          setColor(ink.hex);
           drawColorDisc();
+          showToast(`تم اختيار: ${ink.name}`);
         });
         swatchesContainer.appendChild(btn);
       });
     }
+
+    /**
+     * تغيير خامة الورق واللوحة وتحديث العرض فوراً
+     * @param {string} mode - نوع الخامة ('ahar' | 'parchment' | 'papyrus' | 'slate' | 'white')
+     */
+    function setPaperTexture(mode) {
+      state.paperTexture = mode;
+      const label = document.getElementById('current-paper-label');
+      const names = {
+        ahar: 'مقهر عتيق',
+        parchment: 'رق المخطوطات',
+        papyrus: 'ورق البردي',
+        slate: 'لوح حجر أسود',
+        white: 'ورق أبيض ناصع'
+      };
+      if (label && names[mode]) {
+        label.textContent = names[mode];
+      }
+
+      document.querySelectorAll('.paper-chip').forEach(chip => {
+        if (chip.dataset.paper === mode) {
+          chip.className = 'paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-amber-500/20 border-amber-500/50 text-amber-200';
+        } else {
+          chip.className = 'paper-chip px-1.5 py-1 rounded-xl text-[10px] font-bold border transition active:scale-95 bg-white/5 border-white/10 text-gray-300 hover:text-white';
+        }
+      });
+
+      // في حال اختيار اللوح الأسود، إذا كان اللون نشطاً داكناً ننبه أو نقترح الذهب
+      if (mode === 'slate' && (state.color === '#1e293b' || state.color === '#000000')) {
+        setColor('#D4AF37'); // ماء الذهب
+        drawColorDisc();
+        showToast('تم تفعيل اللوح الأسود ولون ماء الذهب عيار 24 ✨');
+      } else {
+        showToast(`خامة اللوحة: ${names[mode] || mode}`);
+      }
+
+      renderComposite();
+    }
+
+    document.querySelectorAll('.paper-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        setPaperTexture(chip.dataset.paper);
+      });
+    });
+
+    /**
+     * تبديل حالة صوت صرير القصبة الأصيل (تشغيل / كتم)
+     */
+    function toggleReedSound() {
+      state.soundEnabled = !state.soundEnabled;
+      const icon = document.getElementById('reed-sound-icon');
+      const btn = document.getElementById('reed-sound-btn');
+      if (state.soundEnabled) {
+        if (icon) icon.className = 'fa-solid fa-volume-high text-xs text-amber-400';
+        if (btn) btn.title = 'صوت صرير قصبة الخط العربي الأصيل (مفعّل)';
+        ReedAudioEngine.start();
+        showToast('تم تفعيل صوت صرير القصبة الأصيل 🔊');
+      } else {
+        if (icon) icon.className = 'fa-solid fa-volume-xmark text-xs text-gray-400';
+        if (btn) btn.title = 'صوت صرير قصبة الخط العربي الأصيل (مكتوم)';
+        ReedAudioEngine.stop();
+        showToast('تم كتم صوت صرير القصبة 🔇');
+      }
+      try {
+        localStorage.setItem('procreate_reed_sound', String(state.soundEnabled));
+      } catch(e) {}
+    }
+
+    safeBind('reed-sound-btn', 'click', toggleReedSound);
 
     safeBind('color-btn', 'click', () => {
       drawColorDisc();
@@ -5484,6 +5925,46 @@
       }, 2200);
     }
 
+    /**
+     * معالجة روابط المشاركة الفورية للخط العربي
+     * يدعم فتح الكلمات التراثية أو المخطوطات المخصصة المشفرة بالرابط
+     */
+    function handleShareUrlHash() {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      if (hash.startsWith('#word=')) {
+        const wordKey = decodeURIComponent(hash.replace('#word=', ''));
+        if (typeof StudioTapeRecorder !== 'undefined') {
+          StudioTapeRecorder.loadWordFromLibrary(wordKey);
+          showToast(`تم فتح الكلمة المشاركة: ${wordKey} ▶️`);
+        }
+      } else if (hash.startsWith('#play=')) {
+        try {
+          const base64 = hash.replace('#play=', '');
+          const jsonStr = decodeURIComponent(escape(atob(base64)));
+          const payload = JSON.parse(jsonStr);
+          if (payload && payload.strokes && typeof StudioTapeRecorder !== 'undefined') {
+            StudioTapeRecorder.recordedStrokes = payload.strokes.map(st => ({
+              color: state.color,
+              size: payload.size || state.size,
+              opacity: state.opacity,
+              nibAngleDeg: state.nibAngleDeg,
+              nibRoundness: state.nibRoundness,
+              points: st.map(p => ({ x: p.x, y: p.y, pressure: p.pressure || 0.75 }))
+            }));
+            StudioTapeRecorder.currentTitle = payload.title || 'مخطوطة مشاركة';
+            if (StudioTapeRecorder.titleLabel) StudioTapeRecorder.titleLabel.textContent = StudioTapeRecorder.currentTitle;
+            StudioTapeRecorder.showDeck();
+            StudioTapeRecorder.play();
+            showToast('تم تحميل المخطوطة المشتركة وبدء كتابتها ▶️');
+          }
+        } catch(e) {
+          console.warn('Could not decode share payload:', e);
+        }
+      }
+    }
+
     // ----------------------------------------------------
     // 13. INITIALIZATION
     // ----------------------------------------------------
@@ -5502,6 +5983,18 @@
       // Initialize Interactive Calligraphy Learning Studio & Tape Recorder
       CalligraphyInteractiveStudio.init();
       StudioTapeRecorder.init();
+
+      // التحقق من تفضيل صوت القصبة المحفوظ
+      try {
+        const savedSound = localStorage.getItem('procreate_reed_sound');
+        if (savedSound !== null) {
+          state.soundEnabled = (savedSound === 'true');
+          const icon = document.getElementById('reed-sound-icon');
+          if (icon) {
+            icon.className = state.soundEnabled ? 'fa-solid fa-volume-high text-xs text-amber-400' : 'fa-solid fa-volume-xmark text-xs text-gray-400';
+          }
+        }
+      } catch(e) {}
 
       // Render introductory Naskh calligraphy demonstration
       const topLayer = getActiveLayer();
@@ -5528,14 +6021,21 @@
         saveState();
       }
 
-      showToast('تم تشغيل الاستوديو وحل كافة الأخطاء بنجاح');
+      // فحص روابط المشاركة الفورية للتشغيل
+      if (window.location.hash) {
+        setTimeout(() => {
+          handleShareUrlHash();
+        }, 700);
+      }
+
+      showToast('أستوديو الخط العربي جاهز بكامل الميزات الجديدة ✨');
     });
   </script>
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.6.2';
-    const BUILD_DATE = '2026-10-02';
+    const APP_VERSION = '2.7.0';
+    const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
       currentVersion: APP_VERSION,
