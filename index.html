@@ -238,10 +238,32 @@
         <i class="fa-solid fa-hand-pointer text-sm"></i>
       </button>
 
-      <!-- Eraser Tool Button -->
-      <button id="tool-eraser" title="الممحاة" class="tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition">
-        <i class="fa-solid fa-eraser text-sm"></i>
-      </button>
+      <!-- Dedicated Eraser Cluster with Direct Size Stepper Buttons -->
+      <div class="flex items-center bg-white/5 border border-white/10 rounded-xl p-0.5" id="eraser-cluster">
+        <!-- Main Eraser Tool Button -->
+        <button id="tool-eraser" title="أداة الممحاة (E) - انقر لفتح خيارات الحجم" class="tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition relative">
+          <i class="fa-solid fa-eraser text-sm"></i>
+          <span id="eraser-badge" class="absolute -bottom-1 -right-1 bg-rose-500 text-white text-[8px] font-bold px-1 rounded-full shadow hidden">45</span>
+        </button>
+
+        <!-- Direct Size Controls: Minus, Display Button, Plus -->
+        <div class="flex items-center gap-0.5 px-1 border-r border-white/10" id="eraser-stepper-bar">
+          <!-- Decrease Eraser Size Button -->
+          <button id="eraser-size-dec-btn" title="تصغير حجم الممحاة (-5px) [الاختصار: [ ]" class="w-6 h-6 sm:w-7 sm:h-7 rounded-md flex items-center justify-center bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-400 active:scale-90 transition text-xs">
+            <i class="fa-solid fa-minus text-[9px]"></i>
+          </button>
+
+          <!-- Current Size Display / Popover Trigger Button -->
+          <button id="eraser-size-popover-btn" title="فتح لوحة إعدادات الممحاة والمقاسات الجاهزة" class="h-6 sm:h-7 px-1.5 rounded-md flex items-center justify-center bg-white/5 hover:bg-rose-500/20 text-rose-300 hover:text-white active:scale-95 transition font-mono font-bold text-[10px]">
+            <span id="eraser-size-label">45px</span>
+          </button>
+
+          <!-- Increase Eraser Size Button -->
+          <button id="eraser-size-inc-btn" title="تكبير حجم الممحاة (+5px) [الاختصار: ] ]" class="w-6 h-6 sm:w-7 sm:h-7 rounded-md flex items-center justify-center bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-400 active:scale-90 transition text-xs">
+            <i class="fa-solid fa-plus text-[9px]"></i>
+          </button>
+        </div>
+      </div>
 
       <!-- Layers Button -->
       <button id="layers-btn" title="الطبقات (Layers)" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 text-gray-300 hover:text-white transition">
@@ -262,11 +284,11 @@
     <!-- Procreate Vertical Left Floating Sliders Bar -->
     <aside class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-10 bg-[#16161c]/85 backdrop-blur-2xl border border-white/10 py-7 px-2.5 rounded-3xl shadow-2xl">
       
-      <!-- Brush Size Slider -->
+      <!-- Dynamic Size Slider (Adapts to Brush / Eraser) -->
       <div class="relative flex flex-col items-center">
-        <span class="text-[10px] font-bold text-gray-400 mb-2">الحجم</span>
+        <span id="slider-size-title" class="text-[10px] font-bold text-gray-400 mb-2">الحجم</span>
         <div class="h-36 w-8 flex items-center justify-center relative">
-          <input type="range" id="slider-size" min="4" max="150" value="34" class="procreate-vertical-slider">
+          <input type="range" id="slider-size" min="3" max="250" value="34" class="procreate-vertical-slider">
         </div>
         <span id="slider-size-val" class="text-[10px] font-mono font-bold text-blue-400 mt-2">34px</span>
       </div>
@@ -1392,6 +1414,73 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- DEDICATED ERASER STUDIO POPOVER            -->
+    <!-- ========================================== -->
+    <div id="eraser-studio-popover" class="fixed top-16 right-4 sm:right-28 w-80 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl border border-white/10">
+      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
+            <i class="fa-solid fa-eraser text-xs"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white">إعدادات حجم الممحاة (Eraser)</h4>
+            <span class="text-[10px] text-gray-400">تحكم دقيق ومستقل بحجم رأس المسح</span>
+          </div>
+        </div>
+        <button id="close-eraser-popover-btn" class="w-6 h-6 rounded-md hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Live Size Preview Circle -->
+      <div class="flex flex-col items-center justify-center py-3 bg-white/5 rounded-2xl border border-white/5">
+        <div class="h-24 w-full flex items-center justify-center overflow-hidden">
+          <div id="eraser-preview-circle" class="rounded-full border-2 border-dashed border-rose-400 bg-rose-500/20 transition-all duration-75 flex items-center justify-center" style="width: 45px; height: 45px;">
+            <span id="eraser-preview-text" class="text-[9px] font-mono text-rose-300 font-bold">45px</span>
+          </div>
+        </div>
+        <span class="text-[10px] text-gray-400 mt-1">حجم رأس الممحاة الفعلي</span>
+      </div>
+
+      <!-- Direct Stepper Buttons (-10, -5, +5, +10) -->
+      <div class="grid grid-cols-4 gap-1.5">
+        <button id="eraser-step-m10" class="py-1 px-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-300 text-xs font-mono font-bold text-center transition active:scale-95">-10px</button>
+        <button id="eraser-step-m5" class="py-1 px-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-300 text-xs font-mono font-bold text-center transition active:scale-95">-5px</button>
+        <button id="eraser-step-p5" class="py-1 px-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-300 text-xs font-mono font-bold text-center transition active:scale-95">+5px</button>
+        <button id="eraser-step-p10" class="py-1 px-1.5 rounded-lg bg-white/5 hover:bg-rose-500/20 text-gray-300 hover:text-rose-300 text-xs font-mono font-bold text-center transition active:scale-95">+10px</button>
+      </div>
+
+      <!-- Main Eraser Slider -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs text-gray-300">
+          <span>شريط تكبير وتصغير الممحاة</span>
+          <span id="eraser-popover-slider-val" class="font-mono font-bold text-rose-400 text-xs">45px</span>
+        </div>
+        <input type="range" id="eraser-popover-slider" min="3" max="250" value="45" class="w-full accent-rose-500 cursor-pointer">
+      </div>
+
+      <!-- Quick Preset Sizes -->
+      <div>
+        <span class="text-[10px] text-gray-400 block mb-1.5">مقاسات سريعة جاهزة:</span>
+        <div class="flex flex-wrap gap-1.5">
+          <button class="eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-gray-300 border border-white/5 transition" data-size="8">دقيقة (8px)</button>
+          <button class="eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-gray-300 border border-white/5 transition" data-size="20">صغيرة (20px)</button>
+          <button class="eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold transition" data-size="45">متوسطة (45px)</button>
+          <button class="eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-gray-300 border border-white/5 transition" data-size="90">كبيرة (90px)</button>
+          <button class="eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-gray-300 border border-white/5 transition" data-size="160">عريضة (160px)</button>
+        </div>
+      </div>
+
+      <!-- Clear Layer Quick Button -->
+      <div class="pt-2 border-t border-white/10">
+        <button id="eraser-clear-active-layer-btn" class="w-full py-2 px-3 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition active:scale-95">
+          <i class="fa-solid fa-trash-can text-[10px]"></i>
+          <span>مسح محتوى الطبقة بالكامل</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
     <!-- ACTIONS & EXPORT POPOVER                   -->
     <!-- ========================================== -->
     <div id="actions-panel" class="fixed top-16 left-4 sm:left-12 w-72 procreate-popover rounded-2xl p-4 hidden z-50 flex-col gap-2">
@@ -1440,7 +1529,7 @@
         badge: "نسخ",
         angleDeg: 72,
         roundness: 0.12,
-        smoothness: 0.82,
+        smoothness: 0.28,       // Optimized responsive smoothness
         defaultSize: 34,        // Canonical default: 34px
         ascenderPts: 5,         // Alif height: 5 points
         meanPts: 2,             // Waistline / heads: 2 points
@@ -1451,7 +1540,7 @@
         badge: "رقعة",
         angleDeg: 48,
         roundness: 0.08,
-        smoothness: 0.65,
+        smoothness: 0.18,       // Crisp, agile Ruq'ah
         defaultSize: 38,        // Ruq'ah default: 38px
         ascenderPts: 3,         // Compact: 3 points
         meanPts: 1.5,
@@ -1462,7 +1551,7 @@
         badge: "ديواني",
         angleDeg: 80,
         roundness: 0.10,
-        smoothness: 0.90,
+        smoothness: 0.32,       // Flowing Diwani
         defaultSize: 30,        // Diwani default: 30px
         ascenderPts: 6,         // Flourishing: 6 points
         meanPts: 2,
@@ -1473,7 +1562,7 @@
         badge: "ثلث",
         angleDeg: 55,
         roundness: 0.11,
-        smoothness: 0.88,
+        smoothness: 0.32,       // Regal Thuluth
         defaultSize: 28,        // Thuluth default: 28px
         ascenderPts: 7.5,       // Majestic: 7.5 to 8 points
         meanPts: 2.5,
@@ -1484,7 +1573,7 @@
         badge: "فارسي",
         angleDeg: 65,
         roundness: 0.09,
-        smoothness: 0.88,
+        smoothness: 0.28,       // Balanced Farsi
         defaultSize: 32,        // Farsi default: 32px
         ascenderPts: 4.5,
         meanPts: 2,
@@ -1502,7 +1591,7 @@
       // Active Nib Geometry & Brush Studio Settings
       nibAngleDeg: 72,
       nibRoundness: 0.12,
-      nibSmoothness: 0.82,
+      nibSmoothness: 0.28,     // Responsive default (low latency, no sluggish drag)
       spacing: 0,
       jitter: 0,
       falloff: 0,
@@ -1514,6 +1603,10 @@
       hsv: { h: 217, s: 49, v: 23 },
       size: 34,                // EXACT DEFAULT: 34px
       opacity: 1.0,
+      
+      // Dedicated Eraser State (Independent of brush size)
+      eraserSize: 45,          // Dedicated eraser size
+      eraserOpacity: 1.0,      // Eraser opacity
       
       // Drawing runtime state
       isDrawing: false,
@@ -1543,9 +1636,9 @@
       backgroundColor: '#f8fafc'
     };
 
-    // Safe element lookups
+    // Safe element lookups (with hardware-accelerated desynchronized canvas context)
     const displayCanvas = document.getElementById('display-canvas');
-    const displayCtx = displayCanvas ? displayCanvas.getContext('2d') : null;
+    const displayCtx = displayCanvas ? displayCanvas.getContext('2d', { desynchronized: true }) : null;
     const gridCanvas = document.getElementById('grid-canvas');
     const gridCtx = gridCanvas ? gridCanvas.getContext('2d') : null;
     const canvasContainer = document.getElementById('canvas-container');
@@ -1563,11 +1656,17 @@
     const gridSettingsPopover = document.getElementById('grid-settings-popover');
     const colorPanel = document.getElementById('color-panel');
     const actionsPanel = document.getElementById('actions-panel');
+    const eraserStudioPopover = document.getElementById('eraser-studio-popover');
 
-    // Header buttons
+    // Header buttons & Eraser Controls
     const toolBrushBtn = document.getElementById('tool-brush');
     const toolSmudgeBtn = document.getElementById('tool-smudge');
     const toolEraserBtn = document.getElementById('tool-eraser');
+    const eraserBadge = document.getElementById('eraser-badge');
+    const eraserSizeDecBtn = document.getElementById('eraser-size-dec-btn');
+    const eraserSizeIncBtn = document.getElementById('eraser-size-inc-btn');
+    const eraserSizePopoverBtn = document.getElementById('eraser-size-popover-btn');
+    const eraserSizeLabel = document.getElementById('eraser-size-label');
     const colorBtn = document.getElementById('color-btn');
     const colorPreviewCircle = document.getElementById('color-preview-circle');
     const activeColorBadge = document.getElementById('active-color-badge');
@@ -1584,12 +1683,22 @@
     // ----------------------------------------------------
     // 3. MATHEMATICAL CALLIGRAPHY ENGINE (SUPPORT VECTORS)
     // ----------------------------------------------------
-    function getEllipseSupportVector(nx, ny, a, b, angleRad) {
-      const cosA = Math.cos(angleRad);
-      const sinA = Math.sin(angleRad);
+    // Cached trigonometric angles for blazing fast 120Hz/240Hz calligraphic drawing
+    let cachedAngleRad = (state.nibAngleDeg * Math.PI) / 180;
+    let cachedCosA = Math.cos(-cachedAngleRad);
+    let cachedSinA = Math.sin(-cachedAngleRad);
 
-      const nLocalX = nx * cosA + ny * sinA;
-      const nLocalY = -nx * sinA + ny * cosA;
+    function updateCachedAngles() {
+      cachedAngleRad = (state.nibAngleDeg * Math.PI) / 180;
+      cachedCosA = Math.cos(-cachedAngleRad);
+      cachedSinA = Math.sin(-cachedAngleRad);
+    }
+    updateCachedAngles();
+
+    function getEllipseSupportVector(nx, ny, a, b) {
+      // Uses precalculated cosA and sinA to eliminate expensive Math.cos/Math.sin evaluations
+      const nLocalX = nx * cachedCosA + ny * cachedSinA;
+      const nLocalY = -nx * cachedSinA + ny * cachedCosA;
 
       const a2 = a * a;
       const b2 = b * b;
@@ -1599,14 +1708,13 @@
       const pLocalY = (b2 * nLocalY) / denom;
 
       return {
-        x: pLocalX * cosA - pLocalY * sinA,
-        y: pLocalX * sinA + pLocalY * cosA
+        x: pLocalX * cachedCosA - pLocalY * cachedSinA,
+        y: pLocalX * cachedSinA + pLocalY * cachedCosA
       };
     }
 
     function renderCalligraphicSegment(ctx, p0, p1, customSize = null, customColor = null, customOpacity = null) {
       if (!ctx) return;
-      const angleRad = (state.nibAngleDeg * Math.PI) / 180;
       
       const pres0 = state.usePressure ? (p0.pressure || 0.65) : 1.0;
       const pres1 = state.usePressure ? (p1.pressure || 0.65) : 1.0;
@@ -1626,23 +1734,21 @@
       const dy = p1.y - p0.y;
       const dist = Math.hypot(dx, dy);
 
-      ctx.save();
       ctx.fillStyle = customColor || state.color;
       ctx.globalAlpha = customOpacity !== null ? customOpacity : state.opacity;
 
       if (dist < 0.6) {
         ctx.beginPath();
-        ctx.ellipse(p1.x, p1.y, a1, b1, -angleRad, 0, Math.PI * 2);
+        ctx.ellipse(p1.x, p1.y, a1, b1, -cachedAngleRad, 0, Math.PI * 2);
         ctx.fill();
-        ctx.restore();
         return;
       }
 
       const nx = -dy / dist;
       const ny = dx / dist;
 
-      const s0 = getEllipseSupportVector(nx, ny, a0, b0, -angleRad);
-      const s1 = getEllipseSupportVector(nx, ny, a1, b1, -angleRad);
+      const s0 = getEllipseSupportVector(nx, ny, a0, b0);
+      const s1 = getEllipseSupportVector(nx, ny, a1, b1);
 
       ctx.beginPath();
       ctx.moveTo(p0.x + s0.x, p0.y + s0.y);
@@ -1653,19 +1759,21 @@
       ctx.fill();
 
       ctx.beginPath();
-      ctx.ellipse(p1.x, p1.y, a1, b1, -angleRad, 0, Math.PI * 2);
+      ctx.ellipse(p1.x, p1.y, a1, b1, -cachedAngleRad, 0, Math.PI * 2);
       ctx.fill();
-
-      ctx.restore();
     }
 
     // ----------------------------------------------------
-    // 4. DRAWING & POINTER EVENT HANDLING
+    // 4. DRAWING & POINTER EVENT HANDLING (HIGH-PERFORMANCE)
     // ----------------------------------------------------
+    let cachedCanvasRect = null;
+
     function getPointerPos(e) {
-      const rect = displayCanvas.getBoundingClientRect();
-      const scaleX = state.canvasWidth / rect.width;
-      const scaleY = state.canvasHeight / rect.height;
+      if (!cachedCanvasRect || !state.isDrawing) {
+        cachedCanvasRect = displayCanvas.getBoundingClientRect();
+      }
+      const scaleX = state.canvasWidth / cachedCanvasRect.width;
+      const scaleY = state.canvasHeight / cachedCanvasRect.height;
 
       let clientX = e.clientX;
       let clientY = e.clientY;
@@ -1676,8 +1784,8 @@
       }
 
       return {
-        x: (clientX - rect.left) * scaleX,
-        y: (clientY - rect.top) * scaleY,
+        x: (clientX - cachedCanvasRect.left) * scaleX,
+        y: (clientY - cachedCanvasRect.top) * scaleY,
         pressure: (e.pressure && e.pressure > 0) ? e.pressure : 0.65
       };
     }
@@ -1692,10 +1800,24 @@
 
       state.isDrawing = true;
       state.currentStrokeDist = 0;
+      cachedCanvasRect = displayCanvas.getBoundingClientRect();
       const pos = getPointerPos(e);
       state.rawPoints = [pos];
       state.filteredPoints = [pos];
       state.lastDrawnPos = { x: pos.x, y: pos.y, pressure: pos.pressure };
+
+      // Pre-set context styles for the stroke
+      if (state.tool === 'brush') {
+        updateCachedAngles();
+        if (activeLayer.ctx) {
+          activeLayer.ctx.fillStyle = state.color;
+          activeLayer.ctx.globalAlpha = state.opacity;
+        }
+        if (displayCtx) {
+          displayCtx.fillStyle = state.color;
+          displayCtx.globalAlpha = state.opacity;
+        }
+      }
 
       // Studio Tape Recorder hook
       if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.isRecording) {
@@ -1713,6 +1835,14 @@
         return;
       }
 
+      // Read sub-pixel coalesced events if supported (Apple Pencil, stylus, high-Hz pointer)
+      const events = (typeof e.getCoalescedEvents === 'function') ? e.getCoalescedEvents() : [e];
+      for (let i = 0; i < events.length; i++) {
+        processStrokePoint(events[i]);
+      }
+    }
+
+    function processStrokePoint(e) {
       let rawPos = getPointerPos(e);
 
       if (state.jitter > 0) {
@@ -1723,14 +1853,20 @@
 
       state.rawPoints.push(rawPos);
 
-      const smoothFactor = state.nibSmoothness;
-      const alpha = 1.0 - Math.min(0.96, Math.max(0.04, smoothFactor));
-
       const prev = state.filteredPoints[state.filteredPoints.length - 1];
+      const distRaw = Math.hypot(rawPos.x - prev.x, rawPos.y - prev.y);
+
+      // Adaptive responsive smoothing:
+      // When moving swiftly, increase responsiveness dynamically to eliminate perceived lag!
+      // When moving slowly, maintain smooth stabilization for delicate Arabic curves.
+      const baseAlpha = 1.0 - Math.min(0.92, Math.max(0.08, state.nibSmoothness));
+      const speedBoost = Math.min(0.65, distRaw / 28);
+      const effectiveAlpha = Math.min(0.95, baseAlpha + speedBoost);
+
       const smoothedPos = {
-        x: prev.x + (rawPos.x - prev.x) * alpha,
-        y: prev.y + (rawPos.y - prev.y) * alpha,
-        pressure: prev.pressure + (rawPos.pressure - prev.pressure) * alpha
+        x: prev.x + (rawPos.x - prev.x) * effectiveAlpha,
+        y: prev.y + (rawPos.y - prev.y) * effectiveAlpha,
+        pressure: prev.pressure + (rawPos.pressure - prev.pressure) * effectiveAlpha
       };
 
       state.filteredPoints.push(smoothedPos);
@@ -1743,8 +1879,11 @@
       const dist = Math.hypot(smoothedPos.x - state.lastDrawnPos.x, smoothedPos.y - state.lastDrawnPos.y);
       state.currentStrokeDist += dist;
 
-      const stepSize = state.spacing > 0 ? Math.max(2, (state.spacing / 100) * state.size * 0.7) : 2.0;
-      const steps = Math.max(1, Math.ceil(dist / stepSize));
+      // Smart step size: Avoids heavy micro-step overdraw that caused lag/sluggishness
+      const activeSize = state.tool === 'eraser' ? state.eraserSize : state.size;
+      const minStep = Math.max(10, activeSize * 0.3);
+      const stepSize = state.spacing > 0 ? Math.max(2, (state.spacing / 100) * state.size * 0.7) : minStep;
+      const steps = Math.max(1, Math.min(6, Math.ceil(dist / stepSize)));
 
       for (let s = 1; s <= steps; s++) {
         const t = s / steps;
@@ -1761,6 +1900,7 @@
     function endStroke(e) {
       if (!state.isDrawing) return;
       state.isDrawing = false;
+      cachedCanvasRect = null;
       
       // Studio Tape Recorder hook
       if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.isRecording) {
@@ -1784,42 +1924,73 @@
       const activeLayer = getActiveLayer();
       if (!activeLayer) return;
 
-      const contexts = [activeLayer.ctx, displayCtx];
+      if (state.tool === 'eraser') {
+        const effEraserSize = state.eraserSize || 45;
+        const pressure = to.pressure || 0.65;
+        const strokeW = Math.max(3, effEraserSize * (0.4 + 0.6 * pressure));
+        const alpha = state.eraserOpacity !== undefined ? state.eraserOpacity : state.opacity;
 
-      contexts.forEach(ctx => {
-        if (!ctx) return;
-        if (state.tool === 'eraser') {
-          ctx.save();
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.globalAlpha = state.opacity;
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          ctx.lineWidth = Math.max(3, state.size * (0.35 + 0.65 * (to.pressure || 0.65)));
-          ctx.beginPath();
-          ctx.moveTo(from.x, from.y);
-          ctx.lineTo(to.x, to.y);
-          ctx.stroke();
-          ctx.restore();
+        // 1. Erase on active layer
+        activeLayer.ctx.save();
+        activeLayer.ctx.globalCompositeOperation = 'destination-out';
+        activeLayer.ctx.globalAlpha = alpha;
+        activeLayer.ctx.lineCap = 'round';
+        activeLayer.ctx.lineJoin = 'round';
+        activeLayer.ctx.lineWidth = strokeW;
+        activeLayer.ctx.beginPath();
+        activeLayer.ctx.moveTo(from.x, from.y);
+        activeLayer.ctx.lineTo(to.x, to.y);
+        activeLayer.ctx.stroke();
+        activeLayer.ctx.restore();
 
-        } else if (state.tool === 'smudge') {
-          if (ctx === activeLayer.ctx) {
-            const smSize = Math.max(6, Math.floor(state.size * 0.9));
-            try {
-              ctx.save();
-              ctx.globalAlpha = 0.25 * state.opacity;
-              ctx.drawImage(
-                activeLayer.canvas,
-                Math.max(0, from.x - smSize / 2), Math.max(0, from.y - smSize / 2), smSize, smSize,
-                to.x - smSize / 2, to.y - smSize / 2, smSize, smSize
-              );
-              ctx.restore();
-            } catch(err) {}
-          }
-
-        } else {
-          renderCalligraphicSegment(ctx, from, to);
+        // 2. Real-time display canvas feedback (erases with background color to avoid black holes)
+        if (displayCtx) {
+          displayCtx.save();
+          displayCtx.strokeStyle = state.backgroundColor;
+          displayCtx.globalAlpha = alpha;
+          displayCtx.lineCap = 'round';
+          displayCtx.lineJoin = 'round';
+          displayCtx.lineWidth = strokeW;
+          displayCtx.beginPath();
+          displayCtx.moveTo(from.x, from.y);
+          displayCtx.lineTo(to.x, to.y);
+          displayCtx.stroke();
+          displayCtx.restore();
         }
-      });
+        return;
+      }
+
+      if (state.tool === 'smudge') {
+        const smSize = Math.max(6, Math.floor(state.size * 0.9));
+        try {
+          activeLayer.ctx.save();
+          activeLayer.ctx.globalAlpha = 0.25 * state.opacity;
+          activeLayer.ctx.drawImage(
+            activeLayer.canvas,
+            Math.max(0, from.x - smSize / 2), Math.max(0, from.y - smSize / 2), smSize, smSize,
+            to.x - smSize / 2, to.y - smSize / 2, smSize, smSize
+          );
+          activeLayer.ctx.restore();
+
+          if (displayCtx) {
+            displayCtx.save();
+            displayCtx.globalAlpha = 0.25 * state.opacity;
+            displayCtx.drawImage(
+              activeLayer.canvas,
+              Math.max(0, from.x - smSize / 2), Math.max(0, from.y - smSize / 2), smSize, smSize,
+              to.x - smSize / 2, to.y - smSize / 2, smSize, smSize
+            );
+            displayCtx.restore();
+          }
+        } catch(err) {}
+        return;
+      }
+
+      // Normal Calligraphic Brush Tool
+      renderCalligraphicSegment(activeLayer.ctx, from, to);
+      if (displayCtx) {
+        renderCalligraphicSegment(displayCtx, from, to);
+      }
     }
 
     if (displayCanvas) {
@@ -4130,13 +4301,62 @@
     function setBrushSize(newSize) {
       state.size = Math.max(4, Math.min(150, Math.round(newSize)));
       const slider = document.getElementById('slider-size');
-      if (slider) slider.value = state.size;
+      if (slider && state.tool !== 'eraser') slider.value = state.size;
       const label = document.getElementById('slider-size-val');
-      if (label) label.textContent = `${state.size}px`;
+      if (label && state.tool !== 'eraser') label.textContent = `${state.size}px`;
       
       if (state.syncGuidelinesToBrush && state.showGrid) {
         drawGuidelinesAndGrid();
       }
+    }
+
+    function setEraserSize(newSize) {
+      state.eraserSize = Math.max(3, Math.min(250, Math.round(newSize)));
+
+      const slider = document.getElementById('slider-size');
+      if (slider && state.tool === 'eraser') slider.value = state.eraserSize;
+
+      const label = document.getElementById('slider-size-val');
+      if (label && state.tool === 'eraser') label.textContent = `${state.eraserSize}px`;
+
+      const headerLabel = document.getElementById('eraser-size-label');
+      if (headerLabel) headerLabel.textContent = `${state.eraserSize}px`;
+
+      const badge = document.getElementById('eraser-badge');
+      if (badge) badge.textContent = state.eraserSize;
+
+      const popSlider = document.getElementById('eraser-popover-slider');
+      if (popSlider) popSlider.value = state.eraserSize;
+
+      const popVal = document.getElementById('eraser-popover-slider-val');
+      if (popVal) popVal.textContent = `${state.eraserSize}px`;
+
+      const previewCircle = document.getElementById('eraser-preview-circle');
+      if (previewCircle) {
+        const visualPx = Math.min(84, Math.max(8, state.eraserSize));
+        previewCircle.style.width = `${visualPx}px`;
+        previewCircle.style.height = `${visualPx}px`;
+      }
+      const previewText = document.getElementById('eraser-preview-text');
+      if (previewText) previewText.textContent = `${state.eraserSize}px`;
+
+      // Highlight active preset chip if matching
+      document.querySelectorAll('.eraser-preset-btn').forEach(btn => {
+        const bSize = parseInt(btn.getAttribute('data-size'));
+        if (bSize === state.eraserSize) {
+          btn.className = 'eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold transition';
+        } else {
+          btn.className = 'eraser-preset-btn text-[10px] px-2 py-1 rounded-lg bg-white/5 hover:bg-rose-500/20 hover:text-rose-300 text-gray-300 border border-white/5 transition';
+        }
+      });
+    }
+
+    function stepEraserSize(delta) {
+      if (state.tool !== 'eraser') {
+        selectTool('eraser');
+      }
+      setEraserSize(state.eraserSize + delta);
+      showToast(`حجم الممحاة: ${state.eraserSize}px`);
     }
 
     function matchBrushSizeToCurrentPreset() {
@@ -4499,7 +4719,12 @@
     // 10. PROCREATE VERTICAL SLIDERS & CONTROLS
     // ----------------------------------------------------
     safeBind('slider-size', 'input', (e) => {
-      setBrushSize(parseInt(e.target.value));
+      const val = parseInt(e.target.value);
+      if (state.tool === 'eraser') {
+        setEraserSize(val);
+      } else {
+        setBrushSize(val);
+      }
     });
 
     safeBind('slider-opacity', 'input', (e) => {
@@ -4510,26 +4735,60 @@
     });
 
     function selectTool(toolName) {
+      const isAlreadyEraser = (state.tool === 'eraser' && toolName === 'eraser');
       state.tool = toolName;
       [toolBrushBtn, toolSmudgeBtn, toolEraserBtn].forEach(b => {
         if (b) b.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition';
       });
 
+      const sliderLabel = document.getElementById('slider-size-title');
+      const sliderVal = document.getElementById('slider-size-val');
+      const slider = document.getElementById('slider-size');
+      const badge = document.getElementById('eraser-badge');
+
       if (toolName === 'brush') {
         if (toolBrushBtn) toolBrushBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-blue-400 bg-blue-600/20 border border-blue-500/40 transition relative shadow';
-        togglePopover(brushLibraryPopover);
-      } else {
-        if (brushLibraryPopover) brushLibraryPopover.classList.add('hidden');
+        if (sliderLabel) sliderLabel.innerHTML = '<span class="text-[10px] font-bold text-gray-400 mb-2">الحجم</span>';
+        if (slider) slider.value = state.size;
+        if (sliderVal) {
+          sliderVal.textContent = `${state.size}px`;
+          sliderVal.className = 'text-[10px] font-mono font-bold text-blue-400 mt-2';
+        }
+        if (badge) badge.classList.add('hidden');
+        if (eraserStudioPopover) eraserStudioPopover.classList.add('hidden');
       }
 
       if (toolName === 'smudge') {
         if (toolSmudgeBtn) toolSmudgeBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-amber-400 bg-amber-600/20 border border-amber-500/40 transition shadow';
+        if (sliderLabel) sliderLabel.innerHTML = '<span class="text-[10px] font-bold text-amber-400 mb-2">الدمج</span>';
+        if (slider) slider.value = state.size;
+        if (sliderVal) {
+          sliderVal.textContent = `${state.size}px`;
+          sliderVal.className = 'text-[10px] font-mono font-bold text-amber-400 mt-2';
+        }
+        if (badge) badge.classList.add('hidden');
+        if (eraserStudioPopover) eraserStudioPopover.classList.add('hidden');
         showToast('أداة الدمج والتلطيخ (Smudge)');
       }
 
       if (toolName === 'eraser') {
-        if (toolEraserBtn) toolEraserBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-rose-400 bg-rose-600/20 border border-rose-500/40 transition shadow';
-        showToast('الممحاة (Eraser)');
+        if (toolEraserBtn) toolEraserBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center active:scale-95 text-rose-400 bg-rose-600/20 border border-rose-500/40 transition relative shadow';
+        if (sliderLabel) sliderLabel.innerHTML = '<span class="text-[10px] font-bold text-rose-400 mb-2 flex items-center gap-1"><i class="fa-solid fa-eraser text-[8px]"></i>الممحاة</span>';
+        if (slider) slider.value = state.eraserSize;
+        if (sliderVal) {
+          sliderVal.textContent = `${state.eraserSize}px`;
+          sliderVal.className = 'text-[10px] font-mono font-bold text-rose-400 mt-2';
+        }
+        if (badge) {
+          badge.textContent = state.eraserSize;
+          badge.classList.remove('hidden');
+        }
+        // If clicking eraser button when already active, toggle its options popover
+        if (isAlreadyEraser) {
+          togglePopover(eraserStudioPopover);
+        } else {
+          showToast(`الممحاة: ${state.eraserSize}px`);
+        }
       }
     }
 
@@ -4537,10 +4796,59 @@
     if (toolSmudgeBtn) toolSmudgeBtn.addEventListener('click', () => selectTool('smudge'));
     if (toolEraserBtn) toolEraserBtn.addEventListener('click', () => selectTool('eraser'));
 
+    // Dedicated Eraser Direct Stepper Controls
+    safeBind('eraser-size-dec-btn', 'click', (e) => {
+      e.stopPropagation();
+      stepEraserSize(-5);
+    });
+
+    safeBind('eraser-size-inc-btn', 'click', (e) => {
+      e.stopPropagation();
+      stepEraserSize(+5);
+    });
+
+    safeBind('eraser-size-popover-btn', 'click', (e) => {
+      e.stopPropagation();
+      if (state.tool !== 'eraser') selectTool('eraser');
+      togglePopover(eraserStudioPopover);
+    });
+
+    safeBind('close-eraser-popover-btn', 'click', () => {
+      if (eraserStudioPopover) eraserStudioPopover.classList.add('hidden');
+    });
+
+    safeBind('eraser-step-m10', 'click', () => stepEraserSize(-10));
+    safeBind('eraser-step-m5', 'click', () => stepEraserSize(-5));
+    safeBind('eraser-step-p5', 'click', () => stepEraserSize(+5));
+    safeBind('eraser-step-p10', 'click', () => stepEraserSize(+10));
+
+    safeBind('eraser-popover-slider', 'input', (e) => {
+      setEraserSize(parseInt(e.target.value));
+    });
+
+    document.querySelectorAll('.eraser-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const s = parseInt(btn.getAttribute('data-size'));
+        setEraserSize(s);
+        showToast(`حجم الممحاة: ${s}px`);
+      });
+    });
+
+    safeBind('eraser-clear-active-layer-btn', 'click', () => {
+      const activeLayer = getActiveLayer();
+      if (activeLayer) {
+        activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+        renderComposite();
+        saveState();
+        if (eraserStudioPopover) eraserStudioPopover.classList.add('hidden');
+        showToast('تم مسح محتوى الطبقة بالكامل');
+      }
+    });
+
     function togglePopover(panel) {
       if (!panel) return;
       const isHidden = panel.classList.contains('hidden');
-      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover].forEach(p => {
+      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover, eraserStudioPopover].forEach(p => {
         if (p) p.classList.add('hidden');
       });
       if (isHidden) panel.classList.remove('hidden');
@@ -4770,10 +5078,18 @@
       const activeLayer = getActiveLayer();
       if (!activeLayer) return;
 
-      const snapshot = activeLayer.ctx.getImageData(0, 0, state.canvasWidth, state.canvasHeight);
+      // High-performance GPU-friendly snapshot via offscreen canvas (eliminates heavy 7.7MB getImageData pipeline stall)
+      const snapshot = document.createElement('canvas');
+      snapshot.width = state.canvasWidth;
+      snapshot.height = state.canvasHeight;
+      const sCtx = snapshot.getContext('2d');
+      if (sCtx) {
+        sCtx.drawImage(activeLayer.canvas, 0, 0);
+      }
+
       state.history.push({
         layerId: activeLayer.id,
-        data: snapshot
+        canvas: snapshot
       });
 
       if (state.history.length > state.maxHistory) {
@@ -4792,8 +5108,13 @@
 
       const previous = state.history[state.history.length - 1];
       const targetLayer = state.layers.find(l => l.id === previous.layerId) || getActiveLayer();
-      if (targetLayer) {
-        targetLayer.ctx.putImageData(previous.data, 0, 0);
+      if (targetLayer && previous) {
+        targetLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+        if (previous.canvas) {
+          targetLayer.ctx.drawImage(previous.canvas, 0, 0);
+        } else if (previous.data) {
+          targetLayer.ctx.putImageData(previous.data, 0, 0);
+        }
         renderComposite();
         showToast('تراجع (Undo)');
       }
@@ -4807,8 +5128,13 @@
       const next = state.redoStack.pop();
       state.history.push(next);
       const targetLayer = state.layers.find(l => l.id === next.layerId) || getActiveLayer();
-      if (targetLayer) {
-        targetLayer.ctx.putImageData(next.data, 0, 0);
+      if (targetLayer && next) {
+        targetLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+        if (next.canvas) {
+          targetLayer.ctx.drawImage(next.canvas, 0, 0);
+        } else if (next.data) {
+          targetLayer.ctx.putImageData(next.data, 0, 0);
+        }
         renderComposite();
         showToast('إعادة (Redo)');
       }
@@ -4829,6 +5155,12 @@
         selectTool('eraser');
       } else if (e.key.toLowerCase() === 's' && !e.ctrlKey) {
         selectTool('smudge');
+      } else if (e.key === '[') {
+        if (state.tool === 'eraser') stepEraserSize(-5);
+        else setBrushSize(state.size - 2);
+      } else if (e.key === ']') {
+        if (state.tool === 'eraser') stepEraserSize(+5);
+        else setBrushSize(state.size + 2);
       }
     });
 
