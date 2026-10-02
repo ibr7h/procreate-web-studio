@@ -11,10 +11,10 @@
   <!-- FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   
-  <!-- Google Fonts: Cairo & Plus Jakarta Sans -->
+  <!-- Google Fonts: Amiri, Cairo & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- PWA & Mobile Meta Tags -->
   <link rel="manifest" href="manifest.webmanifest">
@@ -114,6 +114,31 @@
       touch-action: none;
       box-shadow: 0 25px 65px -10px rgba(0, 0, 0, 0.85);
     }
+
+    /* Cassette Tape Recorder Deck Animations & Details */
+    @keyframes spin-cw {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes pulse-tape-rec {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(1.2); }
+    }
+    .spool-spinning {
+      animation: spin-cw 2.4s linear infinite;
+    }
+    .spool-spinning-fast {
+      animation: spin-cw 1.1s linear infinite;
+    }
+    .spool-spinning-slow {
+      animation: spin-cw 4.8s linear infinite;
+    }
+    .rec-indicator-blinking {
+      animation: pulse-tape-rec 0.9s ease-in-out infinite;
+    }
+    .tape-deck-gloss {
+      background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 100%);
+    }
   </style>
 </head>
 <body class="h-screen w-screen flex flex-col justify-between select-none">
@@ -172,6 +197,12 @@
       <button id="auto-write-btn" title="محاكاة وتدريب الكتابة بالقصبة العربية" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600/25 to-teal-600/25 hover:from-emerald-600/35 hover:to-teal-600/35 border border-emerald-500/40 text-emerald-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5 shadow-sm">
         <i class="fa-solid fa-wand-magic-sparkles text-xs text-emerald-400 animate-pulse"></i>
         <span class="hidden md:inline">محاكاة وتدريب الكتابة</span>
+      </button>
+
+      <!-- Tape Recorder Studio Button -->
+      <button id="tape-recorder-btn" title="مسجل الكلمات والخط كأزرار المسجل (Tape Recorder)" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-600/25 to-red-600/25 hover:from-rose-600/35 hover:to-red-600/35 border border-rose-500/40 text-rose-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-record-vinyl text-xs text-rose-400 animate-pulse"></i>
+        <span class="hidden sm:inline">مسجل الخط (Tape Deck)</span>
       </button>
 
       <!-- PWA Install Button -->
@@ -327,6 +358,248 @@
     </div>
 
     <!-- ========================================== -->
+    <!-- STUDIO CALLIGRAPHY TAPE RECORDER DECK       -->
+    <!-- ========================================== -->
+    <div id="studio-tape-recorder" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[96%] max-w-4xl transition-all duration-300 select-none hidden">
+      <div class="bg-[#14141b]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-3 sm:p-4 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.95)] flex flex-col gap-3 tape-deck-gloss">
+        
+        <!-- Top Bar of Deck: Tape Window + LCD + Title + Quick Actions -->
+        <div class="flex items-center justify-between gap-2 sm:gap-3 bg-black/40 border border-white/10 rounded-2xl p-2 sm:p-3">
+          
+          <!-- Cassette Spools Visual (بكرات الكاسيت الدوارة) -->
+          <div class="flex items-center gap-2 sm:gap-3 bg-[#0d0d12] border border-white/10 px-2 sm:px-3 py-1.5 rounded-xl shrink-0">
+            <!-- Left Spool -->
+            <div id="tape-spool-left" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-dashed border-gray-500 flex items-center justify-center text-gray-400 transition-transform">
+              <i class="fa-solid fa-gear text-[10px] text-gray-400"></i>
+            </div>
+            <!-- Tape Ribbon Line -->
+            <div class="w-6 sm:w-10 h-1 bg-gradient-to-r from-amber-600/70 via-amber-300 to-amber-600/70 rounded-full relative">
+              <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-3 bg-white/30 rounded-sm"></div>
+            </div>
+            <!-- Right Spool -->
+            <div id="tape-spool-right" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-dashed border-gray-500 flex items-center justify-center text-gray-400 transition-transform">
+              <i class="fa-solid fa-gear text-[10px] text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- LCD Digital Screen (شاشة المسجل الرقمية) -->
+          <div class="flex-1 flex items-center justify-between bg-[#08080c] border border-white/10 px-3 py-1.5 sm:py-2 rounded-xl font-mono text-xs overflow-hidden">
+            <div class="flex items-center gap-2 truncate">
+              <!-- Mode LED Indicator -->
+              <span id="tape-status-led" class="w-2.5 h-2.5 rounded-full bg-gray-500 shrink-0"></span>
+              <span id="tape-mode-label" class="font-bold text-gray-400 uppercase tracking-wider text-[11px] shrink-0">STOP</span>
+              <span class="text-white/20 shrink-0">|</span>
+              <span id="tape-session-title" class="text-amber-300 font-sans font-bold text-xs truncate">جاهز للتسجيل أو التشغيل</span>
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+              <span id="tape-stroke-counter" class="text-[11px] text-blue-400 font-mono hidden sm:inline">0 ضربات</span>
+              <span class="text-white/20 hidden sm:inline">|</span>
+              <span id="tape-time-counter" class="text-emerald-400 font-bold font-mono tracking-widest text-xs sm:text-sm">00:00.0</span>
+            </div>
+          </div>
+
+          <!-- Header Mini Controls: Word Library & Close -->
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button id="tape-words-lib-btn" title="مكتبة الكلمات والحروف الجاهزة والمسجلة" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-gray-200 text-xs font-bold flex items-center gap-1.5 transition active:scale-95">
+              <i class="fa-solid fa-book-bookmark text-amber-400 text-xs"></i>
+              <span class="hidden md:inline">مكتبة الكلمات</span>
+            </button>
+            <button id="tape-deck-close-btn" title="إخفاء المسجل" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center transition active:scale-95">
+              <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Scrubber Timeline Slider (شريط التمرير الزمني لشريط الكاسيت) -->
+        <div class="flex items-center gap-2 px-1">
+          <span class="text-[10px] font-mono text-gray-400 w-10 text-right" id="tape-current-pos-label">00:00</span>
+          <div class="flex-1 relative flex items-center">
+            <input type="range" id="tape-timeline-slider" min="0" max="100" value="0" step="0.2" class="w-full h-1.5 bg-white/10 hover:bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald-500 transition">
+          </div>
+          <span class="text-[10px] font-mono text-gray-400 w-10" id="tape-total-duration-label">00:00</span>
+        </div>
+
+        <!-- The Classic Tape Recorder Physical-like Buttons (أزرار المسجل الحقيقية) -->
+        <div class="flex items-center justify-between flex-wrap gap-2 pt-1 border-t border-white/10">
+          
+          <!-- Primary Tape Cluster: REC, STOP, PLAY, PAUSE, REWIND, SPEED, LOOP -->
+          <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
+            
+            <!-- RECORD BUTTON (تسجيل 🔴) -->
+            <button id="tape-btn-rec" title="تسجيل جديد (Record) - اضغط ثم اكتب بالفرشاة" class="px-3 sm:px-4 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/35 border border-rose-500/50 text-rose-300 font-bold text-xs flex items-center gap-2 transition active:scale-90 shadow">
+              <i class="fa-solid fa-circle text-rose-500 text-xs" id="tape-rec-icon"></i>
+              <span>تسجيل</span>
+            </button>
+
+            <!-- STOP BUTTON (إيقاف ⏹) -->
+            <button id="tape-btn-stop" title="إيقاف التسجيل أو التشغيل (Stop)" class="px-3 sm:px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-300 font-bold text-xs flex items-center gap-1.5 transition active:scale-90">
+              <i class="fa-solid fa-stop text-gray-300 text-xs"></i>
+              <span>إيقاف</span>
+            </button>
+
+            <!-- PLAY BUTTON (تشغيل ▶️) -->
+            <button id="tape-btn-play" title="تشغيل الكلمة أو التسجيل الحالي (Play)" class="px-3 sm:px-4 py-2 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/50 text-emerald-300 font-bold text-xs flex items-center gap-2 transition active:scale-90 shadow">
+              <i class="fa-solid fa-play text-emerald-400 text-xs"></i>
+              <span>تشغيل</span>
+            </button>
+
+            <!-- PAUSE BUTTON (إيقاف مؤقت ⏸) -->
+            <button id="tape-btn-pause" title="إيقاف مؤقت (Pause)" class="px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-amber-300 font-bold text-xs flex items-center gap-1.5 transition active:scale-90">
+              <i class="fa-solid fa-pause text-amber-400 text-xs"></i>
+            </button>
+
+            <!-- REWIND BUTTON (ترجيع للبداية ⏪) -->
+            <button id="tape-btn-rewind" title="إعادة للبداية (Rewind)" class="px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-blue-300 font-bold text-xs flex items-center gap-1.5 transition active:scale-90">
+              <i class="fa-solid fa-backward-step text-blue-400 text-xs"></i>
+            </button>
+
+            <!-- SPEED CYCLER (0.5x, 1x, 2x, 4x ⏩) -->
+            <button id="tape-btn-speed" title="تغيير سرعة المحاكاة" class="px-2.5 sm:px-3 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs flex items-center gap-1 transition active:scale-90">
+              <i class="fa-solid fa-forward-step text-[10px]"></i>
+              <span id="tape-speed-badge">1x</span>
+            </button>
+
+            <!-- LOOP TOGGLE (تكرار مستمر 🔁) -->
+            <button id="tape-btn-loop" title="تشغيل متكرر مستمر (Loop)" class="px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 font-bold text-xs flex items-center gap-1 transition active:scale-90">
+              <i class="fa-solid fa-repeat text-xs"></i>
+            </button>
+
+          </div>
+
+          <!-- Secondary Actions: Save Word, Clear -->
+          <div class="flex items-center gap-2">
+            <!-- Save Word Button (حفظ الكلمة) -->
+            <button id="tape-btn-save-word" title="حفظ الكلمة المسجلة في المكتبة والذاكرة الدائمة" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-600/30 to-orange-600/30 hover:from-amber-600/40 hover:to-orange-600/40 border border-amber-500/40 text-amber-200 font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
+              <i class="fa-solid fa-floppy-disk text-amber-400"></i>
+              <span>حفظ الكلمة</span>
+            </button>
+
+            <!-- Clear Buffer -->
+            <button id="tape-btn-clear" title="مسح التسجيل الحالي وبدء جلسة جديدة" class="px-2.5 py-2 rounded-xl bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 text-xs transition active:scale-95">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAPE WORDS & LETTERS LIBRARY MODAL         -->
+    <!-- ========================================== -->
+    <div id="tape-words-library-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6 select-none">
+      <div class="w-full max-w-2xl max-h-[88vh] bg-[#16161c] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-gray-200">
+        
+        <!-- Header -->
+        <div class="h-14 px-6 border-b border-white/10 flex items-center justify-between bg-[#1b1b22] shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-book-bookmark"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">مكتبة الكلمات والحروف للتشغيل والتدريب</h2>
+              <p class="text-[10px] text-gray-400">اختر أي كلمة أو حرف لتشغيله بأزرار المسجل أو تدريبه</p>
+            </div>
+          </div>
+          <button id="close-tape-library-btn" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Body Tabs & Content -->
+        <div class="flex-1 overflow-y-auto p-5 space-y-6">
+          
+          <!-- Category 1: Classical Words (كلمات وعبارات معتمدة) -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-star text-[10px]"></i>
+                <span>كلمات وعبارات عربية كلاسيكية معتمدة:</span>
+              </span>
+              <span class="text-[10px] text-gray-400 font-mono">نماذج متصلة وموزونة</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="tape-lib-words-grid">
+              <!-- Dynamically populated classical words -->
+            </div>
+          </div>
+
+          <!-- Category 2: User Recorded Custom Words (كلماتك المسجلة يدوياً) -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-graduation-cap text-[10px]"></i>
+                <span>كلماتك ومخطوطاتك المسجلة بالمسجل:</span>
+              </span>
+              <span id="tape-custom-count-badge" class="text-[10px] text-amber-300 font-mono bg-amber-500/15 px-2 py-0.5 rounded-full">0 كلمة</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="tape-lib-custom-grid">
+              <!-- Dynamically populated custom recorded words -->
+            </div>
+          </div>
+
+          <!-- Category 3: Alphabet Letters (الحروف الأبجدية المفردة) -->
+          <div class="space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-blue-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-font text-[10px]"></i>
+                <span>الحروف الأبجدية المفردة:</span>
+              </span>
+            </div>
+            <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-1.5" id="tape-lib-letters-grid">
+              <!-- Dynamically populated letters -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAPE SAVE WORD DIALOG MODAL                -->
+    <!-- ========================================== -->
+    <div id="tape-save-word-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 select-none">
+      <div class="w-full max-w-md bg-[#181822] border border-white/15 rounded-3xl p-6 shadow-2xl space-y-4 text-gray-200">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div class="flex items-center gap-2 text-amber-400 font-bold text-sm">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>حفظ الكلمة أو المخطوطة في الذاكرة</span>
+          </div>
+          <button id="close-tape-save-modal-btn" class="w-7 h-7 rounded-full hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center">
+            <i class="fa-solid fa-xmark text-xs"></i>
+          </button>
+        </div>
+
+        <p class="text-xs text-gray-300 leading-relaxed">
+          اكتب اسم الكلمة أو العبارة التي قمت برسمها لحفظ مساراتها، دقتها، وزمن ضرباتها بشكل دائم في المسجل والذاكرة لتشغيلها في أي وقت:
+        </p>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-bold text-gray-300">اسم الكلمة / العبارة:</label>
+          <input type="text" id="tape-save-input-name" placeholder="مثال: مرحبا ، سلام ، رمضان كريم ، فن..." class="w-full bg-black/50 border border-white/15 focus:border-amber-500 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none transition" dir="rtl">
+        </div>
+
+        <div class="flex items-center justify-between text-[11px] text-gray-400 bg-white/5 p-3 rounded-xl border border-white/5">
+          <span>عدد الضربات المسجلة:</span>
+          <span id="tape-save-strokes-stat" class="font-bold text-amber-400 font-mono">0 ضربات</span>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button id="tape-save-cancel-btn" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-gray-300 text-xs font-bold transition">
+            إلغاء
+          </button>
+          <button id="tape-save-confirm-btn" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition shadow flex items-center gap-1.5">
+            <i class="fa-solid fa-check"></i>
+            <span>حفظ في المكتبة الآن</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
     <!-- AUTO-WRITE & INTERACTIVE TRAINING MODAL    -->
     <!-- ========================================== -->
     <div id="auto-write-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6 select-none">
@@ -395,12 +668,19 @@
 
             <!-- Custom Text Input Field -->
             <div class="space-y-2">
-              <label class="text-xs font-bold text-gray-300">أو اكتب حروفاً / كلمة مخصصة:</label>
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-gray-300">أو اكتب حروفاً / كلمة مخصصة:</label>
+                <span class="text-[10px] text-gray-400">يدعم الكلمات المركبة والمفردة</span>
+              </div>
               <div class="flex items-center gap-2">
-                <input type="text" id="sim-custom-text-input" placeholder="مثال: الله ، كتاب ، نور ، قلم..." class="flex-1 bg-black/50 border border-white/15 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none transition" dir="rtl">
-                <button id="sim-apply-custom-btn" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                <input type="text" id="sim-custom-text-input" placeholder="مثال: محمد ، سلام ، الحمد لله ، نور..." class="flex-1 bg-black/50 border border-white/15 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none transition" dir="rtl">
+                <button id="sim-apply-custom-btn" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5 shrink-0">
                   <i class="fa-solid fa-play"></i>
-                  <span>محاكاة النص</span>
+                  <span>محاكاة وتشغيل</span>
+                </button>
+                <button id="sim-record-word-direct-btn" title="تسجيل هذه الكلمة بيدك بالمسجل الحي" class="px-3.5 py-2.5 bg-rose-600/25 hover:bg-rose-600/40 border border-rose-500/50 active:scale-95 text-rose-300 font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5 shrink-0">
+                  <i class="fa-solid fa-circle text-rose-500 text-[10px]"></i>
+                  <span>تسجيلها بالمسجل 🔴</span>
                 </button>
               </div>
             </div>
@@ -483,12 +763,12 @@
               </div>
             </div>
 
-            <!-- Custom letter input -->
+            <!-- Custom letter / word input -->
             <div class="space-y-2">
-              <label class="text-xs font-bold text-gray-300">أو اكتب رمزاً / مقطعاً مخصصاً لتدريبه:</label>
+              <label class="text-xs font-bold text-gray-300">أو اكتب كلمة أو حرفاً مخصصاً لتدريبه وحفظه:</label>
               <div class="flex items-center gap-2">
-                <input type="text" id="train-custom-input" placeholder="مثال: ص ، ع ، ك ، ط..." class="w-40 bg-black/50 border border-white/15 focus:border-amber-500 rounded-xl px-4 py-2 text-sm text-white font-bold outline-none transition text-center" dir="rtl">
-                <button id="train-set-custom-btn" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                <input type="text" id="train-custom-input" placeholder="مثال: مرحبا ، سلام ، رمضان كريم ، فن..." class="flex-1 bg-black/50 border border-white/15 focus:border-amber-500 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none transition" dir="rtl">
+                <button id="train-set-custom-btn" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5 shrink-0">
                   <i class="fa-solid fa-bullseye"></i>
                   <span>تحديد كهدف للتدريب</span>
                 </button>
@@ -1417,6 +1697,11 @@
       state.filteredPoints = [pos];
       state.lastDrawnPos = { x: pos.x, y: pos.y, pressure: pos.pressure };
 
+      // Studio Tape Recorder hook
+      if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.isRecording) {
+        StudioTapeRecorder.onStrokeStart(pos);
+      }
+
       drawStrokeStep(state.lastDrawnPos, state.lastDrawnPos);
     }
 
@@ -1450,6 +1735,11 @@
 
       state.filteredPoints.push(smoothedPos);
 
+      // Studio Tape Recorder hook
+      if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.isRecording) {
+        StudioTapeRecorder.onStrokePoint(smoothedPos);
+      }
+
       const dist = Math.hypot(smoothedPos.x - state.lastDrawnPos.x, smoothedPos.y - state.lastDrawnPos.y);
       state.currentStrokeDist += dist;
 
@@ -1472,6 +1762,11 @@
       if (!state.isDrawing) return;
       state.isDrawing = false;
       
+      // Studio Tape Recorder hook
+      if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.isRecording) {
+        StudioTapeRecorder.onStrokeEnd();
+      }
+
       // If training mode active, register captured stroke points
       if (typeof CalligraphyInteractiveStudio !== 'undefined' && CalligraphyInteractiveStudio.isTrainingMode && state.filteredPoints.length > 1) {
         CalligraphyInteractiveStudio.recordStrokeDuringTraining(state.filteredPoints);
@@ -1675,6 +1970,7 @@
         char: "الله",
         label: "لفظ الجلالة",
         widthPts: 9.5,
+        isWord: true,
         isCustomLearned: false,
         strokes: [
           sampleCubicBezier({ x: 7.8, y: -4.9 }, { x: 7.85, y: -3.2 }, { x: 7.7, y: -1.5 }, { x: 7.6, y: 0.0 }, 28, 0.75, 0.85),
@@ -1684,6 +1980,136 @@
           sampleCubicBezier({ x: 3.55, y: -3.9 }, { x: 3.5, y: -2.0 }, { x: 3.3, y: -0.5 }, { x: 2.8, y: 0.0 }, 22, 0.7, 0.85),
           sampleCubicBezier({ x: 2.8, y: 0.0 }, { x: 2.2, y: 0.05 }, { x: 1.8, y: 0.0 }, { x: 1.4, y: -0.2 }, 16, 0.8, 0.85),
           sampleCubicBezier({ x: 1.4, y: -0.2 }, { x: 1.3, y: -1.8 }, { x: 0.2, y: -1.4 }, { x: 0.5, y: 0.0 }, 24, 0.7, 0.8)
+        ]
+      },
+      bismillah: {
+        id: "bismillah",
+        char: "بسم الله",
+        label: "البسملة الكلاسيكية",
+        widthPts: 16.5,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.2, y: -1.4 }, { x: -0.3, y: -0.4 }, { x: -0.5, y: 0.0 }, { x: -0.8, y: 0.0 }, 14, 0.7, 0.85),
+          [{ dx: -0.5, dy: 1.2, pressure: 0.85 }, { dx: -0.5, dy: 1.2, pressure: 0.85 }],
+          sampleCubicBezier({ x: -0.8, y: 0.0 }, { x: -1.0, y: -0.8 }, { x: -1.3, y: -0.7 }, { x: -1.6, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: -1.6, y: 0.0 }, { x: -1.8, y: -0.8 }, { x: -2.1, y: -0.7 }, { x: -2.4, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: -2.4, y: 0.0 }, { x: -3.0, y: 0.0 }, { x: -3.5, y: 0.0 }, { x: -4.0, y: 0.0 }, 14, 0.8, 0.8),
+          sampleCubicBezier({ x: -4.0, y: 0.0 }, { x: -4.4, y: -1.0 }, { x: -5.0, y: -0.8 }, { x: -4.8, y: 0.0 }, 18, 0.7, 0.8),
+          sampleCubicBezier({ x: -4.8, y: 0.0 }, { x: -4.9, y: 1.2 }, { x: -5.0, y: 2.4 }, { x: -5.1, y: 3.2 }, 22, 0.8, 0.35),
+          sampleCubicBezier({ x: -6.5, y: -4.8 }, { x: -6.5, y: -2.5 }, { x: -6.5, y: -1.0 }, { x: -6.5, y: 0.0 }, 24, 0.75, 0.85),
+          sampleCubicBezier({ x: -8.0, y: -4.3 }, { x: -8.0, y: -2.0 }, { x: -8.1, y: 0.0 }, { x: -8.8, y: 0.0 }, 22, 0.75, 0.85),
+          sampleCubicBezier({ x: -8.8, y: 0.0 }, { x: -9.0, y: -3.8 }, { x: -9.2, y: -1.5 }, { x: -10.0, y: 0.0 }, 22, 0.75, 0.85),
+          sampleCubicBezier({ x: -10.0, y: 0.0 }, { x: -10.3, y: -1.8 }, { x: -11.2, y: -1.2 }, { x: -11.0, y: 0.0 }, 22, 0.7, 0.8)
+        ]
+      },
+      mohammed: {
+        id: "mohammed",
+        char: "محمد",
+        label: "محمد ﷺ",
+        widthPts: 7.5,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.8, y: -0.3 }, { x: -0.2, y: -1.1 }, { x: -0.8, y: -1.4 }, { x: -1.4, y: -0.5 }, 18, 0.65, 0.8),
+          sampleCubicBezier({ x: -1.4, y: -0.5 }, { x: -1.2, y: 0.0 }, { x: -1.8, y: 0.0 }, { x: -2.3, y: 0.0 }, 14, 0.8, 0.8),
+          sampleCubicBezier({ x: -3.5, y: -1.8 }, { x: -2.8, y: -2.1 }, { x: -2.0, y: -1.9 }, { x: -1.7, y: -1.4 }, 20, 0.7, 0.85),
+          sampleCubicBezier({ x: -1.7, y: -1.4 }, { x: -2.4, y: -0.7 }, { x: -3.0, y: 0.0 }, { x: -3.8, y: 0.0 }, 22, 0.85, 0.8),
+          sampleCubicBezier({ x: -3.8, y: 0.0 }, { x: -4.3, y: -0.9 }, { x: -4.9, y: -0.8 }, { x: -4.8, y: 0.0 }, 20, 0.7, 0.8),
+          sampleCubicBezier({ x: -4.8, y: 0.0 }, { x: -5.3, y: 0.0 }, { x: -5.6, y: -0.3 }, { x: -5.8, y: -1.8 }, 20, 0.8, 0.85),
+          sampleCubicBezier({ x: -5.8, y: -1.8 }, { x: -6.0, y: -0.8 }, { x: -6.4, y: 0.0 }, { x: -7.2, y: 0.0 }, 22, 0.85, 0.6)
+        ]
+      },
+      salam: {
+        id: "salam",
+        char: "سلام",
+        label: "سلام",
+        widthPts: 8.5,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.2, y: -1.0 }, { x: -0.3, y: -0.2 }, { x: -0.6, y: 0.0 }, { x: -1.0, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: -1.0, y: 0.0 }, { x: -1.2, y: -0.8 }, { x: -1.5, y: -0.7 }, { x: -1.8, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: -1.8, y: 0.0 }, { x: -2.3, y: 0.05 }, { x: -2.8, y: 0.0 }, { x: -3.2, y: 0.0 }, 14, 0.8, 0.85),
+          sampleCubicBezier({ x: -3.2, y: 0.0 }, { x: -3.3, y: -2.2 }, { x: -3.35, y: -4.0 }, { x: -3.4, y: -4.8 }, 26, 0.85, 0.7),
+          sampleCubicBezier({ x: -4.6, y: -4.5 }, { x: -4.3, y: -2.8 }, { x: -3.8, y: -1.0 }, { x: -3.3, y: 0.0 }, 24, 0.75, 0.85),
+          sampleCubicBezier({ x: -3.3, y: 0.0 }, { x: -4.2, y: 0.05 }, { x: -5.0, y: 0.0 }, { x: -5.6, y: 0.0 }, 16, 0.8, 0.8),
+          sampleCubicBezier({ x: -5.6, y: 0.0 }, { x: -6.0, y: -1.0 }, { x: -6.7, y: -0.8 }, { x: -6.5, y: 0.0 }, 20, 0.7, 0.8),
+          sampleCubicBezier({ x: -6.5, y: 0.0 }, { x: -6.6, y: 1.2 }, { x: -6.7, y: 2.4 }, { x: -6.8, y: 3.5 }, 24, 0.8, 0.35)
+        ]
+      },
+      alhamdulillah: {
+        id: "alhamdulillah",
+        char: "الحمد لله",
+        label: "الحمد لله",
+        widthPts: 11.5,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.2, y: -4.8 }, { x: -0.2, y: -2.5 }, { x: -0.2, y: -1.0 }, { x: -0.2, y: 0.0 }, 24, 0.75, 0.85),
+          sampleCubicBezier({ x: -1.2, y: -4.8 }, { x: -1.2, y: -2.5 }, { x: -1.2, y: -0.5 }, { x: -1.3, y: 0.0 }, 24, 0.75, 0.85),
+          sampleCubicBezier({ x: -1.3, y: 0.0 }, { x: -1.8, y: -1.8 }, { x: -2.5, y: -1.8 }, { x: -3.2, y: 0.0 }, 24, 0.7, 0.85),
+          sampleCubicBezier({ x: -3.2, y: 0.0 }, { x: -3.7, y: -0.9 }, { x: -4.3, y: -0.8 }, { x: -4.2, y: 0.0 }, 20, 0.7, 0.8),
+          sampleCubicBezier({ x: -4.2, y: 0.0 }, { x: -4.8, y: -1.8 }, { x: -5.4, y: -0.5 }, { x: -6.0, y: 0.0 }, 22, 0.8, 0.6),
+          sampleCubicBezier({ x: -7.5, y: -4.2 }, { x: -7.5, y: -2.0 }, { x: -7.6, y: 0.0 }, { x: -8.3, y: 0.0 }, 22, 0.75, 0.85),
+          sampleCubicBezier({ x: -8.3, y: 0.0 }, { x: -8.5, y: -3.8 }, { x: -8.7, y: -1.5 }, { x: -9.5, y: 0.0 }, 22, 0.75, 0.85),
+          sampleCubicBezier({ x: -9.5, y: 0.0 }, { x: -9.8, y: -1.8 }, { x: -10.6, y: -1.2 }, { x: -10.4, y: 0.0 }, 22, 0.7, 0.8)
+        ]
+      },
+      shukran: {
+        id: "shukran",
+        char: "شكراً",
+        label: "شكراً",
+        widthPts: 8.0,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.2, y: -1.0 }, { x: -0.3, y: -0.3 }, { x: -0.6, y: 0.0 }, { x: -0.9, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: -0.9, y: 0.0 }, { x: -1.1, y: -0.8 }, { x: -1.4, y: -0.7 }, { x: -1.7, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: -1.7, y: 0.0 }, { x: -2.2, y: 0.0 }, { x: -2.7, y: 0.0 }, { x: -3.1, y: 0.0 }, 14, 0.8, 0.8),
+          [{ dx: -0.9, dy: -1.6, pressure: 0.85 }, { dx: -0.9, dy: -1.6, pressure: 0.85 }],
+          [{ dx: -1.3, dy: -1.6, pressure: 0.85 }, { dx: -1.3, dy: -1.6, pressure: 0.85 }],
+          [{ dx: -1.1, dy: -2.1, pressure: 0.85 }, { dx: -1.1, dy: -2.1, pressure: 0.85 }],
+          sampleCubicBezier({ x: -3.1, y: 0.0 }, { x: -3.2, y: -2.5 }, { x: -3.25, y: -4.2 }, { x: -3.3, y: -4.8 }, 24, 0.8, 0.7),
+          sampleCubicBezier({ x: -3.1, y: 0.0 }, { x: -3.6, y: 0.0 }, { x: -4.1, y: 0.0 }, { x: -4.6, y: 0.0 }, 14, 0.85, 0.8),
+          sampleCubicBezier({ x: -4.6, y: 0.0 }, { x: -4.8, y: 0.6 }, { x: -5.3, y: 1.8 }, { x: -6.0, y: 2.3 }, 22, 0.85, 0.4),
+          sampleCubicBezier({ x: -6.8, y: -4.8 }, { x: -6.8, y: -2.5 }, { x: -6.8, y: -1.0 }, { x: -6.8, y: 0.0 }, 24, 0.75, 0.85),
+          sampleCubicBezier({ x: -6.5, y: -5.3 }, { x: -6.9, y: -5.0 }, { x: -7.1, y: -4.9 }, { x: -7.3, y: -4.8 }, 10, 0.6, 0.7),
+          sampleCubicBezier({ x: -6.5, y: -5.6 }, { x: -6.9, y: -5.3 }, { x: -7.1, y: -5.2 }, { x: -7.3, y: -5.1 }, 10, 0.6, 0.7)
+        ]
+      },
+      noor: {
+        id: "noor",
+        char: "نور",
+        label: "نور",
+        widthPts: 7.5,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.2, y: -1.1 }, { x: -0.3, y: -0.3 }, { x: -0.5, y: 0.0 }, { x: -1.0, y: 0.0 }, 14, 0.7, 0.8),
+          sampleCubicBezier({ x: -1.0, y: 0.0 }, { x: -1.5, y: 0.0 }, { x: -2.0, y: 0.0 }, { x: -2.5, y: 0.0 }, 14, 0.8, 0.85),
+          [{ dx: -0.6, dy: -1.4, pressure: 0.85 }, { dx: -0.6, dy: -1.4, pressure: 0.85 }],
+          sampleCubicBezier({ x: -2.5, y: 0.0 }, { x: -2.2, y: -1.5 }, { x: -3.0, y: -1.5 }, { x: -3.2, y: 0.0 }, 20, 0.65, 0.8),
+          sampleCubicBezier({ x: -3.2, y: 0.0 }, { x: -3.5, y: 1.2 }, { x: -4.1, y: 2.1 }, { x: -4.7, y: 2.3 }, 24, 0.85, 0.4),
+          sampleCubicBezier({ x: -5.5, y: -0.8 }, { x: -5.6, y: -0.1 }, { x: -5.8, y: 0.4 }, { x: -6.0, y: 1.0 }, 14, 0.7, 0.8),
+          sampleCubicBezier({ x: -6.0, y: 1.0 }, { x: -6.4, y: 2.0 }, { x: -7.0, y: 2.4 }, { x: -7.4, y: 2.4 }, 22, 0.85, 0.4)
+        ]
+      },
+      khatt: {
+        id: "khatt",
+        char: "خط",
+        label: "خط عربي",
+        widthPts: 6.8,
+        isWord: true,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.5, y: -1.8 }, { x: -1.2, y: -2.1 }, { x: -2.0, y: -1.9 }, { x: -2.6, y: -1.5 }, 18, 0.7, 0.85),
+          sampleCubicBezier({ x: -2.6, y: -1.5 }, { x: -2.0, y: -0.7 }, { x: -1.4, y: 0.0 }, { x: -0.8, y: 0.0 }, 18, 0.85, 0.8),
+          sampleCubicBezier({ x: -0.8, y: 0.0 }, { x: -1.8, y: 0.0 }, { x: -2.8, y: 0.0 }, { x: -3.8, y: 0.0 }, 16, 0.8, 0.85),
+          [{ dx: -1.5, dy: -2.4, pressure: 0.85 }, { dx: -1.5, dy: -2.4, pressure: 0.85 }],
+          sampleCubicBezier({ x: -3.8, y: 0.0 }, { x: -4.4, y: -1.4 }, { x: -5.4, y: -1.4 }, { x: -6.0, y: 0.0 }, 22, 0.7, 0.85),
+          sampleCubicBezier({ x: -6.0, y: 0.0 }, { x: -5.0, y: 0.0 }, { x: -4.0, y: 0.0 }, { x: -3.5, y: 0.0 }, 18, 0.85, 0.8),
+          sampleCubicBezier({ x: -5.0, y: 0.0 }, { x: -5.1, y: -2.2 }, { x: -5.15, y: -3.8 }, { x: -5.2, y: -4.8 }, 24, 0.8, 0.7)
         ]
       }
     };
@@ -1709,11 +2135,63 @@
       return 'alif';
     }
 
+    // Unified Intelligent Glyph & Word Matcher
+    function findGlyphOrWord(textOrKey) {
+      if (!textOrKey) return null;
+      const clean = textOrKey.trim();
+
+      // 1. Direct match
+      if (learnedGlyphsMemory[clean]) return learnedGlyphsMemory[clean];
+      if (learnedGlyphsMemory[textOrKey]) return learnedGlyphsMemory[textOrKey];
+
+      // 2. Common phrase keys
+      const wordKeyMap = {
+        'الله': 'allah',
+        'بسم الله': 'bismillah',
+        'بسم الله الرحمن الرحيم': 'bismillah',
+        'محمد': 'mohammed',
+        'سلام': 'salam',
+        'الحمد لله': 'alhamdulillah',
+        'الحمدلله': 'alhamdulillah',
+        'شكرا': 'shukran',
+        'شكراً': 'shukran',
+        'نور': 'noor',
+        'خط': 'khatt',
+        'خط عربي': 'khatt'
+      };
+      if (wordKeyMap[clean] && learnedGlyphsMemory[wordKeyMap[clean]]) {
+        return learnedGlyphsMemory[wordKeyMap[clean]];
+      }
+
+      // 3. Normalized Arabic search (remove diacritics, normalize alef)
+      const norm = clean.replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا');
+      for (const k of Object.keys(learnedGlyphsMemory)) {
+        const item = learnedGlyphsMemory[k];
+        const itemChar = (item.char || '').replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا');
+        const itemLabel = (item.label || '').replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا');
+        if (itemChar === norm || itemLabel === norm || k === norm) {
+          return item;
+        }
+      }
+
+      // 4. Saved words from StudioTapeRecorder
+      if (typeof StudioTapeRecorder !== 'undefined' && StudioTapeRecorder.savedWords) {
+        const found = StudioTapeRecorder.savedWords.find(w => {
+          const wChar = (w.char || '').replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا');
+          const wLabel = (w.label || '').replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا');
+          return w.id === clean || w.char === clean || wChar === norm || wLabel === norm;
+        });
+        if (found) return found;
+      }
+
+      return null;
+    }
+
     // Calligraphy Interactive Studio Controller
     const CalligraphyInteractiveStudio = {
       isTrainingMode: false,
-      activeTrainingGlyphKey: 'baa',
-      activeTrainingTargetChar: 'ب',
+      activeTrainingGlyphKey: 'mohammed',
+      activeTrainingTargetChar: 'محمد',
       trainingBaselineY: 600,
       trainingStartX: 700,
       trainingCapturedStrokes: [],
@@ -1753,9 +2231,22 @@
         this.pauseBtn = document.getElementById('sim-pause-btn');
         this.nibPointer = document.getElementById('simulated-nib-pointer');
 
+        this.loadCustomLearnedMemory();
         this.renderPresetsGrid();
         this.renderTrainingAlphabetGrid();
         this.updateMemoryBadge();
+      },
+
+      loadCustomLearnedMemory() {
+        try {
+          const data = localStorage.getItem('procreate_calligraphy_learned_custom_v2');
+          if (data) {
+            const parsed = JSON.parse(data);
+            Object.keys(parsed).forEach(k => {
+              learnedGlyphsMemory[k] = parsed[k];
+            });
+          }
+        } catch (e) {}
       },
 
       updateMemoryBadge() {
@@ -1770,17 +2261,30 @@
         const container = document.getElementById('sim-presets-container');
         if (!container) return;
         container.innerHTML = '';
-        Object.keys(learnedGlyphsMemory).forEach(key => {
+
+        // Group into: Classical words first, then letters, then custom words
+        const allKeys = Object.keys(learnedGlyphsMemory);
+        const classicalWordKeys = ['bismillah', 'mohammed', 'salam', 'alhamdulillah', 'shukran', 'noor', 'khatt', 'allah'];
+        const letterKeys = ['alif', 'baa', 'dal', 'raa', 'seen', 'haa', 'meem', 'noon', 'waw', 'laam'];
+        const customKeys = allKeys.filter(k => !classicalWordKeys.includes(k) && !letterKeys.includes(k) && learnedGlyphsMemory[k].isCustomLearned);
+
+        const orderedKeys = [...classicalWordKeys, ...letterKeys, ...customKeys];
+        const uniqueKeys = Array.from(new Set(orderedKeys)).filter(k => learnedGlyphsMemory[k]);
+
+        uniqueKeys.forEach(key => {
           const item = learnedGlyphsMemory[key];
           const btn = document.createElement('button');
           const isCustom = item.isCustomLearned;
+          const isWord = item.isWord || item.char.length > 1;
+
           btn.className = `p-2 rounded-xl text-center flex flex-col items-center justify-center border transition active:scale-95 ${
-            isCustom ? 'bg-amber-600/20 border-amber-500/50 text-amber-200' : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10'
+            isCustom ? 'bg-amber-600/20 border-amber-500/50 text-amber-200' :
+            (isWord ? 'bg-emerald-600/15 border-emerald-500/40 text-emerald-200 hover:bg-emerald-600/25' : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10')
           }`;
           btn.innerHTML = `
-            <span class="text-base font-bold text-emerald-400 font-serif mb-0.5">${item.char}</span>
-            <span class="text-[10px] text-gray-300 font-medium truncate w-full flex items-center justify-center gap-0.5">
-              ${isCustom ? '<i class="fa-solid fa-graduation-cap text-[8px] text-amber-400"></i>' : ''}
+            <span class="text-sm sm:text-base font-bold text-white font-serif mb-0.5 truncate max-w-full">${item.char}</span>
+            <span class="text-[9px] text-gray-300 font-medium truncate w-full flex items-center justify-center gap-0.5">
+              ${isCustom ? '<i class="fa-solid fa-graduation-cap text-[8px] text-amber-400"></i>' : (isWord ? '<i class="fa-solid fa-feather text-[8px] text-emerald-400"></i>' : '')}
               <span>${item.label}</span>
             </span>
           `;
@@ -1800,17 +2304,24 @@
         const grid = document.getElementById('train-alphabet-grid');
         if (!grid) return;
         grid.innerHTML = '';
-        const arabicLetters = [
+
+        const presets = [
+          { key: 'mohammed', char: 'محمد' },
+          { key: 'salam', char: 'سلام' },
+          { key: 'alhamdulillah', char: 'الحمد لله' },
+          { key: 'shukran', char: 'شكراً' },
+          { key: 'noor', char: 'نور' },
+          { key: 'bismillah', char: 'بسم الله' },
           { key: 'alif', char: 'ا' }, { key: 'baa', char: 'ب' }, { key: 'dal', char: 'د' },
           { key: 'raa', char: 'ر' }, { key: 'seen', char: 'س' }, { key: 'haa', char: 'ح' },
           { key: 'meem', char: 'م' }, { key: 'noon', char: 'ن' }, { key: 'waw', char: 'و' },
-          { key: 'laam', char: 'ل' }, { key: 'allah', char: 'الله' }
+          { key: 'laam', char: 'ل' }
         ];
 
-        arabicLetters.forEach(item => {
+        presets.forEach(item => {
           const btn = document.createElement('button');
           const isSelected = item.key === this.activeTrainingGlyphKey;
-          btn.className = `p-2 rounded-xl text-center font-bold text-sm font-serif border transition active:scale-95 ${
+          btn.className = `p-2 rounded-xl text-center font-bold text-xs sm:text-sm font-serif border transition active:scale-95 truncate ${
             isSelected ? 'bg-amber-600 border-amber-400 text-white shadow' : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10'
           }`;
           btn.textContent = item.char;
@@ -1818,11 +2329,11 @@
             this.activeTrainingGlyphKey = item.key;
             this.activeTrainingTargetChar = item.char;
             const statusEl = document.getElementById('training-selected-status');
-            if (statusEl) statusEl.textContent = `الحرف المختار: ${item.char}`;
+            if (statusEl) statusEl.textContent = `الهدف المختار: ${item.char}`;
             document.querySelectorAll('#train-alphabet-grid button').forEach(b => {
-              b.className = 'p-2 rounded-xl text-center font-bold text-sm font-serif border transition active:scale-95 bg-white/5 border-white/5 text-gray-300 hover:bg-white/10';
+              b.className = 'p-2 rounded-xl text-center font-bold text-xs sm:text-sm font-serif border transition active:scale-95 bg-white/5 border-white/5 text-gray-300 hover:bg-white/10 truncate';
             });
-            btn.className = 'p-2 rounded-xl text-center font-bold text-sm font-serif border transition active:scale-95 bg-amber-600 border-amber-400 text-white shadow';
+            btn.className = 'p-2 rounded-xl text-center font-bold text-xs sm:text-sm font-serif border transition active:scale-95 bg-amber-600 border-amber-400 text-white shadow truncate';
           });
           grid.appendChild(btn);
         });
@@ -1855,7 +2366,7 @@
           }
         }
         this.trainingBaselineY = bestY;
-        this.trainingStartX = state.canvasWidth / 2 + 60;
+        this.trainingStartX = state.canvasWidth / 2 + 100;
 
         if (this.trainingBanner) {
           this.trainingBanner.classList.remove('hidden');
@@ -1869,7 +2380,7 @@
         }
 
         this.drawTrainingGhostGuide();
-        showToast(`بدأت جلسة التدريب: اكتب حرف (${this.activeTrainingTargetChar}) بيدك على السطر بالفرشاة`);
+        showToast(`بدأت جلسة التدريب: اكتب (${this.activeTrainingTargetChar}) بيدك على السطر بالفرشاة`);
       },
 
       drawTrainingGhostGuide() {
@@ -1883,16 +2394,27 @@
           return;
         }
 
-        const model = learnedGlyphsMemory[this.activeTrainingGlyphKey];
+        const model = findGlyphOrWord(this.activeTrainingGlyphKey) || findGlyphOrWord(this.activeTrainingTargetChar);
         if (!model) return;
 
         this.trainingGhostCanvas.classList.remove('hidden');
         const pt = getCalligraphyPointUnit();
         const ctx = this.trainingGhostCtx;
 
+        // Calculate origin using universal centering formula
+        let minDx = Infinity, maxDx = -Infinity;
+        model.strokes.forEach(st => st.forEach(p => {
+          if (p.dx < minDx) minDx = p.dx;
+          if (p.dx > maxDx) maxDx = p.dx;
+        }));
+        if (!isFinite(minDx)) { minDx = 0; maxDx = 1; }
+        const dxSpan = Math.max(0.5, maxDx - minDx);
+        const totalWidth = dxSpan * pt;
+        const originX = (state.canvasWidth - totalWidth) / 2 - minDx * pt;
+
         ctx.save();
         ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
-        ctx.lineWidth = Math.max(3, state.size * 0.4);
+        ctx.lineWidth = Math.max(3, state.size * 0.38);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.setLineDash([6, 6]);
@@ -1901,7 +2423,7 @@
           if (stroke.length < 2) return;
           ctx.beginPath();
           stroke.forEach((p, idx) => {
-            const x = this.trainingStartX + p.dx * pt;
+            const x = originX + p.dx * pt;
             const y = this.trainingBaselineY + p.dy * pt;
             if (idx === 0) ctx.moveTo(x, y);
             else ctx.lineTo(x, y);
@@ -1910,8 +2432,6 @@
         });
 
         ctx.setLineDash([]);
-        ctx.fillStyle = 'rgba(245, 158, 11, 0.2)';
-        ctx.fillRect(this.trainingStartX - 10, this.trainingBaselineY - 4, 20, 8);
         ctx.restore();
       },
 
@@ -1925,40 +2445,78 @@
 
       saveLearnedModel() {
         if (this.trainingCapturedStrokes.length === 0) {
-          showToast('لم تسجل أي ضربات قلم بعد! اكتب الحرف على السطر أولاً');
+          showToast('لم تسجل أي ضربات قلم بعد! اكتب الكلمة أو الحرف على السطر أولاً');
           return;
         }
 
         const pt = getCalligraphyPointUnit();
         let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
 
-        const normalizedStrokes = this.trainingCapturedStrokes.map(stroke => {
-          return stroke.map(p => {
+        // Compute true bounding box across all captured strokes of the word/letter
+        this.trainingCapturedStrokes.forEach(stroke => {
+          stroke.forEach(p => {
             if (p.x < minX) minX = p.x;
             if (p.x > maxX) maxX = p.x;
-            return {
-              dx: (p.x - this.trainingStartX) / pt,
-              dy: (p.y - this.trainingBaselineY) / pt,
-              pressure: p.pressure || 0.75
-            };
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
           });
         });
 
-        const totalWidthPts = Math.max(1.5, Math.abs(maxX - minX) / pt);
+        const totalWidthPts = Math.max(1.0, (maxX - minX) / pt);
+        const cleanChar = this.activeTrainingTargetChar.trim();
+        const isWord = cleanChar.length > 1;
 
-        learnedGlyphsMemory[this.activeTrainingGlyphKey] = {
+        // Normalize relative to right edge maxX (Arabic RTL) and baseline
+        const normalizedStrokes = this.trainingCapturedStrokes.map(stroke => {
+          return stroke.map(p => ({
+            dx: (p.x - maxX) / pt,
+            dy: (p.y - this.trainingBaselineY) / pt,
+            pressure: p.pressure || 0.75
+          }));
+        });
+
+        const modelData = {
           id: this.activeTrainingGlyphKey,
-          char: this.activeTrainingTargetChar,
-          label: learnedGlyphsMemory[this.activeTrainingGlyphKey]?.label || this.activeTrainingTargetChar,
+          char: cleanChar,
+          label: cleanChar,
           widthPts: totalWidthPts,
           isCustomLearned: true,
+          isWord: isWord,
           strokes: normalizedStrokes
         };
+
+        learnedGlyphsMemory[this.activeTrainingGlyphKey] = modelData;
+        learnedGlyphsMemory[cleanChar] = modelData;
+
+        // Normalized text index without tashkeel
+        const stripped = cleanChar.replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/[أإآ]/g, 'ا');
+        if (stripped && stripped !== cleanChar) {
+          learnedGlyphsMemory[stripped] = modelData;
+        }
+
+        // Also add to StudioTapeRecorder library
+        if (typeof StudioTapeRecorder !== 'undefined') {
+          StudioTapeRecorder.savedWords.unshift(modelData);
+          StudioTapeRecorder.persistSavedWords();
+          StudioTapeRecorder.renderWordsLibrary();
+        }
+
+        // Persist custom models to localStorage
+        try {
+          const customModels = {};
+          Object.keys(learnedGlyphsMemory).forEach(k => {
+            if (learnedGlyphsMemory[k].isCustomLearned) {
+              customModels[k] = learnedGlyphsMemory[k];
+            }
+          });
+          localStorage.setItem('procreate_calligraphy_learned_custom_v2', JSON.stringify(customModels));
+        } catch(e) {}
 
         this.endTrainingSession();
         this.renderPresetsGrid();
         this.updateMemoryBadge();
-        showToast(`✓ تم بنجاح تعلّم حركة حرف (${this.activeTrainingTargetChar}) وحفظها في ذاكرة الفرشاة!`);
+        showToast(`✓ تم بنجاح تعلّم حركة (${cleanChar}) وحفظها في ذاكرة الفرشاة والمسجل!`);
       },
 
       clearTrainingAttempt() {
@@ -1971,7 +2529,7 @@
           activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
           renderComposite();
         }
-        showToast('تم مسح المحاولة، تفضل بإعادة كتابة الحرف');
+        showToast('تم مسح المحاولة، تفضل بإعادة كتابة الكلمة أو الحرف');
       },
 
       cancelTrainingSession() {
@@ -1996,6 +2554,9 @@
         Object.keys(MASTER_CALLIGRAPHY_GLYPHS).forEach(k => {
           learnedGlyphsMemory[k] = JSON.parse(JSON.stringify(MASTER_CALLIGRAPHY_GLYPHS[k]));
         });
+        try {
+          localStorage.removeItem('procreate_calligraphy_learned_custom_v2');
+        } catch(e) {}
         this.renderPresetsGrid();
         this.updateMemoryBadge();
         showToast('تمت استعادة حركات الخط الكلاسيكية الأصلية');
@@ -2027,48 +2588,64 @@
           yBase = bestY;
         }
 
-        const buildGlyphPoints = (glyph, originX) => {
+        // Universal Glyph Builder with Automatic Centering
+        const buildGlyphPoints = (glyph, customOriginX = null) => {
+          let minDx = Infinity, maxDx = -Infinity;
+          glyph.strokes.forEach(st => st.forEach(p => {
+            if (p.dx < minDx) minDx = p.dx;
+            if (p.dx > maxDx) maxDx = p.dx;
+          }));
+          if (!isFinite(minDx)) { minDx = 0; maxDx = 1; }
+          const dxSpan = Math.max(0.5, maxDx - minDx);
+          const totalWidth = dxSpan * pt;
+          const originX = customOriginX !== null ? customOriginX : ((state.canvasWidth - totalWidth) / 2 - minDx * pt);
+
           return glyph.strokes.map(st => {
             return st.map(p => ({
               x: originX + p.dx * pt,
               y: yBase + p.dy * pt,
-              pressure: p.pressure
+              pressure: p.pressure !== undefined ? p.pressure : 0.75
             }));
           });
         };
 
-        if (learnedGlyphsMemory[textOrKey]) {
-          const glyph = learnedGlyphsMemory[textOrKey];
-          const totalWidth = glyph.widthPts * pt;
-          const startX = (state.canvasWidth - totalWidth) / 2 + (glyph.strokes[0][0]?.dx > 0 ? glyph.widthPts * pt * 0.7 : 0);
-          this.playbackStrokes = buildGlyphPoints(glyph, startX);
+        // 1. Direct or fuzzy lookup in learned memory or saved words
+        const found = findGlyphOrWord(textOrKey);
+        if (found) {
+          this.playbackStrokes = buildGlyphPoints(found);
           return true;
         }
 
-        const clean = textOrKey.trim();
-        if (clean === 'الله' && learnedGlyphsMemory.allah) {
-          const glyph = learnedGlyphsMemory.allah;
-          const startX = (state.canvasWidth - glyph.widthPts * pt) / 2;
-          this.playbackStrokes = buildGlyphPoints(glyph, startX);
-          return true;
-        }
-
+        const clean = (textOrKey || '').trim();
         if (clean.length > 0) {
+          // If word is not found, compose letters smoothly along the baseline
           const chars = clean.split('');
-          const glyphs = chars.map(c => learnedGlyphsMemory[mapCharToGlyphKey(c)] || learnedGlyphsMemory.alif);
+          const glyphs = chars.map(c => findGlyphOrWord(c) || learnedGlyphsMemory[mapCharToGlyphKey(c)] || learnedGlyphsMemory.alif);
 
           let totalPts = 0;
-          glyphs.forEach(g => { totalPts += g.widthPts + 0.6; });
+          glyphs.forEach(g => { totalPts += (g.widthPts || 3.0) + 0.3; });
           const totalWidth = totalPts * pt;
           let currentX = (state.canvasWidth + totalWidth) / 2;
 
           const combined = [];
           for (let i = 0; i < glyphs.length; i++) {
             const g = glyphs[i];
-            currentX -= g.widthPts * pt;
-            const strokes = buildGlyphPoints(g, currentX);
+            let minDx = Infinity, maxDx = -Infinity;
+            g.strokes.forEach(st => st.forEach(p => {
+              if (p.dx < minDx) minDx = p.dx;
+              if (p.dx > maxDx) maxDx = p.dx;
+            }));
+            if (!isFinite(minDx)) { minDx = 0; maxDx = 1; }
+            const span = Math.max(0.5, maxDx - minDx);
+            const originX = currentX - maxDx * pt;
+
+            const strokes = g.strokes.map(st => st.map(p => ({
+              x: originX + p.dx * pt,
+              y: yBase + p.dy * pt,
+              pressure: p.pressure || 0.75
+            })));
             strokes.forEach(s => combined.push(s));
-            currentX -= 0.6 * pt;
+            currentX -= (span + 0.3) * pt;
           }
 
           this.playbackStrokes = combined;
@@ -2124,13 +2701,13 @@
         }
 
         const currentStroke = this.playbackStrokes[this.strokeIndex];
-        const stepsPerFrame = Math.max(1, Math.round(1.6 * this.speedMultiplier));
+        const stepsPerFrame = Math.max(1, Math.round(1.8 * this.speedMultiplier));
 
         for (let step = 0; step < stepsPerFrame; step++) {
           if (this.pointIndex >= currentStroke.length - 1) {
             this.strokeIndex++;
             this.pointIndex = 0;
-            break;
+            break; // natural inter-stroke lifting
           }
 
           const p0 = currentStroke[this.pointIndex];
@@ -2179,6 +2756,839 @@
         renderComposite();
         saveState();
         showToast('اكتملت المحاكاة بالخط الأصلي بنجاح!');
+      }
+    };
+
+    // ======================================================================
+    // 5.B STUDIO CALLIGRAPHY TAPE RECORDER (مسجل الخط كأزرار المسجل والكاسيت)
+    // ======================================================================
+    const StudioTapeRecorder = {
+      isRecording: false,
+      isPlaying: false,
+      isPaused: false,
+      speedMultiplier: 1.0,
+      isLooping: false,
+
+      currentTitle: 'جاهز للتسجيل أو التشغيل',
+      startTime: 0,
+      totalDurationMs: 0,
+      recordedStrokes: [],
+      activeStroke: null,
+      timerInterval: null,
+
+      // Playback state
+      playbackStrokeIdx: 0,
+      playbackPointIdx: 0,
+      playbackCurrentTime: 0,
+      playbackAnimId: null,
+
+      savedWords: [],
+
+      // Elements
+      deckEl: null,
+      recBtn: null,
+      stopBtn: null,
+      playBtn: null,
+      pauseBtn: null,
+      rewindBtn: null,
+      speedBtn: null,
+      speedBadge: null,
+      loopBtn: null,
+      sliderEl: null,
+      statusLed: null,
+      modeLabel: null,
+      titleLabel: null,
+      strokeCounter: null,
+      timeCounter: null,
+      currentPosLabel: null,
+      totalDurationLabel: null,
+      spoolLeft: null,
+      spoolRight: null,
+
+      init() {
+        this.deckEl = document.getElementById('studio-tape-recorder');
+        this.recBtn = document.getElementById('tape-btn-rec');
+        this.stopBtn = document.getElementById('tape-btn-stop');
+        this.playBtn = document.getElementById('tape-btn-play');
+        this.pauseBtn = document.getElementById('tape-btn-pause');
+        this.rewindBtn = document.getElementById('tape-btn-rewind');
+        this.speedBtn = document.getElementById('tape-btn-speed');
+        this.speedBadge = document.getElementById('tape-speed-badge');
+        this.loopBtn = document.getElementById('tape-btn-loop');
+        this.sliderEl = document.getElementById('tape-timeline-slider');
+        this.statusLed = document.getElementById('tape-status-led');
+        this.modeLabel = document.getElementById('tape-mode-label');
+        this.titleLabel = document.getElementById('tape-session-title');
+        this.strokeCounter = document.getElementById('tape-stroke-counter');
+        this.timeCounter = document.getElementById('tape-time-counter');
+        this.currentPosLabel = document.getElementById('tape-current-pos-label');
+        this.totalDurationLabel = document.getElementById('tape-total-duration-label');
+        this.spoolLeft = document.getElementById('tape-spool-left');
+        this.spoolRight = document.getElementById('tape-spool-right');
+
+        this.bindEvents();
+        this.loadSavedWordsFromStorage();
+        this.renderWordsLibrary();
+      },
+
+      bindEvents() {
+        safeBind('tape-recorder-btn', 'click', () => this.toggleDeck());
+        safeBind('tape-deck-close-btn', 'click', () => this.hideDeck());
+        safeBind('tape-btn-rec', 'click', () => this.startRecording());
+        safeBind('tape-btn-stop', 'click', () => this.stop());
+        safeBind('tape-btn-play', 'click', () => this.play());
+        safeBind('tape-btn-pause', 'click', () => this.pause());
+        safeBind('tape-btn-rewind', 'click', () => this.rewind());
+        safeBind('tape-btn-speed', 'click', () => this.cycleSpeed());
+        safeBind('tape-btn-loop', 'click', () => this.toggleLoop());
+        safeBind('tape-btn-save-word', 'click', () => this.openSaveDialog());
+        safeBind('tape-btn-clear', 'click', () => this.clearSession());
+        safeBind('tape-words-lib-btn', 'click', () => this.openWordsLibrary());
+        safeBind('close-tape-library-btn', 'click', () => this.closeWordsLibrary());
+
+        safeBind('close-tape-save-modal-btn', 'click', () => this.closeSaveDialog());
+        safeBind('tape-save-cancel-btn', 'click', () => this.closeSaveDialog());
+        safeBind('tape-save-confirm-btn', 'click', () => {
+          const input = document.getElementById('tape-save-input-name');
+          const val = input ? input.value.trim() : '';
+          if (!val) {
+            showToast('يرجى إدخال اسم الكلمة أو العبارة');
+            return;
+          }
+          this.confirmSaveWord(val);
+        });
+
+        if (this.sliderEl) {
+          this.sliderEl.addEventListener('input', (e) => {
+            this.onScrub(parseFloat(e.target.value));
+          });
+        }
+      },
+
+      showDeck() {
+        if (!this.deckEl) return;
+        this.deckEl.classList.remove('hidden');
+        this.deckEl.classList.add('flex');
+        const btn = document.getElementById('tape-recorder-btn');
+        if (btn) btn.classList.add('ring-2', 'ring-rose-500');
+      },
+
+      hideDeck() {
+        if (!this.deckEl) return;
+        this.deckEl.classList.add('hidden');
+        this.deckEl.classList.remove('flex');
+        const btn = document.getElementById('tape-recorder-btn');
+        if (btn) btn.classList.remove('ring-2', 'ring-rose-500');
+      },
+
+      toggleDeck() {
+        if (!this.deckEl) return;
+        if (this.deckEl.classList.contains('hidden')) {
+          this.showDeck();
+        } else {
+          this.hideDeck();
+        }
+      },
+
+      startRecording() {
+        if (this.isPlaying) this.stop();
+        this.isRecording = true;
+        this.isPlaying = false;
+        this.isPaused = false;
+        this.recordedStrokes = [];
+        this.activeStroke = null;
+        this.startTime = performance.now();
+        this.totalDurationMs = 0;
+
+        selectTool('brush');
+        if (!state.showGrid) updateGridState(true);
+
+        if (this.statusLed) {
+          this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 rec-indicator-blinking shrink-0';
+        }
+        if (this.modeLabel) {
+          this.modeLabel.textContent = 'REC';
+          this.modeLabel.className = 'font-bold text-rose-400 uppercase tracking-wider text-[11px] shrink-0';
+        }
+        if (this.titleLabel) {
+          this.titleLabel.textContent = 'جاري التسجيل بالفرشاة... ارسم كلمتك الآن';
+        }
+        if (this.strokeCounter) this.strokeCounter.textContent = '0 ضربات';
+        if (this.timeCounter) this.timeCounter.textContent = '00:00.0';
+        if (this.currentPosLabel) this.currentPosLabel.textContent = '00:00';
+        if (this.sliderEl) this.sliderEl.value = 0;
+
+        this.startSpools();
+        this.startTimer();
+        showToast('بدأ تسجيل شريط الخط 🔴: اكتب الكلمة أو الحروف بحرية الآن');
+      },
+
+      onStrokeStart(pos) {
+        if (!this.isRecording || this.isPaused) return;
+        const now = performance.now() - this.startTime;
+        this.activeStroke = {
+          color: state.color,
+          size: state.size,
+          opacity: state.opacity,
+          nibAngleDeg: state.nibAngleDeg,
+          nibRoundness: state.nibRoundness,
+          points: [{ x: pos.x, y: pos.y, pressure: pos.pressure || 0.7, t: now }]
+        };
+        this.recordedStrokes.push(this.activeStroke);
+        this.updateCounters();
+      },
+
+      onStrokePoint(smoothedPos) {
+        if (!this.isRecording || this.isPaused || !this.activeStroke) return;
+        const now = performance.now() - this.startTime;
+        this.activeStroke.points.push({
+          x: smoothedPos.x,
+          y: smoothedPos.y,
+          pressure: smoothedPos.pressure || 0.7,
+          t: now
+        });
+        this.totalDurationMs = now;
+      },
+
+      onStrokeEnd() {
+        if (!this.isRecording) return;
+        this.activeStroke = null;
+        this.totalDurationMs = Math.max(this.totalDurationMs, performance.now() - this.startTime);
+        this.updateCounters();
+      },
+
+      updateCounters() {
+        if (this.strokeCounter) {
+          this.strokeCounter.textContent = `${this.recordedStrokes.length} ضربة`;
+        }
+      },
+
+      startTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+        this.timerInterval = setInterval(() => {
+          if (!this.isRecording && !this.isPlaying) return;
+          if (this.isPaused) return;
+
+          const elapsed = this.isRecording
+            ? (performance.now() - this.startTime)
+            : (this.playbackCurrentTime);
+
+          const m = Math.floor(elapsed / 60000);
+          const s = Math.floor((elapsed % 60000) / 1000);
+          const ms = Math.floor((elapsed % 1000) / 100);
+          const formatted = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${ms}`;
+
+          if (this.timeCounter) this.timeCounter.textContent = formatted;
+          if (this.currentPosLabel) this.currentPosLabel.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }, 100);
+      },
+
+      stopTimer() {
+        if (this.timerInterval) {
+          clearInterval(this.timerInterval);
+          this.timerInterval = null;
+        }
+      },
+
+      startSpools() {
+        if (!this.spoolLeft || !this.spoolRight) return;
+        const speedClass = this.speedMultiplier >= 2.0
+          ? 'spool-spinning-fast'
+          : (this.speedMultiplier <= 0.5 ? 'spool-spinning-slow' : 'spool-spinning');
+        this.spoolLeft.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
+        this.spoolRight.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
+        this.spoolLeft.classList.add(speedClass);
+        this.spoolRight.classList.add(speedClass);
+      },
+
+      stopSpools() {
+        if (!this.spoolLeft || !this.spoolRight) return;
+        this.spoolLeft.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
+        this.spoolRight.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
+      },
+
+      stop() {
+        this.stopTimer();
+        this.stopSpools();
+
+        if (this.isRecording) {
+          this.isRecording = false;
+          this.totalDurationMs = Math.max(100, performance.now() - this.startTime);
+          if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-gray-500 shrink-0';
+          if (this.modeLabel) {
+            this.modeLabel.textContent = 'STOP';
+            this.modeLabel.className = 'font-bold text-gray-400 uppercase tracking-wider text-[11px] shrink-0';
+          }
+          if (this.recordedStrokes.length > 0) {
+            if (this.titleLabel) this.titleLabel.textContent = `تسجيل مكتمل (${this.recordedStrokes.length} ضربة)`;
+            this.updateTotalDurationDisplay(this.totalDurationMs);
+            showToast(`تم إيقاف التسجيل (${this.recordedStrokes.length} ضربة). يمكنك الآن تشغيل الكلمة ▶️ أو حفظها 💾`);
+          } else {
+            if (this.titleLabel) this.titleLabel.textContent = 'جاهز للتسجيل أو التشغيل';
+            showToast('تم إيقاف التسجيل بدون ضربات');
+          }
+          return;
+        }
+
+        if (this.isPlaying || this.isPaused) {
+          this.isPlaying = false;
+          this.isPaused = false;
+          if (this.playbackAnimId) {
+            cancelAnimationFrame(this.playbackAnimId);
+            this.playbackAnimId = null;
+          }
+          const nib = document.getElementById('simulated-nib-pointer');
+          if (nib) nib.classList.add('hidden');
+          if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-gray-500 shrink-0';
+          if (this.modeLabel) {
+            this.modeLabel.textContent = 'STOP';
+            this.modeLabel.className = 'font-bold text-gray-400 uppercase tracking-wider text-[11px] shrink-0';
+          }
+          if (this.sliderEl) this.sliderEl.value = 0;
+          if (this.currentPosLabel) this.currentPosLabel.textContent = '00:00';
+          showToast('تم إيقاف تشغيل الكلمة');
+        }
+      },
+
+      play() {
+        if (this.isRecording) this.stop();
+
+        if (this.recordedStrokes.length === 0) {
+          if (learnedGlyphsMemory.mohammed) {
+            this.loadWordFromLibrary('mohammed');
+            return;
+          }
+          showToast('لا توجد ضربات مسجلة حالياً! اكتب بالفرشاة وسجل، أو اختر كلمة من المكتبة 📚');
+          return;
+        }
+
+        if (this.isPaused) {
+          this.isPaused = false;
+          this.isPlaying = true;
+          if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0';
+          if (this.modeLabel) {
+            this.modeLabel.textContent = 'PLAY';
+            this.modeLabel.className = 'font-bold text-emerald-400 uppercase tracking-wider text-[11px] shrink-0';
+          }
+          this.startSpools();
+          this.startTimer();
+          this.tickPlayback();
+          showToast('استئناف تشغيل الكلمة ▶️');
+          return;
+        }
+
+        selectTool('brush');
+        this.isPlaying = true;
+        this.isPaused = false;
+        this.playbackStrokeIdx = 0;
+        this.playbackPointIdx = 0;
+        this.playbackStartTime = performance.now();
+        this.playbackCurrentTime = 0;
+
+        if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0';
+        if (this.modeLabel) {
+          this.modeLabel.textContent = 'PLAY';
+          this.modeLabel.className = 'font-bold text-emerald-400 uppercase tracking-wider text-[11px] shrink-0';
+        }
+
+        const nib = document.getElementById('simulated-nib-pointer');
+        if (nib) nib.classList.remove('hidden');
+
+        this.startSpools();
+        this.startTimer();
+        this.updateTotalDurationDisplay(this.totalDurationMs || 3000);
+        this.tickPlayback();
+        showToast('جاري تشغيل الكلمة بأزرار المسجل الحقيقية ▶️');
+      },
+
+      tickPlayback() {
+        if (!this.isPlaying) return;
+        if (this.isPaused) {
+          this.playbackAnimId = requestAnimationFrame(() => this.tickPlayback());
+          return;
+        }
+
+        const activeLayer = getActiveLayer();
+        if (!activeLayer) {
+          this.stop();
+          return;
+        }
+
+        const stepsPerFrame = Math.max(1, Math.round(2 * this.speedMultiplier));
+        const nib = document.getElementById('simulated-nib-pointer');
+
+        for (let s = 0; s < stepsPerFrame; s++) {
+          if (this.playbackStrokeIdx >= this.recordedStrokes.length) {
+            if (this.isLooping) {
+              this.playbackStrokeIdx = 0;
+              this.playbackPointIdx = 0;
+              break;
+            } else {
+              this.onPlaybackComplete();
+              return;
+            }
+          }
+
+          const stroke = this.recordedStrokes[this.playbackStrokeIdx];
+          if (!stroke || !stroke.points || stroke.points.length < 2) {
+            this.playbackStrokeIdx++;
+            this.playbackPointIdx = 0;
+            continue;
+          }
+
+          if (this.playbackPointIdx >= stroke.points.length - 1) {
+            this.playbackStrokeIdx++;
+            this.playbackPointIdx = 0;
+            break; // natural inter-stroke pause
+          }
+
+          const p0 = stroke.points[this.playbackPointIdx];
+          const p1 = stroke.points[this.playbackPointIdx + 1];
+
+          // Draw segment with exact stroke parameters
+          renderCalligraphicSegment(
+            activeLayer.ctx,
+            p0,
+            p1,
+            stroke.size || state.size,
+            stroke.color || state.color,
+            stroke.opacity !== undefined ? stroke.opacity : state.opacity
+          );
+          if (displayCtx) {
+            renderCalligraphicSegment(
+              displayCtx,
+              p0,
+              p1,
+              stroke.size || state.size,
+              stroke.color || state.color,
+              stroke.opacity !== undefined ? stroke.opacity : state.opacity
+            );
+          }
+
+          if (nib) {
+            nib.style.left = `${(p1.x / state.canvasWidth) * 100}%`;
+            nib.style.top = `${(p1.y / state.canvasHeight) * 100}%`;
+          }
+
+          this.playbackPointIdx++;
+        }
+
+        // Update scrubber position
+        let totalPoints = 0;
+        let completedPoints = 0;
+        for (let i = 0; i < this.recordedStrokes.length; i++) {
+          const len = this.recordedStrokes[i].points ? this.recordedStrokes[i].points.length : 0;
+          totalPoints += len;
+          if (i < this.playbackStrokeIdx) {
+            completedPoints += len;
+          } else if (i === this.playbackStrokeIdx) {
+            completedPoints += this.playbackPointIdx;
+          }
+        }
+
+        const pct = totalPoints > 0 ? (completedPoints / totalPoints) * 100 : 0;
+        if (this.sliderEl) this.sliderEl.value = pct;
+        this.playbackCurrentTime = (pct / 100) * (this.totalDurationMs || 3000);
+
+        this.playbackAnimId = requestAnimationFrame(() => this.tickPlayback());
+      },
+
+      onPlaybackComplete() {
+        this.stop();
+        renderComposite();
+        saveState();
+        showToast('اكتمل تشغيل الكلمة بنجاح! ✓');
+      },
+
+      pause() {
+        if (!this.isRecording && !this.isPlaying) return;
+        this.isPaused = !this.isPaused;
+        if (this.isPaused) {
+          if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0';
+          if (this.modeLabel) {
+            this.modeLabel.textContent = 'PAUSE';
+            this.modeLabel.className = 'font-bold text-amber-400 uppercase tracking-wider text-[11px] shrink-0';
+          }
+          this.stopSpools();
+          showToast('تم الإيقاف المؤقت للمسجل ❚❚');
+        } else {
+          if (this.isRecording) {
+            if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 rec-indicator-blinking shrink-0';
+            if (this.modeLabel) {
+              this.modeLabel.textContent = 'REC';
+              this.modeLabel.className = 'font-bold text-rose-400 uppercase tracking-wider text-[11px] shrink-0';
+            }
+          } else if (this.isPlaying) {
+            if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0';
+            if (this.modeLabel) {
+              this.modeLabel.textContent = 'PLAY';
+              this.modeLabel.className = 'font-bold text-emerald-400 uppercase tracking-wider text-[11px] shrink-0';
+            }
+          }
+          this.startSpools();
+          showToast('تم استئناف المسجل ▶️');
+        }
+      },
+
+      rewind() {
+        this.playbackStrokeIdx = 0;
+        this.playbackPointIdx = 0;
+        this.playbackCurrentTime = 0;
+        if (this.sliderEl) this.sliderEl.value = 0;
+        if (this.currentPosLabel) this.currentPosLabel.textContent = '00:00';
+        if (this.isPlaying) {
+          showToast('⏪ تم الترجيع لبداية الكلمة والمتابعة');
+        } else {
+          showToast('⏪ جاهز من البداية');
+        }
+      },
+
+      cycleSpeed() {
+        const speeds = [0.5, 1.0, 2.0, 4.0];
+        const currIdx = speeds.indexOf(this.speedMultiplier);
+        const nextIdx = (currIdx + 1) % speeds.length;
+        this.speedMultiplier = speeds[nextIdx];
+        if (this.speedBadge) this.speedBadge.textContent = this.speedMultiplier + 'x';
+        if (this.isPlaying || this.isRecording) {
+          this.startSpools();
+        }
+        showToast(`سرعة المسجل: ${this.speedMultiplier}x`);
+      },
+
+      toggleLoop() {
+        this.isLooping = !this.isLooping;
+        if (this.loopBtn) {
+          if (this.isLooping) {
+            this.loopBtn.className = 'px-2.5 sm:px-3 py-2 rounded-xl bg-emerald-600/30 border border-emerald-500/60 text-emerald-300 font-bold text-xs flex items-center gap-1 transition active:scale-90 shadow';
+          } else {
+            this.loopBtn.className = 'px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 font-bold text-xs flex items-center gap-1 transition active:scale-90';
+          }
+        }
+        showToast(`تكرار الكاسيت: ${this.isLooping ? 'مفعل 🔁' : 'معطل'}`);
+      },
+
+      onScrub(pct) {
+        if (this.recordedStrokes.length === 0) return;
+        const activeLayer = getActiveLayer();
+        if (!activeLayer) return;
+
+        let totalPoints = 0;
+        this.recordedStrokes.forEach(s => { totalPoints += (s.points ? s.points.length : 0); });
+        const targetPointCount = Math.floor((pct / 100) * totalPoints);
+
+        activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+
+        let count = 0;
+        for (let sIdx = 0; sIdx < this.recordedStrokes.length; sIdx++) {
+          const st = this.recordedStrokes[sIdx];
+          if (!st.points || st.points.length < 2) continue;
+          for (let pIdx = 0; pIdx < st.points.length - 1; pIdx++) {
+            if (count >= targetPointCount) break;
+            renderCalligraphicSegment(
+              activeLayer.ctx,
+              st.points[pIdx],
+              st.points[pIdx + 1],
+              st.size || state.size,
+              st.color || state.color,
+              st.opacity
+            );
+            count++;
+          }
+          if (count >= targetPointCount) break;
+        }
+        renderComposite();
+
+        const elapsed = (pct / 100) * (this.totalDurationMs || 3000);
+        const m = Math.floor(elapsed / 60000);
+        const s = Math.floor((elapsed % 60000) / 1000);
+        if (this.currentPosLabel) this.currentPosLabel.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      },
+
+      openSaveDialog() {
+        if (this.recordedStrokes.length === 0) {
+          showToast('لا توجد ضربات مسجلة لحفظها! اكتب كلمة بالفرشاة وسجلها أولاً 🔴');
+          return;
+        }
+        const modal = document.getElementById('tape-save-word-modal');
+        const stat = document.getElementById('tape-save-strokes-stat');
+        const input = document.getElementById('tape-save-input-name');
+        if (stat) stat.textContent = `${this.recordedStrokes.length} ضربة`;
+        if (input) {
+          input.value = '';
+          setTimeout(() => input.focus(), 150);
+        }
+        if (modal) modal.classList.remove('hidden');
+      },
+
+      closeSaveDialog() {
+        const modal = document.getElementById('tape-save-word-modal');
+        if (modal) modal.classList.add('hidden');
+      },
+
+      confirmSaveWord(name) {
+        const pt = getCalligraphyPointUnit();
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+
+        this.recordedStrokes.forEach(st => {
+          st.points.forEach(p => {
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y;
+            if (p.y > maxY) maxY = p.y;
+          });
+        });
+
+        const baselineY = Math.round((minY + maxY) / 2);
+        const totalWidthPts = Math.max(1.0, (maxX - minX) / pt);
+
+        // Normalize relative to right edge maxX (Arabic RTL) and baseline
+        const normalizedStrokes = this.recordedStrokes.map(st => {
+          return st.points.map(p => ({
+            dx: (p.x - maxX) / pt,
+            dy: (p.y - baselineY) / pt,
+            pressure: p.pressure || 0.75
+          }));
+        });
+
+        const clean = name.trim();
+        const uniqueId = 'word_' + Date.now();
+        const item = {
+          id: uniqueId,
+          char: clean,
+          label: clean,
+          widthPts: totalWidthPts,
+          isWord: clean.length > 1,
+          isCustomLearned: true,
+          strokes: normalizedStrokes,
+          strokeCount: this.recordedStrokes.length,
+          durationMs: this.totalDurationMs
+        };
+
+        learnedGlyphsMemory[clean] = item;
+        learnedGlyphsMemory[uniqueId] = item;
+        this.savedWords.unshift(item);
+        this.persistSavedWords();
+
+        this.closeSaveDialog();
+        if (this.titleLabel) this.titleLabel.textContent = `كلمة: ${clean}`;
+        this.renderWordsLibrary();
+        if (typeof CalligraphyInteractiveStudio !== 'undefined') {
+          CalligraphyInteractiveStudio.renderPresetsGrid();
+          CalligraphyInteractiveStudio.updateMemoryBadge();
+        }
+        showToast(`✓ تم بنجاح حفظ كلمة "${clean}" في مكتبة الأشرطة والذاكرة الدائمة!`);
+      },
+
+      persistSavedWords() {
+        try {
+          localStorage.setItem('procreate_calligraphy_tape_words_v2', JSON.stringify(this.savedWords));
+        } catch(e) {}
+      },
+
+      loadSavedWordsFromStorage() {
+        try {
+          const data = localStorage.getItem('procreate_calligraphy_tape_words_v2');
+          if (data) {
+            this.savedWords = JSON.parse(data);
+            this.savedWords.forEach(item => {
+              learnedGlyphsMemory[item.char] = item;
+              learnedGlyphsMemory[item.id] = item;
+            });
+          }
+        } catch(e) {}
+      },
+
+      openWordsLibrary() {
+        this.renderWordsLibrary();
+        const modal = document.getElementById('tape-words-library-modal');
+        if (modal) modal.classList.remove('hidden');
+      },
+
+      closeWordsLibrary() {
+        const modal = document.getElementById('tape-words-library-modal');
+        if (modal) modal.classList.add('hidden');
+      },
+
+      renderWordsLibrary() {
+        const wordsGrid = document.getElementById('tape-lib-words-grid');
+        const customGrid = document.getElementById('tape-lib-custom-grid');
+        const lettersGrid = document.getElementById('tape-lib-letters-grid');
+        const badge = document.getElementById('tape-custom-count-badge');
+
+        // Classical words
+        if (wordsGrid) {
+          wordsGrid.innerHTML = '';
+          const classicalWords = ['bismillah', 'mohammed', 'salam', 'alhamdulillah', 'shukran', 'noor', 'khatt', 'allah'];
+          classicalWords.forEach(k => {
+            const item = learnedGlyphsMemory[k];
+            if (!item) return;
+            const btn = document.createElement('button');
+            btn.className = 'p-3 rounded-2xl bg-white/5 hover:bg-emerald-600/20 border border-white/10 hover:border-emerald-500/50 flex flex-col items-center justify-center gap-1 transition active:scale-95 text-gray-200';
+            btn.innerHTML = `
+              <span class="text-base font-bold text-emerald-400 font-serif">${item.char}</span>
+              <span class="text-[11px] text-gray-300 font-medium">${item.label}</span>
+              <span class="text-[9px] text-gray-500 font-mono">${item.strokes.length} ضربات قلم</span>
+            `;
+            btn.addEventListener('click', () => {
+              this.loadWordFromLibrary(k);
+            });
+            wordsGrid.appendChild(btn);
+          });
+        }
+
+        // User Custom Words
+        if (customGrid) {
+          customGrid.innerHTML = '';
+          if (badge) badge.textContent = `${this.savedWords.length} كلمة`;
+          if (this.savedWords.length === 0) {
+            customGrid.innerHTML = '<div class="col-span-full text-center py-4 text-xs text-gray-500">لم تقم بتسجيل أي كلمات خاصة بعد. اضغط تسجيل 🔴 واكتب كلمتك الأولى!</div>';
+          } else {
+            this.savedWords.forEach(item => {
+              const card = document.createElement('div');
+              card.className = 'p-3 rounded-2xl bg-amber-600/15 border border-amber-500/40 flex items-center justify-between text-gray-200';
+              card.innerHTML = `
+                <div class="cursor-pointer flex-1" title="تشغيل الكلمة">
+                  <span class="text-base font-bold text-amber-300 font-serif block">${item.char}</span>
+                  <span class="text-[10px] text-gray-400 font-mono">${item.strokeCount || item.strokes.length} ضربات</span>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="play-btn w-8 h-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center text-xs transition active:scale-90" title="تشغيل">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                  <button class="delete-btn w-8 h-8 rounded-xl bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 flex items-center justify-center text-xs transition active:scale-90" title="حذف">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </div>
+              `;
+              card.querySelector('.play-btn').addEventListener('click', () => {
+                this.loadWordFromLibrary(item.char);
+              });
+              card.querySelector('.delete-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.deleteSavedWord(item.id);
+              });
+              customGrid.appendChild(card);
+            });
+          }
+        }
+
+        // Letters
+        if (lettersGrid) {
+          lettersGrid.innerHTML = '';
+          const letters = [
+            { k: 'alif', c: 'ا' }, { k: 'baa', c: 'ب' }, { k: 'dal', c: 'د' },
+            { k: 'raa', c: 'ر' }, { k: 'seen', c: 'س' }, { k: 'haa', c: 'ح' },
+            { k: 'meem', c: 'م' }, { k: 'noon', c: 'ن' }, { k: 'waw', c: 'و' },
+            { k: 'laam', c: 'ل' }
+          ];
+          letters.forEach(item => {
+            const btn = document.createElement('button');
+            btn.className = 'p-2 rounded-xl bg-white/5 hover:bg-blue-600/20 border border-white/10 hover:border-blue-500/50 text-center font-bold text-sm font-serif text-blue-300 transition active:scale-95';
+            btn.textContent = item.c;
+            btn.addEventListener('click', () => {
+              this.loadWordFromLibrary(item.k);
+            });
+            lettersGrid.appendChild(btn);
+          });
+        }
+      },
+
+      deleteSavedWord(id) {
+        this.savedWords = this.savedWords.filter(w => w.id !== id);
+        this.persistSavedWords();
+        this.renderWordsLibrary();
+        showToast('تم حذف الكلمة من المكتبة');
+      },
+
+      loadWordFromLibrary(keyOrText) {
+        const item = findGlyphOrWord(keyOrText);
+        if (!item) {
+          showToast('تعذر العثور على الكلمة المحددة');
+          return;
+        }
+
+        const pt = getCalligraphyPointUnit();
+        let yBase = state.canvasHeight / 2;
+        if (CalligraphyInteractiveStudio && CalligraphyInteractiveStudio.alignToBaseline) {
+          const spec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+          const ascenderDist = spec.ascenderPts * pt;
+          const descenderDist = spec.descenderPts * pt;
+          const rowHeight = ascenderDist + descenderDist + 75;
+          const startY = Math.max(160, ascenderDist + 50);
+          let bestY = startY;
+          let minDiff = 99999;
+          for (let y = startY; y < state.canvasHeight - descenderDist - 25; y += rowHeight) {
+            const diff = Math.abs(y - state.canvasHeight / 2);
+            if (diff < minDiff) { minDiff = diff; bestY = y; }
+          }
+          yBase = bestY;
+        }
+
+        // Convert strokes using centering formula
+        let minDx = Infinity, maxDx = -Infinity;
+        item.strokes.forEach(st => st.forEach(p => {
+          if (p.dx < minDx) minDx = p.dx;
+          if (p.dx > maxDx) maxDx = p.dx;
+        }));
+        if (!isFinite(minDx)) { minDx = 0; maxDx = 1; }
+        const dxSpan = Math.max(0.5, maxDx - minDx);
+        const totalWidth = dxSpan * pt;
+        const originX = (state.canvasWidth - totalWidth) / 2 - minDx * pt;
+
+        let timeAcc = 0;
+        this.recordedStrokes = item.strokes.map(st => {
+          const strokePts = st.map(p => {
+            timeAcc += 25;
+            return {
+              x: originX + p.dx * pt,
+              y: yBase + p.dy * pt,
+              pressure: p.pressure || 0.75,
+              t: timeAcc
+            };
+          });
+          timeAcc += 180; // natural inter-stroke pause
+          return {
+            color: state.color,
+            size: state.size,
+            opacity: state.opacity,
+            nibAngleDeg: state.nibAngleDeg,
+            nibRoundness: state.nibRoundness,
+            points: strokePts
+          };
+        });
+
+        this.totalDurationMs = timeAcc;
+        this.currentTitle = `كلمة: ${item.label || item.char}`;
+        if (this.titleLabel) this.titleLabel.textContent = this.currentTitle;
+        this.updateCounters();
+        this.updateTotalDurationDisplay(this.totalDurationMs);
+
+        this.closeWordsLibrary();
+        this.showDeck();
+        this.play();
+      },
+
+      clearSession() {
+        this.stop();
+        this.recordedStrokes = [];
+        this.totalDurationMs = 0;
+        if (this.titleLabel) this.titleLabel.textContent = 'جاهز للتسجيل أو التشغيل';
+        if (this.strokeCounter) this.strokeCounter.textContent = '0 ضربات';
+        if (this.timeCounter) this.timeCounter.textContent = '00:00.0';
+        if (this.currentPosLabel) this.currentPosLabel.textContent = '00:00';
+        if (this.totalDurationLabel) this.totalDurationLabel.textContent = '00:00';
+        if (this.sliderEl) this.sliderEl.value = 0;
+        showToast('تم مسح شريط التسجيل وبدء جلسة جديدة');
+      },
+
+      updateTotalDurationDisplay(ms) {
+        const sec = Math.max(1, Math.floor(ms / 1000));
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        if (this.totalDurationLabel) {
+          this.totalDurationLabel.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
       }
     };
 
@@ -2245,7 +3655,7 @@
       CalligraphyInteractiveStudio.activeTrainingGlyphKey = 'custom_' + Date.now();
       CalligraphyInteractiveStudio.activeTrainingTargetChar = val;
       const statusEl = document.getElementById('training-selected-status');
-      if (statusEl) statusEl.textContent = `الرمز المختار: ${val}`;
+      if (statusEl) statusEl.textContent = `الهدف المختار: ${val}`;
       showToast(`تم تحديد "${val}" كهدف للتدريب`);
     });
 
@@ -2261,12 +3671,26 @@
       CalligraphyInteractiveStudio.startSimulation(txt);
     });
 
+    safeBind('sim-record-word-direct-btn', 'click', () => {
+      const input = document.getElementById('sim-custom-text-input');
+      const txt = input ? input.value.trim() : '';
+      const modal = document.getElementById('auto-write-modal');
+      if (modal) modal.classList.add('hidden');
+      
+      StudioTapeRecorder.showDeck();
+      if (txt) {
+        StudioTapeRecorder.currentTitle = `تسجيل كلمة: ${txt}`;
+        if (StudioTapeRecorder.titleLabel) StudioTapeRecorder.titleLabel.textContent = `تسجيل كلمة: ${txt}`;
+      }
+      StudioTapeRecorder.startRecording();
+    });
+
     safeBind('sim-start-preview-btn', 'click', () => {
       const input = document.getElementById('sim-custom-text-input');
       const txt = input ? input.value.trim() : '';
       const modal = document.getElementById('auto-write-modal');
       if (modal) modal.classList.add('hidden');
-      CalligraphyInteractiveStudio.startSimulation(txt || 'alif');
+      CalligraphyInteractiveStudio.startSimulation(txt || 'mohammed');
     });
 
     document.querySelectorAll('.sim-speed-btn').forEach(btn => {
@@ -3535,8 +4959,9 @@
       updateNibPreview();
       updateGridState(true);
 
-      // Initialize Interactive Calligraphy Learning Studio
+      // Initialize Interactive Calligraphy Learning Studio & Tape Recorder
       CalligraphyInteractiveStudio.init();
+      StudioTapeRecorder.init();
 
       // Render introductory Naskh calligraphy demonstration
       const topLayer = getActiveLayer();

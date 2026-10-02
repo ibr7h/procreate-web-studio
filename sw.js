@@ -1,5 +1,5 @@
 // Procreate Web Studio - Progressive Web App Service Worker
-const CACHE_NAME = 'procreate-web-studio-v1';
+const CACHE_NAME = 'procreate-web-studio-v2';
 
 const STATIC_ASSETS = [
   './',
@@ -11,7 +11,7 @@ const STATIC_ASSETS = [
   './icons/icon-maskable-512.png',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
-  'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap'
+  'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap'
 ];
 
 // 1. Install event: Cache core app shell
