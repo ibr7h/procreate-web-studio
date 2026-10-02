@@ -1,20 +1,23 @@
 {
+  "id": "procreate-web-studio",
   "name": "Procreate Web Studio - ميزان السطور ومحاكي الخط العربي",
   "short_name": "ProcreateWeb",
   "description": "أستوديو الخط العربي ومحاكي الرسم التفاعلي وميزان السطور المتقدم",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#0e0e12",
   "theme_color": "#16161b",
   "dir": "rtl",
   "lang": "ar",
-  "scope": "./",
   "categories": [
     "productivity",
     "graphics",
     "education"
   ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -33,6 +36,22 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "لوحة رسم جديدة",
+      "short_name": "لوحة جديدة",
+      "description": "فتح لوحة رسم جديدة بالكامل",
+      "url": "./index.html?action=new",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ميزان السطور والخط",
+      "short_name": "ميزان السطور",
+      "description": "فتح الاستوديو مع تفعيل ميزان السطور وشبكة الخط",
+      "url": "./index.html?action=grid",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
