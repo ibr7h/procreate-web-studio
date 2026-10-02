@@ -1,0 +1,3609 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Procreate Web Studio - ميزان السطور ومحاكي التعلّم التفاعلي</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts: Cairo & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#16161b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Procreate Web">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    body {
+      font-family: 'Cairo', 'Plus Jakarta Sans', system-ui, sans-serif;
+      touch-action: none;
+      overscroll-behavior: none;
+      background-color: #0e0e12;
+      color: #e2e8f0;
+      overflow: hidden;
+    }
+    
+    .procreate-glass {
+      background: rgba(22, 22, 27, 0.94);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .procreate-popover {
+      background: #18181d;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85);
+    }
+
+    /* Procreate Vertical Left Sliders Bar */
+    .procreate-vertical-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 140px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+      outline: none;
+      transform: rotate(-90deg);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+    .procreate-vertical-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      border: 2px solid #3b82f6;
+    }
+    .procreate-vertical-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+      border: 2px solid #3b82f6;
+    }
+
+    input[type=range] {
+      accent-color: #3b82f6;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    #canvas-container {
+      touch-action: none;
+      box-shadow: 0 25px 65px -10px rgba(0, 0, 0, 0.85);
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between select-none">
+
+  <!-- Top Navigation Bar -->
+  <header class="h-14 procreate-glass flex items-center justify-between px-3 sm:px-5 z-40 relative border-b border-white/10 shrink-0">
+    
+    <!-- Left Action Group: Gallery, Wrench, Compass/Studio, Grid, Clear -->
+    <div class="flex items-center gap-1 sm:gap-2">
+      <button id="gallery-btn" class="text-xs sm:text-sm font-bold px-2.5 py-1.5 rounded-xl hover:bg-white/10 active:scale-95 transition text-gray-300 flex items-center gap-1.5">
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span>المعرض</span>
+      </button>
+
+      <div class="h-5 w-px bg-white/10 mx-1"></div>
+
+      <!-- Actions (Wrench) -->
+      <button id="actions-btn" title="الإجراءات والتصدير" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 text-gray-300 hover:text-white transition">
+        <i class="fa-solid fa-wrench text-sm"></i>
+      </button>
+
+      <!-- Full Procreate Brush Studio -->
+      <button id="open-studio-btn" title="فتح Brush Studio المتطور" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 text-blue-400 hover:text-blue-300 transition">
+        <i class="fa-solid fa-sliders text-sm"></i>
+      </button>
+
+      <!-- Nib Tuning Compass -->
+      <button id="nib-settings-btn" title="بوصلة قطة القلم (الزاوية والاستدارة)" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 text-amber-400 hover:text-amber-300 transition">
+        <i class="fa-solid fa-compass-drafting text-sm"></i>
+      </button>
+
+      <!-- Toggle Guidelines & Grid Settings -->
+      <div class="flex items-center bg-white/5 rounded-xl p-0.5 border border-white/10">
+        <button id="toggle-grid-btn" title="إظهار/إخفاء شبكة المربعات ومساعد الرسم" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold text-gray-300 hover:text-white hover:bg-white/10 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-border-all text-xs text-amber-400"></i>
+          <span class="hidden md:inline">الشبكة</span>
+        </button>
+        <button id="grid-settings-btn" title="إعدادات حجم ونمط المربعات وسطور الميزان ومطابقة القلم" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition">
+          <i class="fa-solid fa-gear text-[11px]"></i>
+        </button>
+      </div>
+
+      <!-- Quick Auto-Fit Size to Guidelines Button -->
+      <button id="quick-match-size-btn" title="مطابقة حجم الفرشاة تلقائياً لميزان السطور الحالي" class="px-2.5 py-1.5 rounded-xl bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5">
+        <i class="fa-solid fa-bullseye text-xs text-blue-400"></i>
+        <span class="hidden xl:inline">مطابقة القلم للسطر</span>
+      </button>
+
+      <!-- Calligraphy Reference Lines Guide Modal Button -->
+      <button id="open-calligraphy-guide-btn" title="شرح ودليل خط الارتكاز والسطور المرجعية" class="px-2.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5">
+        <i class="fa-solid fa-ruler-combined text-xs"></i>
+        <span class="hidden sm:inline">ميزان السطور</span>
+      </button>
+
+      <!-- Auto-Write / Trace & Learn Button -->
+      <button id="auto-write-btn" title="محاكاة وتدريب الكتابة بالقصبة العربية" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600/25 to-teal-600/25 hover:from-emerald-600/35 hover:to-teal-600/35 border border-emerald-500/40 text-emerald-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5 shadow-sm">
+        <i class="fa-solid fa-wand-magic-sparkles text-xs text-emerald-400 animate-pulse"></i>
+        <span class="hidden md:inline">محاكاة وتدريب الكتابة</span>
+      </button>
+
+      <!-- PWA Install Button -->
+      <button id="pwa-install-btn" onclick="installPWA()" title="تثبيت التطبيق على جهازك (PWA)" class="hidden px-2.5 py-1.5 rounded-xl bg-purple-600/25 hover:bg-purple-600/40 border border-purple-500/40 text-purple-300 active:scale-95 transition text-xs font-bold flex items-center gap-1.5">
+        <i class="fa-solid fa-download text-xs text-purple-400"></i>
+        <span class="hidden sm:inline">تثبيت التطبيق</span>
+      </button>
+
+      <!-- Clear Active Layer -->
+      <button id="clear-layer-btn" title="مسح محتوى الطبقة النشطة" class="w-9 h-9 rounded-xl flex items-center justify-center hover:bg-rose-500/20 active:scale-95 text-gray-400 hover:text-rose-400 transition">
+        <i class="fa-solid fa-trash-can text-xs"></i>
+      </button>
+    </div>
+
+    <!-- Center Active Brush Status Indicator -->
+    <div class="hidden lg:flex items-center gap-2 text-xs font-semibold text-gray-300 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="header-active-brush-title">فرشاة خط النسخ (Naskh)</span>
+      <span class="text-[10px] px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono" id="header-geometry-badge">72° / 12%</span>
+      <span class="text-[10px] px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono" id="header-pts-badge">النقطة: 32px</span>
+    </div>
+
+    <!-- Right Toolset: Brush, Smudge, Eraser, Layers, Color Disc -->
+    <div class="flex items-center gap-1 sm:gap-2">
+      <!-- Brush Tool Button -->
+      <button id="tool-brush" title="مكتبة الفُرش" class="tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-blue-400 bg-blue-600/20 border border-blue-500/40 transition relative shadow">
+        <i class="fa-solid fa-paintbrush text-sm"></i>
+        <span id="brush-badge" class="absolute -bottom-1 -right-1 bg-amber-500 text-black text-[9px] font-black px-1.5 rounded-full shadow">نسخ</span>
+      </button>
+
+      <!-- Smudge Tool Button -->
+      <button id="tool-smudge" title="التلطيخ والدمج (Smudge)" class="tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition">
+        <i class="fa-solid fa-hand-pointer text-sm"></i>
+      </button>
+
+      <!-- Eraser Tool Button -->
+      <button id="tool-eraser" title="الممحاة" class="tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition">
+        <i class="fa-solid fa-eraser text-sm"></i>
+      </button>
+
+      <!-- Layers Button -->
+      <button id="layers-btn" title="الطبقات (Layers)" class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center hover:bg-white/10 active:scale-95 text-gray-300 hover:text-white transition">
+        <i class="fa-solid fa-layer-group text-sm"></i>
+        <span id="layers-count-badge" class="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold border border-[#141418]">2</span>
+      </button>
+
+      <!-- Color Button (Active Color Dot) -->
+      <button id="color-btn" title="قرص الألوان" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-0.5 border border-white/20 active:scale-90 transition relative overflow-hidden flex items-center justify-center hover:scale-105">
+        <span id="color-preview-circle" class="w-full h-full rounded-full shadow-inner" style="background-color: #1e293b;"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Canvas Workspace -->
+  <main class="flex-1 relative overflow-hidden flex items-center justify-center p-2 sm:p-5 bg-[#0f0f13]">
+    
+    <!-- Procreate Vertical Left Floating Sliders Bar -->
+    <aside class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-10 bg-[#16161c]/85 backdrop-blur-2xl border border-white/10 py-7 px-2.5 rounded-3xl shadow-2xl">
+      
+      <!-- Brush Size Slider -->
+      <div class="relative flex flex-col items-center">
+        <span class="text-[10px] font-bold text-gray-400 mb-2">الحجم</span>
+        <div class="h-36 w-8 flex items-center justify-center relative">
+          <input type="range" id="slider-size" min="4" max="150" value="34" class="procreate-vertical-slider">
+        </div>
+        <span id="slider-size-val" class="text-[10px] font-mono font-bold text-blue-400 mt-2">34px</span>
+      </div>
+
+      <!-- Quick Reset / Center crosshair button -->
+      <div class="w-7 h-7 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-gray-400 hover:text-white cursor-pointer active:scale-90 transition" id="fit-screen-btn" title="ملاءمة الشاشة">
+        <i class="fa-solid fa-expand text-[10px]"></i>
+      </div>
+
+      <!-- Brush Opacity Slider -->
+      <div class="relative flex flex-col items-center">
+        <span class="text-[10px] font-bold text-gray-400 mb-2">الشفافية</span>
+        <div class="h-36 w-8 flex items-center justify-center relative">
+          <input type="range" id="slider-opacity" min="5" max="100" value="100" class="procreate-vertical-slider">
+        </div>
+        <span id="slider-opacity-val" class="text-[10px] font-mono font-bold text-blue-400 mt-2">100%</span>
+      </div>
+
+      <!-- Undo / Redo Buttons -->
+      <div class="flex flex-col gap-2 pt-2 border-t border-white/10">
+        <button id="undo-btn" title="تراجع (Ctrl+Z)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90">
+          <i class="fa-solid fa-arrow-rotate-left text-xs"></i>
+        </button>
+        <button id="redo-btn" title="إعادة (Ctrl+Y)" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/15 text-gray-300 hover:text-white flex items-center justify-center transition active:scale-90">
+          <i class="fa-solid fa-arrow-rotate-right text-xs"></i>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Canvas Container -->
+    <div id="canvas-container" class="relative rounded-2xl overflow-hidden bg-white cursor-crosshair border border-white/10" style="width: 1600px; height: 1200px; max-width: 94vw; max-height: 88vh;">
+      <canvas id="display-canvas" width="1600" height="1200" class="absolute inset-0 z-0 block w-full h-full"></canvas>
+      <canvas id="grid-canvas" width="1600" height="1200" class="absolute inset-0 z-10 block w-full h-full pointer-events-none hidden"></canvas>
+      <canvas id="training-ghost-canvas" width="1600" height="1200" class="absolute inset-0 z-15 block w-full h-full pointer-events-none hidden"></canvas>
+      
+      <!-- Simulated Virtual Calligraphy Pen Tip Cursor -->
+      <div id="simulated-nib-pointer" class="absolute pointer-events-none z-20 hidden transition-transform duration-75" style="transform: translate(-50%, -50%);">
+        <div class="relative flex items-center justify-center">
+          <div class="w-7 h-7 rounded-full bg-emerald-500/30 border border-emerald-400 animate-ping absolute"></div>
+          <div class="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white shadow-[0_0_15px_rgba(16,185,129,0.9)] flex items-center justify-center">
+            <div class="w-1.5 h-1.5 bg-black rounded-full"></div>
+          </div>
+          <span class="absolute -top-6 bg-black/80 backdrop-blur-md text-[10px] text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/40 font-mono shadow whitespace-nowrap">
+            قصبة النسخ 72°
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Interactive Training Active Banner -->
+    <div id="training-active-banner" class="fixed top-16 left-1/2 -translate-x-1/2 procreate-glass px-4 py-2.5 rounded-2xl hidden z-40 items-center gap-3 border border-amber-500/40 shadow-2xl">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+        <span class="text-xs font-bold text-amber-300">وضع التدريب الحركي:</span>
+        <span id="training-target-char-label" class="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 font-bold font-serif text-sm">ب</span>
+      </div>
+      <div class="h-4 w-px bg-white/20"></div>
+      <span id="training-stroke-count-label" class="text-[11px] font-mono text-gray-300">الضربات المسجلة: 0 ضربة</span>
+      <div class="h-4 w-px bg-white/20"></div>
+      <button id="save-training-btn" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1 transition active:scale-95 shadow">
+        <i class="fa-solid fa-check"></i>
+        <span>حفظ الحركة</span>
+      </button>
+      <button id="clear-training-strokes-btn" class="px-2.5 py-1 rounded-xl bg-white/10 hover:bg-white/15 text-gray-300 text-xs flex items-center gap-1 transition active:scale-95">
+        <i class="fa-solid fa-eraser"></i>
+        <span>مسح المحاولة</span>
+      </button>
+      <button id="cancel-training-btn" class="px-2 py-1 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 text-xs flex items-center gap-1 transition active:scale-95">
+        <i class="fa-solid fa-xmark"></i>
+        <span>إلغاء</span>
+      </button>
+    </div>
+
+    <!-- Active Simulation Floating Control Pill -->
+    <div id="sim-active-bar" class="fixed bottom-8 left-1/2 -translate-x-1/2 procreate-glass px-4 py-2 rounded-2xl hidden z-40 items-center gap-3 border border-emerald-500/40 shadow-2xl">
+      <div class="flex items-center gap-2">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        <span class="text-xs font-bold text-emerald-300" id="sim-status-label">جاري محاكاة الكتابة...</span>
+      </div>
+      <div class="h-4 w-px bg-white/20"></div>
+      <button id="sim-pause-btn" class="text-xs text-gray-300 hover:text-white px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 transition flex items-center gap-1">
+        <i class="fa-solid fa-pause text-[10px]"></i>
+        <span>إيقاف مؤقت</span>
+      </button>
+      <button id="sim-stop-btn" class="text-xs text-rose-400 hover:text-rose-300 px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 transition flex items-center gap-1">
+        <i class="fa-solid fa-stop text-[10px]"></i>
+        <span>إنهاء</span>
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- AUTO-WRITE & INTERACTIVE TRAINING MODAL    -->
+    <!-- ========================================== -->
+    <div id="auto-write-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6 select-none">
+      <div class="w-full max-w-3xl max-h-[92vh] bg-[#16161c] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-gray-200">
+        
+        <!-- Header -->
+        <div class="h-14 px-6 border-b border-white/10 flex items-center justify-between bg-[#1b1b22] shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">محاكي وتدريب الكتابة بالقصبة العربية</h2>
+              <p class="text-[10px] text-gray-400">محاكاة تلقائية بالزاوية والميزان الحقيقي، أو التدريب اليدوي المباشر</p>
+            </div>
+          </div>
+          <button id="close-auto-write-btn" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Mode Tabs -->
+        <div class="px-6 py-2.5 bg-[#141419] border-b border-white/5 flex items-center justify-between">
+          <div class="flex items-center gap-1.5 text-xs">
+            <button id="sim-tab-play-btn" class="px-3.5 py-1.5 rounded-lg font-bold transition bg-emerald-600 text-white shadow flex items-center gap-1.5">
+              <i class="fa-solid fa-play text-[10px]"></i>
+              <span>محاكاة الكتابة</span>
+            </button>
+            <button id="sim-tab-train-btn" class="px-3.5 py-1.5 rounded-lg font-medium transition text-gray-400 hover:text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-graduation-cap text-[11px]"></i>
+              <span>تدريب وتعلّم الفرشاة</span>
+            </button>
+          </div>
+          <span id="learned-stats-badge" class="text-[10px] px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/25 font-mono">
+            الذاكرة: 11 نموذج
+          </span>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+          
+          <!-- PANEL 1: PLAY SIMULATION -->
+          <div id="sim-panel-play" class="space-y-5">
+            <!-- Banner Description -->
+            <div class="bg-gradient-to-r from-emerald-950/40 to-teal-950/40 border border-emerald-500/30 rounded-2xl p-4 text-xs space-y-2">
+              <div class="flex items-center gap-2 text-emerald-300 font-bold text-sm">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>تشغيل ضربات القلم المسجلة بدقة الميزان</span>
+              </div>
+              <p class="leading-relaxed text-gray-300 text-[11px]">
+                توجه الخوارزمية رأس القصبة بزاوية قطة القلم الكلاسيكية (<span class="font-mono text-amber-300">72°</span>) مع توزيع سمك الحبر ومطابقة <b>خط الارتكاز</b> و<b>خط الصعود</b> و<b>خط الهبوط</b>.
+              </p>
+            </div>
+
+            <!-- Quick Letter Selection Presets -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-gray-300">اختر حرفاً أو شكلاً كلاسيكياً للمحاكاة:</label>
+                <span class="text-[10px] text-emerald-400 font-mono">حركات ومسارات معتمدة</span>
+              </div>
+              
+              <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2" id="sim-presets-container">
+                <!-- Dynamically populated buttons -->
+              </div>
+            </div>
+
+            <!-- Custom Text Input Field -->
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-gray-300">أو اكتب حروفاً / كلمة مخصصة:</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="sim-custom-text-input" placeholder="مثال: الله ، كتاب ، نور ، قلم..." class="flex-1 bg-black/50 border border-white/15 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white font-bold outline-none transition" dir="rtl">
+                <button id="sim-apply-custom-btn" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                  <i class="fa-solid fa-play"></i>
+                  <span>محاكاة النص</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Simulation Settings: Speed & Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <!-- Speed Selector -->
+              <div class="bg-white/5 border border-white/5 rounded-2xl p-3.5 space-y-2">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-300">سرعة محاكاة حركة القلم:</span>
+                  <span id="sim-speed-val" class="font-mono text-emerald-400 font-bold">عادي (1x)</span>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5 text-xs">
+                  <button class="sim-speed-btn py-1.5 rounded-lg text-center font-medium bg-white/5 hover:bg-white/10 text-gray-400" data-speed="0.4">
+                    بطيء (تعليمي)
+                  </button>
+                  <button class="sim-speed-btn active py-1.5 rounded-lg text-center font-bold bg-emerald-600 text-white shadow" data-speed="1.0">
+                    عادي (1x)
+                  </button>
+                  <button class="sim-speed-btn py-1.5 rounded-lg text-center font-medium bg-white/5 hover:bg-white/10 text-gray-400" data-speed="2.2">
+                    سريع (2x)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Visual Options -->
+              <div class="bg-white/5 border border-white/5 rounded-2xl p-3.5 space-y-2.5 text-xs">
+                <span class="font-semibold text-gray-300 block">خيارات العرض أثناء المحاكاة:</span>
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400 text-[11px]">إظهار مؤشر القصبة المتحرك</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggle-sim-pointer" class="sr-only peer" checked>
+                    <div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-500"></div>
+                  </label>
+                </div>
+                <div class="flex items-center justify-between">
+                  <span class="text-gray-400 text-[11px]">محاذاة تلقائية على خط الارتكاز</span>
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggle-sim-baseline-align" class="sr-only peer" checked>
+                    <div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Controls Footer inside Modal -->
+            <div class="flex items-center justify-between pt-3 border-t border-white/10">
+              <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-amber-400"></i>
+                <span>يتم الرسم على الطبقة النشطة وباستخدام لون وحجم الفرشاة الحاليين.</span>
+              </div>
+              <button id="sim-start-preview-btn" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition shadow flex items-center gap-2 active:scale-95">
+                <i class="fa-solid fa-paintbrush"></i>
+                <span>تشغيل المحاكاة الآن</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL 2: INTERACTIVE TRACE & LEARN -->
+          <div id="sim-panel-train" class="hidden space-y-5">
+            <!-- Training Banner -->
+            <div class="bg-gradient-to-r from-amber-950/40 to-orange-950/40 border border-amber-500/30 rounded-2xl p-4 text-xs space-y-2">
+              <div class="flex items-center gap-2 text-amber-300 font-bold text-sm">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>كيف يعمل تدريب الفرشاة والتعلّم التفاعلي؟</span>
+              </div>
+              <p class="leading-relaxed text-gray-300 text-[11px]">
+                اختر الحرف، ثم اضغط على <b>"بدء جلسة التدريب على اللوحة"</b> واكتب الحرف بيدك فوق السطر. ستقوم الفرشاة بالتقاط مسارات يدك وضغط القلم وتطبيعها بالنسبة لخط الارتكاز وحفظها في الذاكرة لتكتبها بدقة في المرات القادمة!
+              </p>
+            </div>
+
+            <!-- Target Letter Selection for Training -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between">
+                <label class="text-xs font-bold text-gray-300">اختر الحرف المراد تدريبه:</label>
+                <span id="training-selected-status" class="text-[11px] text-amber-400 font-bold">الحرف المختار: ب</span>
+              </div>
+              <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-11 gap-1.5" id="train-alphabet-grid">
+                <!-- Dynamically populated letters -->
+              </div>
+            </div>
+
+            <!-- Custom letter input -->
+            <div class="space-y-2">
+              <label class="text-xs font-bold text-gray-300">أو اكتب رمزاً / مقطعاً مخصصاً لتدريبه:</label>
+              <div class="flex items-center gap-2">
+                <input type="text" id="train-custom-input" placeholder="مثال: ص ، ع ، ك ، ط..." class="w-40 bg-black/50 border border-white/15 focus:border-amber-500 rounded-xl px-4 py-2 text-sm text-white font-bold outline-none transition text-center" dir="rtl">
+                <button id="train-set-custom-btn" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 active:scale-95 text-white font-bold text-xs rounded-xl transition shadow flex items-center gap-1.5">
+                  <i class="fa-solid fa-bullseye"></i>
+                  <span>تحديد كهدف للتدريب</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Training Options -->
+            <div class="p-3.5 rounded-2xl bg-white/5 border border-white/5 space-y-2 text-xs">
+              <span class="font-semibold text-gray-300 block">خيارات جلسة التدريب:</span>
+              <div class="flex items-center justify-between">
+                <span class="text-gray-400 text-[11px]">إظهار المسار الإرشادي الشفاف (Ghost Guide) على السطر</span>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" id="toggle-train-ghost-guide" class="sr-only peer" checked>
+                  <div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-amber-500"></div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Start Training Button -->
+            <div class="flex items-center justify-between pt-3 border-t border-white/10">
+              <button id="restore-default-models-btn" class="text-xs text-gray-400 hover:text-white px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 transition">
+                استعادة النماذج الكلاسيكية الأصلية
+              </button>
+              <button id="start-interactive-training-btn" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white transition shadow flex items-center gap-2 active:scale-95">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span>بدء جلسة التدريب على اللوحة الآن</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- CALLIGRAPHY GUIDELINES INFO MODAL          -->
+    <!-- ========================================== -->
+    <div id="calligraphy-guide-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-6 select-none">
+      <div class="w-full max-w-4xl max-h-[92vh] bg-[#16161c] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-gray-200">
+        
+        <!-- Header -->
+        <div class="h-14 px-6 border-b border-white/10 flex items-center justify-between bg-[#1b1b22] shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-ruler-combined"></i>
+            </div>
+            <div>
+              <h2 class="text-sm font-bold text-white">دليل خط الارتكاز والسطور المرجعية في الخط العربي</h2>
+              <p class="text-[10px] text-gray-400">ميزان النقطة، الحروف المستقرة والهابطة، ومطابقة مقاس القلم</p>
+            </div>
+          </div>
+          <button id="close-calligraphy-guide-btn" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+          
+          <!-- Explanation cards for the 4 lines -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 text-xs">
+            
+            <!-- Baseline -->
+            <div class="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/30 space-y-1.5">
+              <div class="flex items-center gap-2 font-bold text-blue-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                <span>[0] خط الارتكاز / الأساس (Baseline ★)</span>
+              </div>
+              <p class="text-gray-300 leading-relaxed text-[11px]">
+                هو الخط الأفقي المحوري والمقدس الذي تستقر عليه معظم الكلمات وأجسام الحروف الأفقية (ب، د، ك، ط، ف) والوصلات والمدات (الكشيدة).
+              </p>
+            </div>
+
+            <!-- Ascender -->
+            <div class="p-3.5 rounded-2xl bg-rose-950/30 border border-rose-500/30 space-y-1.5">
+              <div class="flex items-center gap-2 font-bold text-rose-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <span>[1] خط الصعود أو القمة (Ascender Line)</span>
+              </div>
+              <p class="text-gray-300 leading-relaxed text-[11px]">
+                يحدد أقصى ارتفاع مسموح به للحروف الرأسية والسيقان الطويلة (الألفات الصريحة، وسيقان اللام والكاف، وعصا الطاء والظاء).
+              </p>
+            </div>
+
+            <!-- Mean line -->
+            <div class="p-3.5 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-1.5">
+              <div class="flex items-center gap-2 font-bold text-purple-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                <span>[2] خط الوسط / رؤوس الحروف (Mean Line)</span>
+              </div>
+              <p class="text-gray-300 leading-relaxed text-[11px]">
+                يقع بين خط الصعود وخط الارتكاز، وتتوقف عنده أسنّة السين والشين ورؤوس الحروف المغلقة (الواو، الفاء، القاف، الميم، العين، الهاء).
+              </p>
+            </div>
+
+            <!-- Descender -->
+            <div class="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
+              <div class="flex items-center gap-2 font-bold text-emerald-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>[3] خط الهبوط أو القعر (Descender Line)</span>
+              </div>
+              <p class="text-gray-300 leading-relaxed text-[11px]">
+                يحدد أقصى عمق لنزول الكؤوس والأذيال أسفل السطر، وتُجمع في: "نَصِي قَوْس جُمْلَةٍ" أو "صُنِعَ فَرَسٌ نَجَحَ" (ن، ق، ص، ل، س، ي، ر، و، م، ج، ع).
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Comparison Table -->
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold text-gray-200">مقارنة ميزان السطور وزوايا قطة القلم بين الخطوط العربية الكبرى:</h3>
+            <div class="overflow-x-auto rounded-2xl border border-white/10">
+              <table class="w-full text-right text-xs text-gray-300">
+                <thead class="bg-white/5 text-gray-200 border-b border-white/10 font-bold text-[11px]">
+                  <tr>
+                    <th class="p-2.5">نوع الخط العربي</th>
+                    <th class="p-2.5">زاوية القلم</th>
+                    <th class="p-2.5">ارتفاع الصعود (الألف)</th>
+                    <th class="p-2.5">عمق الهبوط (الكؤوس)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-[11px]">
+                  <tr class="hover:bg-white/5">
+                    <td class="p-2.5 font-bold text-amber-300">خط النسخ (Naskh)</td>
+                    <td class="p-2.5">72°</td>
+                    <td class="p-2.5">5 نقاط (~160px)</td>
+                    <td class="p-2.5">3 نقاط (~97px)</td>
+                  </tr>
+                  <tr class="hover:bg-white/5">
+                    <td class="p-2.5 font-bold text-amber-300">خط الرقعة (Ruq'ah)</td>
+                    <td class="p-2.5">48°</td>
+                    <td class="p-2.5">3 نقاط (~85px)</td>
+                    <td class="p-2.5">2 نقطة (~57px)</td>
+                  </tr>
+                  <tr class="hover:bg-white/5">
+                    <td class="p-2.5 font-bold text-amber-300">خط الثلث (Thuluth)</td>
+                    <td class="p-2.5">55°</td>
+                    <td class="p-2.5">7.5 نقاط (~175px)</td>
+                    <td class="p-2.5">4 نقاط (~92px)</td>
+                  </tr>
+                  <tr class="hover:bg-white/5">
+                    <td class="p-2.5 font-bold text-amber-300">خط الديواني (Diwani)</td>
+                    <td class="p-2.5">80°</td>
+                    <td class="p-2.5">6 نقاط (~177px)</td>
+                    <td class="p-2.5">3.5 نقاط (~103px)</td>
+                  </tr>
+                  <tr class="hover:bg-white/5">
+                    <td class="p-2.5 font-bold text-amber-300">الخط الفارسي (Nastaliq)</td>
+                    <td class="p-2.5">65°</td>
+                    <td class="p-2.5">4.5 نقاط (~130px)</td>
+                    <td class="p-2.5">3 نقاط (~87px)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Quick Action Buttons -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/10">
+            <span class="text-xs text-gray-400">تطبيق المقاس الافتراضي المعياري ومطابقة السطور فوراً:</span>
+            <button id="guide-modal-apply-btn" class="px-5 py-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow flex items-center gap-2 active:scale-95">
+              <i class="fa-solid fa-check"></i>
+              <span>ضبط الحجم لـ 34px وتفعيل السطور المطابقة</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- FULL PROCREATE BRUSH STUDIO MODAL          -->
+    <!-- ========================================== -->
+    <div id="brush-studio-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-2 sm:p-5 select-none">
+      <div class="w-full max-w-5xl h-[90vh] bg-[#161619] border border-white/10 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-gray-200">
+        
+        <div class="h-14 px-5 border-b border-white/10 flex items-center justify-between bg-[#1b1b20]">
+          <div class="flex items-center gap-3">
+            <span class="text-sm font-bold text-white tracking-wide">Brush Studio</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium" id="studio-active-brush-badge">Naskh Brush</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="studio-reset-btn" class="px-3.5 py-1.5 rounded-xl text-xs text-gray-400 hover:text-white hover:bg-white/10 transition">إعادة ضبط</button>
+            <button id="studio-done-btn" class="px-4 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition shadow">تم (Done)</button>
+          </div>
+        </div>
+
+        <div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+          <div class="w-full md:w-56 bg-[#18181d] border-b md:border-b-0 md:border-l border-white/10 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto p-2 md:p-3 gap-1 shrink-0">
+            <button class="studio-tab-btn active w-full text-right px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition bg-blue-600 text-white shadow" data-tab="stroke-path">
+              <i class="fa-solid fa-bezier-curve w-4 text-center"></i>
+              <span class="truncate">Stroke path</span>
+            </button>
+            <button class="studio-tab-btn w-full text-right px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/5 flex items-center gap-2.5 transition" data-tab="shape">
+              <i class="fa-solid fa-shapes w-4 text-center"></i>
+              <span class="truncate">Shape</span>
+            </button>
+            <button class="studio-tab-btn w-full text-right px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/5 flex items-center gap-2.5 transition" data-tab="apple-pencil">
+              <i class="fa-solid fa-pen-nib w-4 text-center"></i>
+              <span class="truncate">Apple Pencil</span>
+            </button>
+          </div>
+
+          <div class="flex-1 p-5 overflow-y-auto bg-[#1c1c21]">
+            <div id="panel-stroke-path" class="studio-panel space-y-5">
+              <div>
+                <h3 class="text-sm font-bold text-gray-200 mb-1">Stroke properties</h3>
+                <p class="text-xs text-gray-400">التباعد، الانسيابية والتثبيت، وتلاشي الحبر</p>
+              </div>
+
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">Spacing (التباعد)</span>
+                  <span id="val-spacing" class="font-mono text-blue-400 font-bold">None</span>
+                </div>
+                <input type="range" id="input-spacing" min="0" max="100" value="0" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">StreamLine (الانسيابية والتثبيت)</span>
+                  <span id="val-streamline" class="font-mono text-blue-400 font-bold">82%</span>
+                </div>
+                <input type="range" id="input-streamline" min="0" max="100" value="82" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">Jitter (الاضطراب والخشونة)</span>
+                  <span id="val-jitter" class="font-mono text-blue-400 font-bold">None</span>
+                </div>
+                <input type="range" id="input-jitter" min="0" max="100" value="0" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">Fall off (مسافة التلاشي وتوقف الحبر)</span>
+                  <span id="val-falloff" class="font-mono text-blue-400 font-bold">None</span>
+                </div>
+                <input type="range" id="input-falloff" min="0" max="100" value="0" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+            </div>
+
+            <div id="panel-shape" class="studio-panel hidden space-y-4">
+              <div>
+                <h3 class="text-sm font-bold text-gray-200 mb-1">Shape (قطة القلم وشكل الرأس)</h3>
+                <p class="text-xs text-gray-400">زاوية الميلان والاستدارة الهندسية الدقيقة لخطوط القصبة</p>
+              </div>
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">دوران الزاوية (Angle)</span>
+                  <span id="val-shape-angle" class="font-mono text-amber-400 font-bold">72°</span>
+                </div>
+                <input type="range" id="input-shape-angle" min="0" max="90" value="72" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">السمك والاستدارة (Roundness)</span>
+                  <span id="val-shape-roundness" class="font-mono text-blue-400 font-bold">12%</span>
+                </div>
+                <input type="range" id="input-shape-roundness" min="2" max="50" value="12" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+            </div>
+
+            <div id="panel-apple-pencil" class="studio-panel hidden space-y-4">
+              <div>
+                <h3 class="text-sm font-bold text-gray-200 mb-1">Apple Pencil Dynamics</h3>
+                <p class="text-xs text-gray-400">استجابة الحجم والشفافية لضغط القلم</p>
+              </div>
+              <div class="space-y-2 p-3.5 rounded-2xl bg-white/5 border border-white/5">
+                <div class="flex items-center justify-between text-xs">
+                  <span class="font-semibold text-gray-200">Pressure Size (تأثر الحجم بالضغط)</span>
+                  <span id="val-pressure-size" class="font-mono text-blue-400 font-bold">65%</span>
+                </div>
+                <input type="range" id="input-pressure-size" min="0" max="100" value="65" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+              </div>
+            </div>
+          </div>
+
+          <div class="w-full md:w-80 bg-[#131317] border-t md:border-t-0 md:border-r border-white/10 flex flex-col shrink-0">
+            <div class="p-3 border-b border-white/10 flex items-center justify-between">
+              <span class="text-xs font-bold text-gray-300">Drawing Pad (لوحة التجربة)</span>
+              <button id="studio-clear-pad" class="text-[11px] text-gray-400 hover:text-white px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 transition">
+                مسح
+              </button>
+            </div>
+            <div class="flex-1 relative p-2 overflow-hidden flex items-center justify-center bg-black/20">
+              <canvas id="studio-pad-canvas" width="400" height="600" class="block w-full h-full bg-[#1c1c22] rounded-2xl cursor-crosshair shadow-inner"></canvas>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- QUICK NIB COMPASS STUDIO POPOVER           -->
+    <!-- ========================================== -->
+    <div id="nib-studio-popover" class="fixed top-16 right-3 sm:right-28 w-80 sm:w-96 procreate-popover rounded-3xl p-5 hidden z-50 flex-col gap-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-compass-drafting"></i>
+          </div>
+          <span class="text-xs font-bold text-gray-200">استوديو قطة القلم (Calligraphic Nib)</span>
+        </div>
+        <button id="close-nib-studio" class="w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-center gap-4 bg-black/40 p-3 rounded-2xl border border-white/5">
+        <div class="relative w-24 h-24 flex items-center justify-center bg-gray-900 rounded-full border border-white/10 shadow-inner">
+          <canvas id="nib-preview-canvas" width="96" height="96" class="block"></canvas>
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div class="w-full h-px bg-white/10"></div>
+            <div class="h-full w-px bg-white/10 absolute"></div>
+          </div>
+        </div>
+        <div class="flex flex-col text-xs text-gray-300 gap-1.5 flex-1">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-400">الزاوية الحالية:</span>
+            <span id="nib-angle-display" class="font-bold text-amber-300 font-mono">72°</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-400">الاستدارة / السمك:</span>
+            <span id="nib-round-display" class="font-bold text-blue-400 font-mono">12%</span>
+          </div>
+          <div class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+            ✓ 10-15% سمك واقعي موصى به
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <div class="flex justify-between items-center mb-1 text-gray-300">
+            <label for="input-nib-angle" class="font-semibold">دوران الزاوية (Angle)</label>
+            <span id="label-nib-angle" class="font-mono text-amber-300">72°</span>
+          </div>
+          <input type="range" id="input-nib-angle" min="0" max="90" value="72" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1 text-gray-300">
+            <label for="input-nib-roundness" class="font-semibold">السمك والاستدارة (Roundness)</label>
+            <span id="label-nib-roundness" class="font-mono text-blue-300">12%</span>
+          </div>
+          <input type="range" id="input-nib-roundness" min="2" max="50" value="12" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1 text-gray-300">
+            <label for="input-nib-smoothness" class="font-semibold">المرونة والنعومة (StreamLine)</label>
+            <span id="label-nib-smoothness" class="font-mono text-purple-300">82%</span>
+          </div>
+          <input type="range" id="input-nib-smoothness" min="0" max="95" value="82" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+        </div>
+
+        <div class="flex items-center justify-between pt-2 border-t border-white/10">
+          <span class="text-gray-300 text-xs">تأثير ضغط القلم (Pressure Dynamics)</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-pressure" class="sr-only peer" checked>
+            <div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- BRUSH LIBRARY POPOVER                      -->
+    <!-- ========================================== -->
+    <div id="brush-library-popover" class="fixed top-16 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-24 w-84 sm:w-96 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
+      <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-feather-pointed"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-gray-200">فُرش الخط العربي (AliQaseef 2.0)</div>
+            <div class="text-[10px] text-amber-400 font-medium">معايرة تلقائية للحجم الافتراضي وميزان السطور</div>
+          </div>
+        </div>
+        <button id="close-brush-library" class="w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div id="calligraphy-presets-list" class="flex flex-col gap-1.5 max-h-80 overflow-y-auto pr-1">
+        <!-- Naskh -->
+        <button class="brush-preset text-right p-2.5 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-white flex items-center justify-between group transition active:scale-[0.98]" data-preset="naskh">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-amber-200">فرشاة خط النسخ (Naskh Brush)</div>
+              <div class="text-[10px] text-gray-300">افتراضي: 34px | زاوية 72° | استدارة 12% | 5 نقاط للألف</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/30 text-amber-300 font-mono">34px</span>
+        </button>
+
+        <!-- Ruq'ah -->
+        <button class="brush-preset text-right p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 flex items-center justify-between group transition active:scale-[0.98]" data-preset="reqaa">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-pen-nib"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-200">فرشاة خط الرقعة (Reqa'a Brush)</div>
+              <div class="text-[10px] text-gray-400">افتراضي: 38px | زاوية 48° | استدارة 8% | 3 نقاط للألف</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-400 font-mono">38px</span>
+        </button>
+
+        <!-- Diwani -->
+        <button class="brush-preset text-right p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 flex items-center justify-between group transition active:scale-[0.98]" data-preset="diwani">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-scroll"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-200">فرشاة خط الديواني (Diwani Brush)</div>
+              <div class="text-[10px] text-gray-400">افتراضي: 30px | زاوية 80° | استدارة 10% | 6 نقاط للألف</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-400 font-mono">30px</span>
+        </button>
+
+        <!-- Thuluth -->
+        <button class="brush-preset text-right p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 flex items-center justify-between group transition active:scale-[0.98]" data-preset="thuluth">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-200">فرشاة خط الثلث (Thuluth Brush)</div>
+              <div class="text-[10px] text-gray-400">افتراضي: 28px | زاوية 55° | استدارة 11% | 7.5 نقاط للألف</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-400 font-mono">28px</span>
+        </button>
+
+        <!-- Farsi -->
+        <button class="brush-preset text-right p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 flex items-center justify-between group transition active:scale-[0.98]" data-preset="farsi">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-feather-pointed"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-200">فرشاة الفارسي والتعليق (Farsi Brush)</div>
+              <div class="text-[10px] text-gray-400">افتراضي: 32px | زاوية 65° | استدارة 9% | 4.5 نقاط للألف</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-400 font-mono">32px</span>
+        </button>
+      </div>
+
+      <button id="open-studio-from-popover" class="w-full py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition">
+        <i class="fa-solid fa-sliders"></i>
+        <span>فتح Brush Studio الكامل</span>
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- LAYERS DRAWER MODAL                        -->
+    <!-- ========================================== -->
+    <div id="layers-panel" class="fixed top-16 right-4 sm:right-16 w-80 sm:w-92 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3">
+      <div class="flex items-center justify-between pb-3 border-b border-white/10">
+        <div class="flex items-center gap-2 font-bold text-sm text-gray-200">
+          <i class="fa-solid fa-layer-group text-blue-400"></i>
+          <span>الطبقات (Layers)</span>
+        </div>
+        <button id="add-layer-btn" class="w-8 h-8 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center active:scale-95 transition" title="إضافة طبقة جديدة">
+          <i class="fa-solid fa-plus text-xs"></i>
+        </button>
+      </div>
+
+      <div class="text-[10px] text-gray-400 flex items-center gap-1.5 bg-white/5 px-2.5 py-1.5 rounded-xl">
+        <i class="fa-solid fa-circle-info text-blue-400"></i>
+        <span>انقر على اسم الطبقة لتعديله، واستخدم الأسهم لنقلها لأعلى أو لأسفل.</span>
+      </div>
+
+      <div id="layers-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1"></div>
+
+      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/5 border border-white/10">
+        <div class="flex items-center gap-2">
+          <input type="color" id="bg-color-picker" value="#f8fafc" class="w-7 h-7 rounded-lg cursor-pointer bg-transparent border-0">
+          <span class="text-xs font-medium text-gray-300">لون خلفية الورق</span>
+        </div>
+        <span class="text-[10px] text-gray-400 font-mono">Artboard</span>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- GRID & GUIDELINES SETTINGS POPOVER         -->
+    <!-- ========================================== -->
+    <div id="grid-settings-popover" class="fixed top-16 right-3 sm:right-32 w-84 sm:w-96 procreate-popover rounded-3xl p-5 hidden z-50 flex-col gap-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs">
+            <i class="fa-solid fa-border-all"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-gray-200">إعدادات شبكة الرسم وميزان السطور</div>
+            <div class="text-[10px] text-gray-400 font-medium">خط الارتكاز ومطابقة حجم الفرشاة بنظام النقطة</div>
+          </div>
+        </div>
+        <button id="close-grid-settings" class="w-6 h-6 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Active Toggle -->
+      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/5 border border-white/5">
+        <span class="text-xs font-semibold text-gray-200">تفعيل إظهار الشبكة والسطور على اللوحة</span>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="toggle-grid-active" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+
+      <!-- Live Sync Option: Lock Guidelines to Brush Nib Size -->
+      <div class="flex items-center justify-between p-2.5 rounded-2xl bg-blue-600/15 border border-blue-500/30">
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-blue-300">مزامنة السطور مع حجم الفرشاة تلقائياً</span>
+          <span class="text-[9px] text-gray-300">تتسع وتضيق السطور ديناميكياً لتطابق حجم قلمك دائماً (ميزان النقطة)</span>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" id="toggle-sync-guidelines" class="sr-only peer" checked>
+          <div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+        </label>
+      </div>
+
+      <!-- Mode selection -->
+      <div class="space-y-1.5">
+        <label class="text-[11px] font-semibold text-gray-400">نمط المساعد الإرشادي:</label>
+        <div class="grid grid-cols-3 gap-1.5 bg-black/40 p-1 rounded-xl border border-white/5 text-xs">
+          <button id="grid-mode-squares" class="grid-mode-btn py-1.5 rounded-lg text-center font-medium transition text-gray-400 hover:text-white" data-mode="squares">
+            <i class="fa-solid fa-table-cells block mb-0.5 text-xs"></i>
+            <span>مربعات</span>
+          </button>
+          <button id="grid-mode-calligraphy" class="grid-mode-btn py-1.5 rounded-lg text-center font-medium transition bg-blue-600 text-white shadow" data-mode="calligraphy">
+            <i class="fa-solid fa-bars block mb-0.5 text-xs"></i>
+            <span>سطور خط</span>
+          </button>
+          <button id="grid-mode-both" class="grid-mode-btn py-1.5 rounded-lg text-center font-medium transition text-gray-400 hover:text-white" data-mode="both">
+            <i class="fa-solid fa-shapes block mb-0.5 text-xs"></i>
+            <span>كلاهما</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Toggle Guideline Labels & Diamond Dots on Canvas -->
+      <div class="grid grid-cols-2 gap-2">
+        <div class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 text-xs">
+          <span class="text-[11px] text-gray-300">مسميات السطور</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-guideline-labels" class="sr-only peer" checked>
+            <div class="w-7 h-3.5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-amber-500"></div>
+          </label>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded-xl bg-white/5 border border-white/5 text-xs">
+          <span class="text-[11px] text-gray-300">نقاط الميزان (الماسية)</span>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggle-diamond-dots" class="sr-only peer" checked>
+            <div class="w-7 h-3.5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500"></div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Quick Reset Brush Size to Exact Classical Match -->
+      <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-center justify-between">
+        <div>
+          <div class="text-xs font-bold text-amber-300">الحجم الافتراضي للخط الحالي:</div>
+          <div class="text-[10px] text-gray-400" id="current-default-size-txt">النسخ: 34px (نقطة = 32.3px)</div>
+        </div>
+        <button id="apply-default-size-btn" class="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition active:scale-95 shadow">
+          تطبيق 34px
+        </button>
+      </div>
+
+      <!-- Opacity Slider -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-semibold text-gray-300">شفافية خطوط السطور والمربعات:</span>
+          <span id="grid-opacity-label" class="font-mono text-amber-400 font-bold">50%</span>
+        </div>
+        <input type="range" id="input-grid-opacity" min="10" max="100" value="50" class="w-full h-1.5 bg-gray-700 rounded-lg cursor-pointer">
+      </div>
+
+      <!-- Calligraphy Guide Modal trigger button -->
+      <button id="open-guide-from-grid-btn" class="w-full py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-bold flex items-center justify-center gap-2 transition">
+        <i class="fa-solid fa-book-open"></i>
+        <span>عرض شرح وتفاصيل خط الارتكاز والسطور</span>
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- COLOR DISC POPOVER                         -->
+    <!-- ========================================== -->
+    <div id="color-panel" class="fixed top-16 right-4 sm:right-12 w-80 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3">
+      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+        <span class="text-xs font-bold text-gray-300">قرص الألوان (Color Disc)</span>
+        <div class="flex items-center gap-2">
+          <div id="active-color-badge" class="w-5 h-5 rounded-full border border-white/30" style="background-color: #1e293b;"></div>
+          <input type="text" id="hex-input" value="#1E293B" class="w-20 bg-white/5 border border-white/10 rounded px-2 py-0.5 text-xs text-center font-mono uppercase text-gray-200">
+        </div>
+      </div>
+
+      <div class="relative w-full aspect-square flex items-center justify-center my-1 select-none">
+        <canvas id="color-wheel-canvas" width="260" height="260" class="rounded-full cursor-pointer"></canvas>
+      </div>
+
+      <div class="pt-2 border-t border-white/10">
+        <span class="text-[10px] font-semibold text-gray-400 block mb-2">أحبار الخط العربي التقليدية</span>
+        <div class="grid grid-cols-8 gap-1.5" id="color-swatches"></div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ACTIONS & EXPORT POPOVER                   -->
+    <!-- ========================================== -->
+    <div id="actions-panel" class="fixed top-16 left-4 sm:left-12 w-72 procreate-popover rounded-2xl p-4 hidden z-50 flex-col gap-2">
+      <div class="text-xs font-bold text-gray-300 pb-2 border-b border-white/10 flex items-center gap-2">
+        <i class="fa-solid fa-wrench text-blue-400"></i> الإجراءات والتصدير
+      </div>
+
+      <button id="export-png-btn" class="w-full text-right px-3 py-2 rounded-xl text-xs hover:bg-white/10 flex items-center justify-between text-gray-200 transition">
+        <span>تصدير اللوحة بدقة عالية (PNG)</span>
+        <i class="fa-solid fa-download text-gray-400"></i>
+      </button>
+
+      <button id="export-jpg-btn" class="w-full text-right px-3 py-2 rounded-xl text-xs hover:bg-white/10 flex items-center justify-between text-gray-200 transition">
+        <span>تصدير صورة مضغوطة (JPEG)</span>
+        <i class="fa-solid fa-file-image text-gray-400"></i>
+      </button>
+
+      <div class="h-px bg-white/10 my-1"></div>
+
+      <button id="flip-h-btn" class="w-full text-right px-3 py-2 rounded-xl text-xs hover:bg-white/10 flex items-center justify-between text-gray-200 transition">
+        <span>قلب اللوحة أفقياً (Flip Horizontal)</span>
+        <i class="fa-solid fa-arrows-left-right text-gray-400"></i>
+      </button>
+
+      <button id="flip-v-btn" class="w-full text-right px-3 py-2 rounded-xl text-xs hover:bg-white/10 flex items-center justify-between text-gray-200 transition">
+        <span>قلب اللوحة رأسياً (Flip Vertical)</span>
+        <i class="fa-solid fa-arrows-up-down text-gray-400"></i>
+      </button>
+    </div>
+
+    <!-- Toast Notification Message -->
+    <div id="toast-msg" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full procreate-glass text-xs font-semibold text-white pointer-events-none transition-all duration-300 opacity-0 transform translate-y-3 z-50 flex items-center gap-2 shadow-2xl">
+      <i class="fa-solid fa-check text-blue-400"></i>
+      <span id="toast-text">تم تطبيق الإجراء</span>
+    </div>
+
+  </main>
+
+  <script>
+    // ----------------------------------------------------
+    // 1. SCRIPT METRICS & GEOMETRIC DEFAULTS
+    // ----------------------------------------------------
+    const SCRIPT_METRICS = {
+      naskh: {
+        name: "خط النسخ",
+        badge: "نسخ",
+        angleDeg: 72,
+        roundness: 0.12,
+        smoothness: 0.82,
+        defaultSize: 34,        // Canonical default: 34px
+        ascenderPts: 5,         // Alif height: 5 points
+        meanPts: 2,             // Waistline / heads: 2 points
+        descenderPts: 3         // Descender cups: 3 points
+      },
+      reqaa: {
+        name: "خط الرقعة",
+        badge: "رقعة",
+        angleDeg: 48,
+        roundness: 0.08,
+        smoothness: 0.65,
+        defaultSize: 38,        // Ruq'ah default: 38px
+        ascenderPts: 3,         // Compact: 3 points
+        meanPts: 1.5,
+        descenderPts: 2         // Jumu'ah descenders: 2 points
+      },
+      diwani: {
+        name: "خط الديواني",
+        badge: "ديواني",
+        angleDeg: 80,
+        roundness: 0.10,
+        smoothness: 0.90,
+        defaultSize: 30,        // Diwani default: 30px
+        ascenderPts: 6,         // Flourishing: 6 points
+        meanPts: 2,
+        descenderPts: 3.5
+      },
+      thuluth: {
+        name: "خط الثلث",
+        badge: "ثلث",
+        angleDeg: 55,
+        roundness: 0.11,
+        smoothness: 0.88,
+        defaultSize: 28,        // Thuluth default: 28px
+        ascenderPts: 7.5,       // Majestic: 7.5 to 8 points
+        meanPts: 2.5,
+        descenderPts: 4
+      },
+      farsi: {
+        name: "خط الفارسي والتعليق",
+        badge: "فارسي",
+        angleDeg: 65,
+        roundness: 0.09,
+        smoothness: 0.88,
+        defaultSize: 32,        // Farsi default: 32px
+        ascenderPts: 4.5,
+        meanPts: 2,
+        descenderPts: 3
+      }
+    };
+
+    // ----------------------------------------------------
+    // 2. APPLICATION STATE
+    // ----------------------------------------------------
+    const state = {
+      tool: 'brush', // 'brush', 'smudge', 'eraser'
+      activePresetKey: 'naskh',
+      
+      // Active Nib Geometry & Brush Studio Settings
+      nibAngleDeg: 72,
+      nibRoundness: 0.12,
+      nibSmoothness: 0.82,
+      spacing: 0,
+      jitter: 0,
+      falloff: 0,
+      pressureSize: 65,
+      usePressure: true,
+
+      color: '#1e293b',
+      rgb: { r: 30, g: 41, b: 59 },
+      hsv: { h: 217, s: 49, v: 23 },
+      size: 34,                // EXACT DEFAULT: 34px
+      opacity: 1.0,
+      
+      // Drawing runtime state
+      isDrawing: false,
+      rawPoints: [],
+      filteredPoints: [],
+      lastDrawnPos: null,
+      currentStrokeDist: 0,
+      
+      // Grid & Guidelines Settings
+      showGrid: true,
+      gridMode: 'calligraphy', // 'squares', 'calligraphy', 'both'
+      showGuidelineLabels: true,
+      showDiamondDots: true,
+      syncGuidelinesToBrush: true, // Automatically lock guidelines to brush nib size
+      gridSize: 50,
+      gridOpacity: 0.50,
+      gridColor: '#3b82f6',
+
+      // History & Layers
+      history: [],
+      redoStack: [],
+      maxHistory: 16,
+      layers: [],
+      activeLayerId: null,
+      canvasWidth: 1600,
+      canvasHeight: 1200,
+      backgroundColor: '#f8fafc'
+    };
+
+    // Safe element lookups
+    const displayCanvas = document.getElementById('display-canvas');
+    const displayCtx = displayCanvas ? displayCanvas.getContext('2d') : null;
+    const gridCanvas = document.getElementById('grid-canvas');
+    const gridCtx = gridCanvas ? gridCanvas.getContext('2d') : null;
+    const canvasContainer = document.getElementById('canvas-container');
+    const nibPreviewCanvas = document.getElementById('nib-preview-canvas');
+    const nibPreviewCtx = nibPreviewCanvas ? nibPreviewCanvas.getContext('2d') : null;
+    const studioPadCanvas = document.getElementById('studio-pad-canvas');
+    const studioPadCtx = studioPadCanvas ? studioPadCanvas.getContext('2d') : null;
+
+    // Modals & Popovers
+    const calligraphyGuideModal = document.getElementById('calligraphy-guide-modal');
+    const brushStudioModal = document.getElementById('brush-studio-modal');
+    const nibStudioPopover = document.getElementById('nib-studio-popover');
+    const brushLibraryPopover = document.getElementById('brush-library-popover');
+    const layersPanel = document.getElementById('layers-panel');
+    const gridSettingsPopover = document.getElementById('grid-settings-popover');
+    const colorPanel = document.getElementById('color-panel');
+    const actionsPanel = document.getElementById('actions-panel');
+
+    // Header buttons
+    const toolBrushBtn = document.getElementById('tool-brush');
+    const toolSmudgeBtn = document.getElementById('tool-smudge');
+    const toolEraserBtn = document.getElementById('tool-eraser');
+    const colorBtn = document.getElementById('color-btn');
+    const colorPreviewCircle = document.getElementById('color-preview-circle');
+    const activeColorBadge = document.getElementById('active-color-badge');
+    const hexInput = document.getElementById('hex-input');
+
+    // Helper for safe event binding
+    function safeBind(id, event, handler) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener(event, handler);
+      }
+    }
+
+    // ----------------------------------------------------
+    // 3. MATHEMATICAL CALLIGRAPHY ENGINE (SUPPORT VECTORS)
+    // ----------------------------------------------------
+    function getEllipseSupportVector(nx, ny, a, b, angleRad) {
+      const cosA = Math.cos(angleRad);
+      const sinA = Math.sin(angleRad);
+
+      const nLocalX = nx * cosA + ny * sinA;
+      const nLocalY = -nx * sinA + ny * cosA;
+
+      const a2 = a * a;
+      const b2 = b * b;
+      const denom = Math.sqrt(a2 * nLocalX * nLocalX + b2 * nLocalY * nLocalY) || 1e-6;
+
+      const pLocalX = (a2 * nLocalX) / denom;
+      const pLocalY = (b2 * nLocalY) / denom;
+
+      return {
+        x: pLocalX * cosA - pLocalY * sinA,
+        y: pLocalX * sinA + pLocalY * cosA
+      };
+    }
+
+    function renderCalligraphicSegment(ctx, p0, p1, customSize = null, customColor = null, customOpacity = null) {
+      if (!ctx) return;
+      const angleRad = (state.nibAngleDeg * Math.PI) / 180;
+      
+      const pres0 = state.usePressure ? (p0.pressure || 0.65) : 1.0;
+      const pres1 = state.usePressure ? (p1.pressure || 0.65) : 1.0;
+
+      const effSize = customSize || state.size;
+      const pressureInfluence = (state.pressureSize / 100);
+      const baseWidth0 = effSize * ((1 - pressureInfluence * 0.6) + (pressureInfluence * 0.9) * pres0);
+      const baseWidth1 = effSize * ((1 - pressureInfluence * 0.6) + (pressureInfluence * 0.9) * pres1);
+
+      const a0 = Math.max(1.5, baseWidth0 / 2);
+      const b0 = Math.max(1.0, a0 * state.nibRoundness);
+
+      const a1 = Math.max(1.5, baseWidth1 / 2);
+      const b1 = Math.max(1.0, a1 * state.nibRoundness);
+
+      const dx = p1.x - p0.x;
+      const dy = p1.y - p0.y;
+      const dist = Math.hypot(dx, dy);
+
+      ctx.save();
+      ctx.fillStyle = customColor || state.color;
+      ctx.globalAlpha = customOpacity !== null ? customOpacity : state.opacity;
+
+      if (dist < 0.6) {
+        ctx.beginPath();
+        ctx.ellipse(p1.x, p1.y, a1, b1, -angleRad, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+
+      const nx = -dy / dist;
+      const ny = dx / dist;
+
+      const s0 = getEllipseSupportVector(nx, ny, a0, b0, -angleRad);
+      const s1 = getEllipseSupportVector(nx, ny, a1, b1, -angleRad);
+
+      ctx.beginPath();
+      ctx.moveTo(p0.x + s0.x, p0.y + s0.y);
+      ctx.lineTo(p1.x + s1.x, p1.y + s1.y);
+      ctx.lineTo(p1.x - s1.x, p1.y - s1.y);
+      ctx.lineTo(p0.x - s0.x, p0.y - s0.y);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.ellipse(p1.x, p1.y, a1, b1, -angleRad, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // ----------------------------------------------------
+    // 4. DRAWING & POINTER EVENT HANDLING
+    // ----------------------------------------------------
+    function getPointerPos(e) {
+      const rect = displayCanvas.getBoundingClientRect();
+      const scaleX = state.canvasWidth / rect.width;
+      const scaleY = state.canvasHeight / rect.height;
+
+      let clientX = e.clientX;
+      let clientY = e.clientY;
+
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      }
+
+      return {
+        x: (clientX - rect.left) * scaleX,
+        y: (clientY - rect.top) * scaleY,
+        pressure: (e.pressure && e.pressure > 0) ? e.pressure : 0.65
+      };
+    }
+
+    function startStroke(e) {
+      e.preventDefault();
+      const activeLayer = getActiveLayer();
+      if (!activeLayer || !activeLayer.visible) {
+        showToast('الطبقة المحددة غير مرئية!');
+        return;
+      }
+
+      state.isDrawing = true;
+      state.currentStrokeDist = 0;
+      const pos = getPointerPos(e);
+      state.rawPoints = [pos];
+      state.filteredPoints = [pos];
+      state.lastDrawnPos = { x: pos.x, y: pos.y, pressure: pos.pressure };
+
+      drawStrokeStep(state.lastDrawnPos, state.lastDrawnPos);
+    }
+
+    function continueStroke(e) {
+      if (!state.isDrawing) return;
+      e.preventDefault();
+
+      if (state.falloff > 0 && state.currentStrokeDist >= state.falloff * 15) {
+        return;
+      }
+
+      let rawPos = getPointerPos(e);
+
+      if (state.jitter > 0) {
+        const j = (state.jitter / 100) * state.size * 0.8;
+        rawPos.x += (Math.random() - 0.5) * j;
+        rawPos.y += (Math.random() - 0.5) * j;
+      }
+
+      state.rawPoints.push(rawPos);
+
+      const smoothFactor = state.nibSmoothness;
+      const alpha = 1.0 - Math.min(0.96, Math.max(0.04, smoothFactor));
+
+      const prev = state.filteredPoints[state.filteredPoints.length - 1];
+      const smoothedPos = {
+        x: prev.x + (rawPos.x - prev.x) * alpha,
+        y: prev.y + (rawPos.y - prev.y) * alpha,
+        pressure: prev.pressure + (rawPos.pressure - prev.pressure) * alpha
+      };
+
+      state.filteredPoints.push(smoothedPos);
+
+      const dist = Math.hypot(smoothedPos.x - state.lastDrawnPos.x, smoothedPos.y - state.lastDrawnPos.y);
+      state.currentStrokeDist += dist;
+
+      const stepSize = state.spacing > 0 ? Math.max(2, (state.spacing / 100) * state.size * 0.7) : 2.0;
+      const steps = Math.max(1, Math.ceil(dist / stepSize));
+
+      for (let s = 1; s <= steps; s++) {
+        const t = s / steps;
+        const interpPt = {
+          x: state.lastDrawnPos.x + (smoothedPos.x - state.lastDrawnPos.x) * t,
+          y: state.lastDrawnPos.y + (smoothedPos.y - state.lastDrawnPos.y) * t,
+          pressure: state.lastDrawnPos.pressure + (smoothedPos.pressure - state.lastDrawnPos.pressure) * t
+        };
+        drawStrokeStep(state.lastDrawnPos, interpPt);
+        state.lastDrawnPos = interpPt;
+      }
+    }
+
+    function endStroke(e) {
+      if (!state.isDrawing) return;
+      state.isDrawing = false;
+      
+      // If training mode active, register captured stroke points
+      if (typeof CalligraphyInteractiveStudio !== 'undefined' && CalligraphyInteractiveStudio.isTrainingMode && state.filteredPoints.length > 1) {
+        CalligraphyInteractiveStudio.recordStrokeDuringTraining(state.filteredPoints);
+      }
+
+      state.rawPoints = [];
+      state.filteredPoints = [];
+      state.lastDrawnPos = null;
+
+      renderComposite();
+      saveState();
+    }
+
+    function drawStrokeStep(from, to) {
+      const activeLayer = getActiveLayer();
+      if (!activeLayer) return;
+
+      const contexts = [activeLayer.ctx, displayCtx];
+
+      contexts.forEach(ctx => {
+        if (!ctx) return;
+        if (state.tool === 'eraser') {
+          ctx.save();
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.globalAlpha = state.opacity;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.lineWidth = Math.max(3, state.size * (0.35 + 0.65 * (to.pressure || 0.65)));
+          ctx.beginPath();
+          ctx.moveTo(from.x, from.y);
+          ctx.lineTo(to.x, to.y);
+          ctx.stroke();
+          ctx.restore();
+
+        } else if (state.tool === 'smudge') {
+          if (ctx === activeLayer.ctx) {
+            const smSize = Math.max(6, Math.floor(state.size * 0.9));
+            try {
+              ctx.save();
+              ctx.globalAlpha = 0.25 * state.opacity;
+              ctx.drawImage(
+                activeLayer.canvas,
+                Math.max(0, from.x - smSize / 2), Math.max(0, from.y - smSize / 2), smSize, smSize,
+                to.x - smSize / 2, to.y - smSize / 2, smSize, smSize
+              );
+              ctx.restore();
+            } catch(err) {}
+          }
+
+        } else {
+          renderCalligraphicSegment(ctx, from, to);
+        }
+      });
+    }
+
+    if (displayCanvas) {
+      displayCanvas.addEventListener('pointerdown', startStroke);
+    }
+    window.addEventListener('pointermove', continueStroke);
+    window.addEventListener('pointerup', endStroke);
+    window.addEventListener('pointercancel', endStroke);
+
+    // ======================================================================
+    // 5. INTERACTIVE CALLIGRAPHY LEARNING & REPLAY ENGINE
+    // ======================================================================
+
+    function sampleCubicBezier(p0, p1, p2, p3, steps = 24, pressureStart = 0.7, pressureEnd = 0.7) {
+      const points = [];
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const mt = 1 - t;
+        const mt2 = mt * mt;
+        const t2 = t * t;
+        
+        const x = mt2 * mt * p0.x + 3 * mt2 * t * p1.x + 3 * mt * t2 * p2.x + t2 * t * p3.x;
+        const y = mt2 * mt * p0.y + 3 * mt2 * t * p1.y + 3 * mt * t2 * p2.y + t2 * t * p3.y;
+        const pressure = pressureStart + (pressureEnd - pressureStart) * t;
+        points.push({ dx: x, dy: y, pressure });
+      }
+      return points;
+    }
+
+    const MASTER_CALLIGRAPHY_GLYPHS = {
+      alif: {
+        id: "alif",
+        char: "ا",
+        label: "الألف",
+        widthPts: 1.2,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: -0.25, y: -4.9 }, { x: -0.15, y: -5.05 }, { x: 0.0, y: -5.0 }, { x: 0.1, y: -4.8 }, 12, 0.5, 0.7),
+          sampleCubicBezier({ x: 0.05, y: -4.8 }, { x: 0.12, y: -3.2 }, { x: -0.08, y: -1.5 }, { x: -0.15, y: 0.0 }, 36, 0.75, 0.85)
+        ]
+      },
+      baa: {
+        id: "baa",
+        char: "ب",
+        label: "الباء",
+        widthPts: 4.8,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 3.8, y: -1.1 }, { x: 3.6, y: -0.4 }, { x: 3.3, y: -0.05 }, { x: 2.8, y: 0.0 }, 18, 0.65, 0.8),
+          sampleCubicBezier({ x: 2.8, y: 0.0 }, { x: 1.5, y: 0.15 }, { x: 0.4, y: -0.1 }, { x: 0.0, y: -0.85 }, 32, 0.8, 0.6),
+          [{ dx: 1.9, dy: 1.2, pressure: 0.85 }, { dx: 1.9, dy: 1.2, pressure: 0.85 }]
+        ]
+      },
+      dal: {
+        id: "dal",
+        char: "د",
+        label: "الدال",
+        widthPts: 2.6,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 1.8, y: -2.1 }, { x: 2.0, y: -1.1 }, { x: 1.6, y: -0.2 }, { x: 1.2, y: 0.0 }, 22, 0.65, 0.85),
+          sampleCubicBezier({ x: 1.2, y: 0.0 }, { x: 0.6, y: 0.05 }, { x: 0.1, y: 0.0 }, { x: -0.2, y: -0.15 }, 20, 0.85, 0.6)
+        ]
+      },
+      raa: {
+        id: "raa",
+        char: "ر",
+        label: "الراء",
+        widthPts: 2.6,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 1.2, y: -1.0 }, { x: 1.25, y: -0.4 }, { x: 1.1, y: -0.05 }, { x: 0.85, y: 0.4 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: 0.85, y: 0.4 }, { x: 0.4, y: 1.5 }, { x: -0.2, y: 2.1 }, { x: -0.8, y: 2.3 }, 26, 0.85, 0.4)
+        ]
+      },
+      seen: {
+        id: "seen",
+        char: "س",
+        label: "السين",
+        widthPts: 4.6,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 4.2, y: -0.9 }, { x: 4.0, y: -0.2 }, { x: 3.7, y: 0.0 }, { x: 3.4, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: 3.4, y: 0.0 }, { x: 3.2, y: -0.7 }, { x: 2.8, y: -0.6 }, { x: 2.5, y: 0.0 }, 14, 0.65, 0.8),
+          sampleCubicBezier({ x: 2.5, y: 0.0 }, { x: 1.8, y: 2.7 }, { x: 0.6, y: 2.5 }, { x: 0.0, y: 0.3 }, 30, 0.9, 0.5)
+        ]
+      },
+      noon: {
+        id: "noon",
+        char: "ن",
+        label: "النون",
+        widthPts: 3.5,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 2.6, y: -1.1 }, { x: 2.5, y: -0.3 }, { x: 2.3, y: 0.2 }, { x: 1.9, y: 1.0 }, 16, 0.65, 0.85),
+          sampleCubicBezier({ x: 1.9, y: 1.0 }, { x: 1.3, y: 2.8 }, { x: 0.3, y: 2.4 }, { x: 0.0, y: 0.2 }, 30, 0.9, 0.55),
+          [{ dx: 1.25, dy: 0.4, pressure: 0.85 }, { dx: 1.25, dy: 0.4, pressure: 0.85 }]
+        ]
+      },
+      waw: {
+        id: "waw",
+        char: "و",
+        label: "الواو",
+        widthPts: 2.8,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 1.2, y: -0.4 }, { x: 1.5, y: -1.8 }, { x: 2.2, y: -1.6 }, { x: 1.9, y: -0.2 }, 22, 0.6, 0.8),
+          sampleCubicBezier({ x: 1.9, y: -0.2 }, { x: 1.3, y: -0.1 }, { x: 1.0, y: 0.4 }, { x: 0.7, y: 0.9 }, 16, 0.8, 0.85),
+          sampleCubicBezier({ x: 0.7, y: 0.9 }, { x: 0.3, y: 1.8 }, { x: -0.2, y: 2.3 }, { x: -0.7, y: 2.4 }, 24, 0.85, 0.4)
+        ]
+      },
+      haa: {
+        id: "haa",
+        char: "ح",
+        label: "الحاء",
+        widthPts: 4.2,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 0.8, y: -1.8 }, { x: 1.8, y: -2.1 }, { x: 2.8, y: -2.1 }, { x: 3.4, y: -1.8 }, 20, 0.7, 0.85),
+          sampleCubicBezier({ x: 3.4, y: -1.8 }, { x: 2.6, y: -0.8 }, { x: 3.2, y: 1.2 }, { x: 2.4, y: 3.0 }, 30, 0.9, 0.8),
+          sampleCubicBezier({ x: 2.4, y: 3.0 }, { x: 1.2, y: 3.2 }, { x: 0.3, y: 2.4 }, { x: 0.0, y: 1.2 }, 24, 0.8, 0.5)
+        ]
+      },
+      meem: {
+        id: "meem",
+        char: "م",
+        label: "الميم",
+        widthPts: 2.8,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 1.8, y: -0.2 }, { x: 1.2, y: -1.2 }, { x: 0.4, y: -0.7 }, { x: 0.8, y: 0.0 }, 20, 0.65, 0.8),
+          sampleCubicBezier({ x: 0.8, y: 0.0 }, { x: 0.75, y: 1.2 }, { x: 0.6, y: 2.4 }, { x: 0.5, y: 3.2 }, 26, 0.8, 0.35)
+        ]
+      },
+      laam: {
+        id: "laam",
+        char: "ل",
+        label: "اللام",
+        widthPts: 3.4,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 2.4, y: -4.9 }, { x: 2.45, y: -3.0 }, { x: 2.35, y: -1.0 }, { x: 2.1, y: 0.5 }, 28, 0.75, 0.85),
+          sampleCubicBezier({ x: 2.1, y: 0.5 }, { x: 1.4, y: 2.8 }, { x: 0.3, y: 2.4 }, { x: 0.0, y: 0.3 }, 30, 0.9, 0.55)
+        ]
+      },
+      allah: {
+        id: "allah",
+        char: "الله",
+        label: "لفظ الجلالة",
+        widthPts: 9.5,
+        isCustomLearned: false,
+        strokes: [
+          sampleCubicBezier({ x: 7.8, y: -4.9 }, { x: 7.85, y: -3.2 }, { x: 7.7, y: -1.5 }, { x: 7.6, y: 0.0 }, 28, 0.75, 0.85),
+          sampleCubicBezier({ x: 5.5, y: -4.3 }, { x: 5.55, y: -2.5 }, { x: 5.4, y: -0.5 }, { x: 5.2, y: 0.0 }, 24, 0.7, 0.85),
+          sampleCubicBezier({ x: 5.2, y: 0.0 }, { x: 4.6, y: 0.05 }, { x: 4.0, y: 0.0 }, { x: 3.6, y: -0.3 }, 16, 0.8, 0.85),
+          sampleCubicBezier({ x: 3.6, y: -0.3 }, { x: 3.65, y: -2.0 }, { x: 3.6, y: -3.6 }, { x: 3.55, y: -3.9 }, 22, 0.75, 0.65),
+          sampleCubicBezier({ x: 3.55, y: -3.9 }, { x: 3.5, y: -2.0 }, { x: 3.3, y: -0.5 }, { x: 2.8, y: 0.0 }, 22, 0.7, 0.85),
+          sampleCubicBezier({ x: 2.8, y: 0.0 }, { x: 2.2, y: 0.05 }, { x: 1.8, y: 0.0 }, { x: 1.4, y: -0.2 }, 16, 0.8, 0.85),
+          sampleCubicBezier({ x: 1.4, y: -0.2 }, { x: 1.3, y: -1.8 }, { x: 0.2, y: -1.4 }, { x: 0.5, y: 0.0 }, 24, 0.7, 0.8)
+        ]
+      }
+    };
+
+    const learnedGlyphsMemory = JSON.parse(JSON.stringify(MASTER_CALLIGRAPHY_GLYPHS));
+
+    function mapCharToGlyphKey(ch) {
+      if ('اأإآ'.includes(ch)) return 'alif';
+      if ('بتث'.includes(ch)) return 'baa';
+      if ('دذ'.includes(ch)) return 'dal';
+      if ('رز'.includes(ch)) return 'raa';
+      if ('سش'.includes(ch)) return 'seen';
+      if ('صض'.includes(ch)) return 'seen';
+      if ('حجخ'.includes(ch)) return 'haa';
+      if ('عغ'.includes(ch)) return 'haa';
+      if ('فق'.includes(ch)) return 'waw';
+      if (ch === 'ن') return 'noon';
+      if (ch === 'و' || ch === 'ؤ') return 'waw';
+      if (ch === 'م') return 'meem';
+      if (ch === 'ل') return 'laam';
+      if (ch === 'ك') return 'laam';
+      if ('يهى'.includes(ch)) return 'noon';
+      return 'alif';
+    }
+
+    // Calligraphy Interactive Studio Controller
+    const CalligraphyInteractiveStudio = {
+      isTrainingMode: false,
+      activeTrainingGlyphKey: 'baa',
+      activeTrainingTargetChar: 'ب',
+      trainingBaselineY: 600,
+      trainingStartX: 700,
+      trainingCapturedStrokes: [],
+      trainingGhostCanvas: null,
+      trainingGhostCtx: null,
+
+      // Simulation runtime state
+      isSimulating: false,
+      isPaused: false,
+      speedMultiplier: 1.0,
+      showPointer: true,
+      alignToBaseline: true,
+      playbackStrokes: [],
+      strokeIndex: 0,
+      pointIndex: 0,
+      animFrameId: null,
+
+      // UI references
+      trainingBanner: null,
+      trainingCharLabel: null,
+      trainingStrokeCountLabel: null,
+      activeBar: null,
+      statusLabel: null,
+      pauseBtn: null,
+      nibPointer: null,
+
+      init() {
+        this.trainingGhostCanvas = document.getElementById('training-ghost-canvas');
+        if (this.trainingGhostCanvas) {
+          this.trainingGhostCtx = this.trainingGhostCanvas.getContext('2d');
+        }
+        this.trainingBanner = document.getElementById('training-active-banner');
+        this.trainingCharLabel = document.getElementById('training-target-char-label');
+        this.trainingStrokeCountLabel = document.getElementById('training-stroke-count-label');
+        this.activeBar = document.getElementById('sim-active-bar');
+        this.statusLabel = document.getElementById('sim-status-label');
+        this.pauseBtn = document.getElementById('sim-pause-btn');
+        this.nibPointer = document.getElementById('simulated-nib-pointer');
+
+        this.renderPresetsGrid();
+        this.renderTrainingAlphabetGrid();
+        this.updateMemoryBadge();
+      },
+
+      updateMemoryBadge() {
+        const badge = document.getElementById('learned-stats-badge');
+        if (!badge) return;
+        const total = Object.keys(learnedGlyphsMemory).length;
+        const customCount = Object.values(learnedGlyphsMemory).filter(g => g.isCustomLearned).length;
+        badge.textContent = `الذاكرة: ${total} نموذج (${customCount} مدرب يدوياً)`;
+      },
+
+      renderPresetsGrid() {
+        const container = document.getElementById('sim-presets-container');
+        if (!container) return;
+        container.innerHTML = '';
+        Object.keys(learnedGlyphsMemory).forEach(key => {
+          const item = learnedGlyphsMemory[key];
+          const btn = document.createElement('button');
+          const isCustom = item.isCustomLearned;
+          btn.className = `p-2 rounded-xl text-center flex flex-col items-center justify-center border transition active:scale-95 ${
+            isCustom ? 'bg-amber-600/20 border-amber-500/50 text-amber-200' : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10'
+          }`;
+          btn.innerHTML = `
+            <span class="text-base font-bold text-emerald-400 font-serif mb-0.5">${item.char}</span>
+            <span class="text-[10px] text-gray-300 font-medium truncate w-full flex items-center justify-center gap-0.5">
+              ${isCustom ? '<i class="fa-solid fa-graduation-cap text-[8px] text-amber-400"></i>' : ''}
+              <span>${item.label}</span>
+            </span>
+          `;
+          btn.addEventListener('click', () => {
+            const input = document.getElementById('sim-custom-text-input');
+            if (input) input.value = item.char;
+            document.querySelectorAll('#sim-presets-container button').forEach(b => {
+              b.classList.remove('ring-2', 'ring-emerald-400');
+            });
+            btn.classList.add('ring-2', 'ring-emerald-400');
+          });
+          container.appendChild(btn);
+        });
+      },
+
+      renderTrainingAlphabetGrid() {
+        const grid = document.getElementById('train-alphabet-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        const arabicLetters = [
+          { key: 'alif', char: 'ا' }, { key: 'baa', char: 'ب' }, { key: 'dal', char: 'د' },
+          { key: 'raa', char: 'ر' }, { key: 'seen', char: 'س' }, { key: 'haa', char: 'ح' },
+          { key: 'meem', char: 'م' }, { key: 'noon', char: 'ن' }, { key: 'waw', char: 'و' },
+          { key: 'laam', char: 'ل' }, { key: 'allah', char: 'الله' }
+        ];
+
+        arabicLetters.forEach(item => {
+          const btn = document.createElement('button');
+          const isSelected = item.key === this.activeTrainingGlyphKey;
+          btn.className = `p-2 rounded-xl text-center font-bold text-sm font-serif border transition active:scale-95 ${
+            isSelected ? 'bg-amber-600 border-amber-400 text-white shadow' : 'bg-white/5 border-white/5 text-gray-300 hover:bg-white/10'
+          }`;
+          btn.textContent = item.char;
+          btn.addEventListener('click', () => {
+            this.activeTrainingGlyphKey = item.key;
+            this.activeTrainingTargetChar = item.char;
+            const statusEl = document.getElementById('training-selected-status');
+            if (statusEl) statusEl.textContent = `الحرف المختار: ${item.char}`;
+            document.querySelectorAll('#train-alphabet-grid button').forEach(b => {
+              b.className = 'p-2 rounded-xl text-center font-bold text-sm font-serif border transition active:scale-95 bg-white/5 border-white/5 text-gray-300 hover:bg-white/10';
+            });
+            btn.className = 'p-2 rounded-xl text-center font-bold text-sm font-serif border transition active:scale-95 bg-amber-600 border-amber-400 text-white shadow';
+          });
+          grid.appendChild(btn);
+        });
+      },
+
+      startTrainingSession() {
+        const modal = document.getElementById('auto-write-modal');
+        if (modal) modal.classList.add('hidden');
+
+        selectTool('brush');
+        if (!state.showGrid) updateGridState(true);
+
+        this.isTrainingMode = true;
+        this.trainingCapturedStrokes = [];
+
+        const pt = getCalligraphyPointUnit();
+        const spec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+        const ascenderDist = spec.ascenderPts * pt;
+        const descenderDist = spec.descenderPts * pt;
+        const rowHeight = ascenderDist + descenderDist + 75;
+        const startY = Math.max(160, ascenderDist + 50);
+
+        let bestY = startY;
+        let minDiff = 99999;
+        for (let y = startY; y < state.canvasHeight - descenderDist - 25; y += rowHeight) {
+          const diff = Math.abs(y - state.canvasHeight / 2);
+          if (diff < minDiff) {
+            minDiff = diff;
+            bestY = y;
+          }
+        }
+        this.trainingBaselineY = bestY;
+        this.trainingStartX = state.canvasWidth / 2 + 60;
+
+        if (this.trainingBanner) {
+          this.trainingBanner.classList.remove('hidden');
+          this.trainingBanner.classList.add('flex');
+        }
+        if (this.trainingCharLabel) {
+          this.trainingCharLabel.textContent = this.activeTrainingTargetChar;
+        }
+        if (this.trainingStrokeCountLabel) {
+          this.trainingStrokeCountLabel.textContent = 'الضربات المسجلة: 0 ضربة';
+        }
+
+        this.drawTrainingGhostGuide();
+        showToast(`بدأت جلسة التدريب: اكتب حرف (${this.activeTrainingTargetChar}) بيدك على السطر بالفرشاة`);
+      },
+
+      drawTrainingGhostGuide() {
+        if (!this.trainingGhostCtx || !this.trainingGhostCanvas) return;
+        this.trainingGhostCtx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+
+        const ghostToggle = document.getElementById('toggle-train-ghost-guide');
+        const showGhost = ghostToggle ? ghostToggle.checked : true;
+        if (!showGhost) {
+          this.trainingGhostCanvas.classList.add('hidden');
+          return;
+        }
+
+        const model = learnedGlyphsMemory[this.activeTrainingGlyphKey];
+        if (!model) return;
+
+        this.trainingGhostCanvas.classList.remove('hidden');
+        const pt = getCalligraphyPointUnit();
+        const ctx = this.trainingGhostCtx;
+
+        ctx.save();
+        ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+        ctx.lineWidth = Math.max(3, state.size * 0.4);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.setLineDash([6, 6]);
+
+        model.strokes.forEach(stroke => {
+          if (stroke.length < 2) return;
+          ctx.beginPath();
+          stroke.forEach((p, idx) => {
+            const x = this.trainingStartX + p.dx * pt;
+            const y = this.trainingBaselineY + p.dy * pt;
+            if (idx === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.stroke();
+        });
+
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+        ctx.fillRect(this.trainingStartX - 10, this.trainingBaselineY - 4, 20, 8);
+        ctx.restore();
+      },
+
+      recordStrokeDuringTraining(rawStrokePoints) {
+        if (!this.isTrainingMode || !rawStrokePoints || rawStrokePoints.length < 2) return;
+        this.trainingCapturedStrokes.push([...rawStrokePoints]);
+        if (this.trainingStrokeCountLabel) {
+          this.trainingStrokeCountLabel.textContent = `الضربات المسجلة: ${this.trainingCapturedStrokes.length} ضربة`;
+        }
+      },
+
+      saveLearnedModel() {
+        if (this.trainingCapturedStrokes.length === 0) {
+          showToast('لم تسجل أي ضربات قلم بعد! اكتب الحرف على السطر أولاً');
+          return;
+        }
+
+        const pt = getCalligraphyPointUnit();
+        let minX = Infinity, maxX = -Infinity;
+
+        const normalizedStrokes = this.trainingCapturedStrokes.map(stroke => {
+          return stroke.map(p => {
+            if (p.x < minX) minX = p.x;
+            if (p.x > maxX) maxX = p.x;
+            return {
+              dx: (p.x - this.trainingStartX) / pt,
+              dy: (p.y - this.trainingBaselineY) / pt,
+              pressure: p.pressure || 0.75
+            };
+          });
+        });
+
+        const totalWidthPts = Math.max(1.5, Math.abs(maxX - minX) / pt);
+
+        learnedGlyphsMemory[this.activeTrainingGlyphKey] = {
+          id: this.activeTrainingGlyphKey,
+          char: this.activeTrainingTargetChar,
+          label: learnedGlyphsMemory[this.activeTrainingGlyphKey]?.label || this.activeTrainingTargetChar,
+          widthPts: totalWidthPts,
+          isCustomLearned: true,
+          strokes: normalizedStrokes
+        };
+
+        this.endTrainingSession();
+        this.renderPresetsGrid();
+        this.updateMemoryBadge();
+        showToast(`✓ تم بنجاح تعلّم حركة حرف (${this.activeTrainingTargetChar}) وحفظها في ذاكرة الفرشاة!`);
+      },
+
+      clearTrainingAttempt() {
+        this.trainingCapturedStrokes = [];
+        if (this.trainingStrokeCountLabel) {
+          this.trainingStrokeCountLabel.textContent = 'الضربات المسجلة: 0 ضربة';
+        }
+        const activeLayer = getActiveLayer();
+        if (activeLayer) {
+          activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+          renderComposite();
+        }
+        showToast('تم مسح المحاولة، تفضل بإعادة كتابة الحرف');
+      },
+
+      cancelTrainingSession() {
+        this.endTrainingSession();
+        showToast('تم إلغاء جلسة التدريب');
+      },
+
+      endTrainingSession() {
+        this.isTrainingMode = false;
+        this.trainingCapturedStrokes = [];
+        if (this.trainingBanner) {
+          this.trainingBanner.classList.add('hidden');
+          this.trainingBanner.classList.remove('flex');
+        }
+        if (this.trainingGhostCanvas && this.trainingGhostCtx) {
+          this.trainingGhostCanvas.classList.add('hidden');
+          this.trainingGhostCtx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+        }
+      },
+
+      restoreMasterDefaults() {
+        Object.keys(MASTER_CALLIGRAPHY_GLYPHS).forEach(k => {
+          learnedGlyphsMemory[k] = JSON.parse(JSON.stringify(MASTER_CALLIGRAPHY_GLYPHS[k]));
+        });
+        this.renderPresetsGrid();
+        this.updateMemoryBadge();
+        showToast('تمت استعادة حركات الخط الكلاسيكية الأصلية');
+      },
+
+      prepareSimulationSequence(textOrKey) {
+        this.stopSimulation();
+        const pt = getCalligraphyPointUnit();
+        const activeLayer = getActiveLayer();
+        if (!activeLayer) return false;
+
+        let yBase = state.canvasHeight / 2;
+        if (this.alignToBaseline) {
+          const spec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+          const ascenderDist = spec.ascenderPts * pt;
+          const descenderDist = spec.descenderPts * pt;
+          const rowHeight = ascenderDist + descenderDist + 75;
+          const startY = Math.max(160, ascenderDist + 50);
+
+          let bestY = startY;
+          let minDiff = 99999;
+          for (let y = startY; y < state.canvasHeight - descenderDist - 25; y += rowHeight) {
+            const diff = Math.abs(y - state.canvasHeight / 2);
+            if (diff < minDiff) {
+              minDiff = diff;
+              bestY = y;
+            }
+          }
+          yBase = bestY;
+        }
+
+        const buildGlyphPoints = (glyph, originX) => {
+          return glyph.strokes.map(st => {
+            return st.map(p => ({
+              x: originX + p.dx * pt,
+              y: yBase + p.dy * pt,
+              pressure: p.pressure
+            }));
+          });
+        };
+
+        if (learnedGlyphsMemory[textOrKey]) {
+          const glyph = learnedGlyphsMemory[textOrKey];
+          const totalWidth = glyph.widthPts * pt;
+          const startX = (state.canvasWidth - totalWidth) / 2 + (glyph.strokes[0][0]?.dx > 0 ? glyph.widthPts * pt * 0.7 : 0);
+          this.playbackStrokes = buildGlyphPoints(glyph, startX);
+          return true;
+        }
+
+        const clean = textOrKey.trim();
+        if (clean === 'الله' && learnedGlyphsMemory.allah) {
+          const glyph = learnedGlyphsMemory.allah;
+          const startX = (state.canvasWidth - glyph.widthPts * pt) / 2;
+          this.playbackStrokes = buildGlyphPoints(glyph, startX);
+          return true;
+        }
+
+        if (clean.length > 0) {
+          const chars = clean.split('');
+          const glyphs = chars.map(c => learnedGlyphsMemory[mapCharToGlyphKey(c)] || learnedGlyphsMemory.alif);
+
+          let totalPts = 0;
+          glyphs.forEach(g => { totalPts += g.widthPts + 0.6; });
+          const totalWidth = totalPts * pt;
+          let currentX = (state.canvasWidth + totalWidth) / 2;
+
+          const combined = [];
+          for (let i = 0; i < glyphs.length; i++) {
+            const g = glyphs[i];
+            currentX -= g.widthPts * pt;
+            const strokes = buildGlyphPoints(g, currentX);
+            strokes.forEach(s => combined.push(s));
+            currentX -= 0.6 * pt;
+          }
+
+          this.playbackStrokes = combined;
+          return true;
+        }
+
+        return false;
+      },
+
+      startSimulation(textOrKey) {
+        if (!this.prepareSimulationSequence(textOrKey)) {
+          showToast('يرجى اختيار حرف أو إدخال كلمة للمحاكاة');
+          return;
+        }
+
+        selectTool('brush');
+        if (!state.showGrid) updateGridState(true);
+
+        this.isSimulating = true;
+        this.isPaused = false;
+        this.strokeIndex = 0;
+        this.pointIndex = 0;
+
+        if (this.activeBar) {
+          this.activeBar.classList.remove('hidden');
+          this.activeBar.classList.add('flex');
+        }
+        if (this.statusLabel) {
+          this.statusLabel.textContent = `جاري محاكاة "${textOrKey}" بضربات القلم الحقيقية...`;
+        }
+        if (this.pauseBtn) {
+          this.pauseBtn.innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i><span>إيقاف مؤقت</span>';
+        }
+
+        if (this.showPointer && this.nibPointer) {
+          this.nibPointer.classList.remove('hidden');
+        }
+
+        this.tickSimulation();
+      },
+
+      tickSimulation() {
+        if (!this.isSimulating) return;
+        if (this.isPaused) {
+          this.animFrameId = requestAnimationFrame(() => this.tickSimulation());
+          return;
+        }
+
+        const activeLayer = getActiveLayer();
+        if (!activeLayer || this.strokeIndex >= this.playbackStrokes.length) {
+          this.completeSimulation();
+          return;
+        }
+
+        const currentStroke = this.playbackStrokes[this.strokeIndex];
+        const stepsPerFrame = Math.max(1, Math.round(1.6 * this.speedMultiplier));
+
+        for (let step = 0; step < stepsPerFrame; step++) {
+          if (this.pointIndex >= currentStroke.length - 1) {
+            this.strokeIndex++;
+            this.pointIndex = 0;
+            break;
+          }
+
+          const p0 = currentStroke[this.pointIndex];
+          const p1 = currentStroke[this.pointIndex + 1];
+
+          drawStrokeStep(p0, p1);
+
+          if (this.showPointer && this.nibPointer) {
+            this.nibPointer.style.left = `${(p1.x / state.canvasWidth) * 100}%`;
+            this.nibPointer.style.top = `${(p1.y / state.canvasHeight) * 100}%`;
+          }
+
+          this.pointIndex++;
+        }
+
+        this.animFrameId = requestAnimationFrame(() => this.tickSimulation());
+      },
+
+      pauseSimulation() {
+        this.isPaused = !this.isPaused;
+        if (this.isPaused) {
+          if (this.statusLabel) this.statusLabel.textContent = 'تم إيقاف المحاكاة مؤقتاً';
+          if (this.pauseBtn) this.pauseBtn.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i><span>استئناف</span>';
+        } else {
+          if (this.statusLabel) this.statusLabel.textContent = 'جاري متابعة الكتابة...';
+          if (this.pauseBtn) this.pauseBtn.innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i><span>إيقاف مؤقت</span>';
+        }
+      },
+
+      stopSimulation() {
+        this.isSimulating = false;
+        this.isPaused = false;
+        if (this.animFrameId) {
+          cancelAnimationFrame(this.animFrameId);
+          this.animFrameId = null;
+        }
+        if (this.nibPointer) this.nibPointer.classList.add('hidden');
+        if (this.activeBar) {
+          this.activeBar.classList.add('hidden');
+          this.activeBar.classList.remove('flex');
+        }
+      },
+
+      completeSimulation() {
+        this.stopSimulation();
+        renderComposite();
+        saveState();
+        showToast('اكتملت المحاكاة بالخط الأصلي بنجاح!');
+      }
+    };
+
+    // Tabs switching
+    safeBind('sim-tab-play-btn', 'click', () => {
+      const pBtn = document.getElementById('sim-tab-play-btn');
+      const tBtn = document.getElementById('sim-tab-train-btn');
+      const pPanel = document.getElementById('sim-panel-play');
+      const tPanel = document.getElementById('sim-panel-train');
+      if (pBtn) pBtn.className = 'px-3.5 py-1.5 rounded-lg font-bold transition bg-emerald-600 text-white shadow flex items-center gap-1.5';
+      if (tBtn) tBtn.className = 'px-3.5 py-1.5 rounded-lg font-medium transition text-gray-400 hover:text-white flex items-center gap-1.5';
+      if (pPanel) pPanel.classList.remove('hidden');
+      if (tPanel) tPanel.classList.add('hidden');
+    });
+
+    safeBind('sim-tab-train-btn', 'click', () => {
+      const pBtn = document.getElementById('sim-tab-play-btn');
+      const tBtn = document.getElementById('sim-tab-train-btn');
+      const pPanel = document.getElementById('sim-panel-play');
+      const tPanel = document.getElementById('sim-panel-train');
+      if (tBtn) tBtn.className = 'px-3.5 py-1.5 rounded-lg font-bold transition bg-amber-600 text-white shadow flex items-center gap-1.5';
+      if (pBtn) pBtn.className = 'px-3.5 py-1.5 rounded-lg font-medium transition text-gray-400 hover:text-white flex items-center gap-1.5';
+      if (tPanel) tPanel.classList.remove('hidden');
+      if (pPanel) pPanel.classList.add('hidden');
+    });
+
+    safeBind('auto-write-btn', 'click', () => {
+      const modal = document.getElementById('auto-write-modal');
+      if (modal) modal.classList.remove('hidden');
+    });
+
+    safeBind('close-auto-write-btn', 'click', () => {
+      const modal = document.getElementById('auto-write-modal');
+      if (modal) modal.classList.add('hidden');
+    });
+
+    safeBind('start-interactive-training-btn', 'click', () => {
+      CalligraphyInteractiveStudio.startTrainingSession();
+    });
+
+    safeBind('save-training-btn', 'click', () => {
+      CalligraphyInteractiveStudio.saveLearnedModel();
+    });
+
+    safeBind('clear-training-strokes-btn', 'click', () => {
+      CalligraphyInteractiveStudio.clearTrainingAttempt();
+    });
+
+    safeBind('cancel-training-btn', 'click', () => {
+      CalligraphyInteractiveStudio.cancelTrainingSession();
+    });
+
+    safeBind('restore-default-models-btn', 'click', () => {
+      CalligraphyInteractiveStudio.restoreMasterDefaults();
+    });
+
+    safeBind('train-set-custom-btn', 'click', () => {
+      const input = document.getElementById('train-custom-input');
+      const val = input ? input.value.trim() : '';
+      if (!val) {
+        showToast('يرجى إدخال حرف أو كلمة مخصصة للتدريب');
+        return;
+      }
+      CalligraphyInteractiveStudio.activeTrainingGlyphKey = 'custom_' + Date.now();
+      CalligraphyInteractiveStudio.activeTrainingTargetChar = val;
+      const statusEl = document.getElementById('training-selected-status');
+      if (statusEl) statusEl.textContent = `الرمز المختار: ${val}`;
+      showToast(`تم تحديد "${val}" كهدف للتدريب`);
+    });
+
+    safeBind('sim-apply-custom-btn', 'click', () => {
+      const input = document.getElementById('sim-custom-text-input');
+      const txt = input ? input.value.trim() : '';
+      if (!txt) {
+        showToast('يرجى إدخال نص لتشغيل المحاكاة');
+        return;
+      }
+      const modal = document.getElementById('auto-write-modal');
+      if (modal) modal.classList.add('hidden');
+      CalligraphyInteractiveStudio.startSimulation(txt);
+    });
+
+    safeBind('sim-start-preview-btn', 'click', () => {
+      const input = document.getElementById('sim-custom-text-input');
+      const txt = input ? input.value.trim() : '';
+      const modal = document.getElementById('auto-write-modal');
+      if (modal) modal.classList.add('hidden');
+      CalligraphyInteractiveStudio.startSimulation(txt || 'alif');
+    });
+
+    document.querySelectorAll('.sim-speed-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.sim-speed-btn').forEach(b => {
+          b.className = 'sim-speed-btn py-1.5 rounded-lg text-center font-medium bg-white/5 hover:bg-white/10 text-gray-400';
+        });
+        btn.className = 'sim-speed-btn active py-1.5 rounded-lg text-center font-bold bg-emerald-600 text-white shadow';
+        CalligraphyInteractiveStudio.speedMultiplier = parseFloat(btn.dataset.speed);
+        const speedVal = document.getElementById('sim-speed-val');
+        if (speedVal) speedVal.textContent = btn.innerText.trim();
+      });
+    });
+
+    safeBind('toggle-sim-pointer', 'change', (e) => {
+      CalligraphyInteractiveStudio.showPointer = e.target.checked;
+    });
+
+    safeBind('toggle-sim-baseline-align', 'change', (e) => {
+      CalligraphyInteractiveStudio.alignToBaseline = e.target.checked;
+    });
+
+    safeBind('sim-pause-btn', 'click', () => {
+      CalligraphyInteractiveStudio.pauseSimulation();
+    });
+
+    safeBind('sim-stop-btn', 'click', () => {
+      CalligraphyInteractiveStudio.stopSimulation();
+      showToast('تم إنهاء المحاكاة');
+    });
+
+    // ----------------------------------------------------
+    // 6. LAYER ENGINE (WITH MOVE UP/DOWN & RENAME)
+    // ----------------------------------------------------
+    function createLayer(name = null) {
+      const id = 'layer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+      const canvas = document.createElement('canvas');
+      canvas.width = state.canvasWidth;
+      canvas.height = state.canvasHeight;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      const newLayer = {
+        id,
+        name: name || `طبقة ${state.layers.length + 1}`,
+        canvas,
+        ctx,
+        visible: true,
+        opacity: 1.0
+      };
+
+      state.layers.unshift(newLayer);
+      state.activeLayerId = id;
+      renderLayersUI();
+      renderComposite();
+      saveState();
+      return newLayer;
+    }
+
+    function getActiveLayer() {
+      return state.layers.find(l => l.id === state.activeLayerId) || state.layers[0];
+    }
+
+    function moveLayerUp(index) {
+      if (index <= 0) return;
+      const temp = state.layers[index];
+      state.layers[index] = state.layers[index - 1];
+      state.layers[index - 1] = temp;
+      renderLayersUI();
+      renderComposite();
+      saveState();
+      showToast(`تم تحريك "${temp.name}" للأعلى`);
+    }
+
+    function moveLayerDown(index) {
+      if (index >= state.layers.length - 1) return;
+      const temp = state.layers[index];
+      state.layers[index] = state.layers[index + 1];
+      state.layers[index + 1] = temp;
+      renderLayersUI();
+      renderComposite();
+      saveState();
+      showToast(`تم تحريك "${temp.name}" للأسفل`);
+    }
+
+    function renameLayer(layerId, newName) {
+      const target = state.layers.find(l => l.id === layerId);
+      if (target && newName.trim().length > 0) {
+        target.name = newName.trim();
+        renderLayersUI();
+        showToast(`تم تغيير الاسم إلى: ${target.name}`);
+      }
+    }
+
+    function renderLayersUI() {
+      const list = document.getElementById('layers-list');
+      if (!list) return;
+      list.innerHTML = '';
+      const badge = document.getElementById('layers-count-badge');
+      if (badge) badge.textContent = state.layers.length;
+
+      state.layers.forEach((layer, index) => {
+        const isActive = layer.id === state.activeLayerId;
+        const isFirst = index === 0;
+        const isLast = index === state.layers.length - 1;
+
+        const div = document.createElement('div');
+        div.className = `flex items-center justify-between p-2.5 rounded-2xl transition gap-2 ${
+          isActive ? 'bg-blue-600/25 border border-blue-500/50 shadow' : 'bg-white/5 hover:bg-white/10 border border-white/5'
+        }`;
+
+        div.innerHTML = `
+          <button class="layer-vis-btn text-xs w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/10 ${layer.visible ? 'text-blue-400' : 'text-gray-500'}" title="${layer.visible ? 'إخفاء' : 'إظهار'}">
+            <i class="fa-solid ${layer.visible ? 'fa-eye' : 'fa-eye-slash'}"></i>
+          </button>
+
+          <div class="flex-1 flex items-center gap-1.5 overflow-hidden cursor-pointer layer-title-wrap">
+            <span class="layer-name-label text-xs font-semibold text-gray-200 truncate select-none">${layer.name}</span>
+            <input type="text" class="layer-name-input hidden bg-black/70 border border-blue-400 rounded-lg px-2 py-0.5 text-xs text-white outline-none w-28 font-medium" value="${layer.name}">
+            <button class="layer-rename-btn text-gray-400 hover:text-blue-300 text-[11px] p-1 rounded hover:bg-white/10 transition" title="تعديل اسم الطبقة">
+              <i class="fa-solid fa-pen"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-0.5">
+            <button class="layer-up-btn text-xs w-6 h-6 flex items-center justify-center rounded-lg transition ${isFirst ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 hover:text-white hover:bg-white/10 active:scale-90'}" title="تحريك الطبقة لأعلى" ${isFirst ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-up text-[10px]"></i>
+            </button>
+
+            <button class="layer-down-btn text-xs w-6 h-6 flex items-center justify-center rounded-lg transition ${isLast ? 'text-gray-600 cursor-not-allowed' : 'text-gray-300 hover:text-white hover:bg-white/10 active:scale-90'}" title="تحريك الطبقة لأسفل" ${isLast ? 'disabled' : ''}>
+              <i class="fa-solid fa-chevron-down text-[10px]"></i>
+            </button>
+
+            <div class="h-4 w-px bg-white/10 mx-0.5"></div>
+
+            <button class="layer-del-btn text-xs w-6 h-6 flex items-center justify-center rounded-lg hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 active:scale-90 transition" title="حذف الطبقة">
+              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            </button>
+          </div>
+        `;
+
+        const nameLabel = div.querySelector('.layer-name-label');
+        const nameInput = div.querySelector('.layer-name-input');
+        const renameBtn = div.querySelector('.layer-rename-btn');
+
+        div.querySelector('.layer-title-wrap').addEventListener('click', (e) => {
+          if (e.target === renameBtn || e.target.closest('.layer-rename-btn') || e.target === nameInput) return;
+          state.activeLayerId = layer.id;
+          renderLayersUI();
+        });
+
+        function startRenaming(e) {
+          e.stopPropagation();
+          nameLabel.classList.add('hidden');
+          renameBtn.classList.add('hidden');
+          nameInput.classList.remove('hidden');
+          nameInput.focus();
+          nameInput.select();
+        }
+
+        function finishRenaming() {
+          const val = nameInput.value.trim();
+          if (val && val !== layer.name) {
+            renameLayer(layer.id, val);
+          } else {
+            nameInput.value = layer.name;
+            nameLabel.classList.remove('hidden');
+            renameBtn.classList.remove('hidden');
+            nameInput.classList.add('hidden');
+          }
+        }
+
+        renameBtn.addEventListener('click', startRenaming);
+        nameLabel.addEventListener('dblclick', startRenaming);
+
+        nameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') finishRenaming();
+          else if (e.key === 'Escape') {
+            nameInput.value = layer.name;
+            nameLabel.classList.remove('hidden');
+            renameBtn.classList.remove('hidden');
+            nameInput.classList.add('hidden');
+          }
+        });
+        nameInput.addEventListener('blur', finishRenaming);
+
+        div.querySelector('.layer-up-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveLayerUp(index);
+        });
+
+        div.querySelector('.layer-down-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          moveLayerDown(index);
+        });
+
+        div.querySelector('.layer-vis-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          layer.visible = !layer.visible;
+          renderLayersUI();
+          renderComposite();
+        });
+
+        div.querySelector('.layer-del-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (state.layers.length <= 1) {
+            showToast('لا يمكن حذف الطبقة الوحيدة!');
+            return;
+          }
+          state.layers = state.layers.filter(l => l.id !== layer.id);
+          if (state.activeLayerId === layer.id) {
+            state.activeLayerId = state.layers[0].id;
+          }
+          renderLayersUI();
+          renderComposite();
+          saveState();
+          showToast('تم حذف الطبقة');
+        });
+
+        list.appendChild(div);
+      });
+    }
+
+    function renderComposite() {
+      if (!displayCtx) return;
+      displayCtx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      displayCtx.fillStyle = state.backgroundColor;
+      displayCtx.fillRect(0, 0, state.canvasWidth, state.canvasHeight);
+
+      for (let i = state.layers.length - 1; i >= 0; i--) {
+        const layer = state.layers[i];
+        if (layer.visible && layer.canvas) {
+          displayCtx.globalAlpha = layer.opacity;
+          displayCtx.drawImage(layer.canvas, 0, 0);
+        }
+      }
+      displayCtx.globalAlpha = 1.0;
+    }
+
+    // ----------------------------------------------------------------------
+    // 7. MATHEMATICAL GUIDELINES & DIAMOND SCALE DOTS ENGINE
+    // ----------------------------------------------------------------------
+    function getCalligraphyPointUnit() {
+      if (state.syncGuidelinesToBrush) {
+        const rad = (state.nibAngleDeg * Math.PI) / 180;
+        return Math.max(12, state.size * Math.sin(rad));
+      } else {
+        return Math.max(12, state.gridSize * 0.45);
+      }
+    }
+
+    function drawGuidelinesAndGrid() {
+      if (!gridCtx) return;
+      gridCtx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      if (!state.showGrid) return;
+
+      const w = state.canvasWidth;
+      const h = state.canvasHeight;
+      const size = Math.max(10, state.gridSize);
+
+      gridCtx.save();
+
+      // 1. 2D Square Grid (خطوط المربعات)
+      if (state.gridMode === 'squares' || state.gridMode === 'both') {
+        gridCtx.strokeStyle = state.gridColor;
+        gridCtx.globalAlpha = state.gridOpacity;
+        gridCtx.lineWidth = 1.0;
+
+        gridCtx.beginPath();
+        for (let x = 0; x <= w; x += size) {
+          gridCtx.moveTo(x, 0);
+          gridCtx.lineTo(x, h);
+        }
+        for (let y = 0; y <= h; y += size) {
+          gridCtx.moveTo(0, y);
+          gridCtx.lineTo(w, y);
+        }
+        gridCtx.stroke();
+
+        gridCtx.lineWidth = 1.8;
+        gridCtx.globalAlpha = Math.min(1.0, state.gridOpacity * 1.5);
+        gridCtx.beginPath();
+        const majorStep = size * 5;
+        for (let x = 0; x <= w; x += majorStep) {
+          gridCtx.moveTo(x, 0);
+          gridCtx.lineTo(x, h);
+        }
+        for (let y = 0; y <= h; y += majorStep) {
+          gridCtx.moveTo(0, y);
+          gridCtx.lineTo(w, y);
+        }
+        gridCtx.stroke();
+      }
+
+      // 2. Exact 4 Calligraphy Reference Lines with Point Scale & Diamond Dots
+      if (state.gridMode === 'calligraphy' || state.gridMode === 'both') {
+        const scriptSpec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+        const pointUnit = getCalligraphyPointUnit();
+        
+        const ascenderDist = scriptSpec.ascenderPts * pointUnit;
+        const meanDist = scriptSpec.meanPts * pointUnit;
+        const descenderDist = scriptSpec.descenderPts * pointUnit;
+
+        const rowTotalHeight = ascenderDist + descenderDist + 75;
+        const startY = Math.max(160, ascenderDist + 50);
+
+        for (let yBase = startY; yBase < h - descenderDist - 25; yBase += rowTotalHeight) {
+          const yAscender = yBase - ascenderDist;
+          const yMean = yBase - meanDist;
+          const yDescender = yBase + descenderDist;
+
+          // [1] Ascender Line (خط الصعود) - Coral Red
+          gridCtx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+          gridCtx.lineWidth = 1.8;
+          gridCtx.setLineDash([8, 6]);
+          gridCtx.beginPath();
+          gridCtx.moveTo(0, yAscender);
+          gridCtx.lineTo(w, yAscender);
+          gridCtx.stroke();
+
+          // [2] Mean Line (خط الوسط / رؤوس الحروف) - Purple
+          gridCtx.strokeStyle = 'rgba(168, 85, 247, 0.85)';
+          gridCtx.lineWidth = 1.5;
+          gridCtx.setLineDash([4, 4]);
+          gridCtx.beginPath();
+          gridCtx.moveTo(0, yMean);
+          gridCtx.lineTo(w, yMean);
+          gridCtx.stroke();
+
+          // [0] ★ Baseline (خط الارتكاز / الأساس) - Golden Blue Solid & Prominent
+          gridCtx.strokeStyle = 'rgba(37, 99, 235, 0.95)';
+          gridCtx.lineWidth = 3.5;
+          gridCtx.setLineDash([]);
+          gridCtx.beginPath();
+          gridCtx.moveTo(0, yBase);
+          gridCtx.lineTo(w, yBase);
+          gridCtx.stroke();
+
+          // [3] Descender Line (خط الهبوط والقعر) - Emerald Green
+          gridCtx.strokeStyle = 'rgba(16, 185, 129, 0.8)';
+          gridCtx.lineWidth = 1.8;
+          gridCtx.setLineDash([6, 6]);
+          gridCtx.beginPath();
+          gridCtx.moveTo(0, yDescender);
+          gridCtx.lineTo(w, yDescender);
+          gridCtx.stroke();
+
+          // Draw Stack of Classical Diamond Dots (نقاط الميزان الماسية)
+          if (state.showDiamondDots) {
+            const dotSide = state.size;
+            const dotAngleRad = (state.nibAngleDeg * Math.PI) / 180;
+            const dotX = w - 65;
+
+            const drawDiamond = (cx, cy, color) => {
+              gridCtx.save();
+              gridCtx.translate(cx, cy);
+              gridCtx.rotate(-dotAngleRad);
+              gridCtx.beginPath();
+              gridCtx.rect(-dotSide / 2, -dotSide / 2, dotSide, dotSide);
+              gridCtx.fillStyle = color;
+              gridCtx.fill();
+              gridCtx.strokeStyle = '#ffffff';
+              gridCtx.lineWidth = 1.2;
+              gridCtx.stroke();
+              gridCtx.restore();
+            };
+
+            for (let i = 1; i <= Math.floor(scriptSpec.ascenderPts); i++) {
+              const dotY = yBase - (i - 0.5) * pointUnit;
+              drawDiamond(dotX, dotY, 'rgba(239, 68, 68, 0.35)');
+            }
+
+            for (let j = 1; j <= Math.floor(scriptSpec.descenderPts); j++) {
+              const dotY = yBase + (j - 0.5) * pointUnit;
+              drawDiamond(dotX, dotY, 'rgba(16, 185, 129, 0.35)');
+            }
+          }
+
+          // Render Line Labels & Badges with browser safety check
+          if (state.showGuidelineLabels) {
+            gridCtx.font = "bold 13px 'Cairo', sans-serif";
+            gridCtx.textAlign = "right";
+            gridCtx.textBaseline = "middle";
+
+            const drawBadge = (text, y, color, bgColor, icon = "") => {
+              const fullText = icon ? `${icon} ${text}` : text;
+              const textWidth = gridCtx.measureText(fullText).width;
+              const badgeX = w - (state.showDiamondDots ? 100 : 25);
+
+              gridCtx.fillStyle = bgColor;
+              gridCtx.beginPath();
+              if (gridCtx.roundRect) {
+                gridCtx.roundRect(badgeX - textWidth - 16, y - 11, textWidth + 16, 22, 6);
+              } else {
+                gridCtx.rect(badgeX - textWidth - 16, y - 11, textWidth + 16, 22);
+              }
+              gridCtx.fill();
+
+              gridCtx.fillStyle = color;
+              gridCtx.fillText(fullText, badgeX - 8, y);
+            };
+
+            drawBadge(`خط الصعود (${scriptSpec.ascenderPts} نقاط - الألف واللام)`, yAscender, "#fca5a5", "rgba(127, 29, 29, 0.88)", "▲");
+            drawBadge(`خط الوسط (${scriptSpec.meanPts} نقاط - رؤوس الحروف)`, yMean, "#d8b4fe", "rgba(88, 28, 135, 0.88)", "◆");
+            drawBadge("★ خط الارتكاز / الأساس (استقرار الكلمات)", yBase, "#ffffff", "rgba(30, 64, 175, 0.95)", "★");
+            drawBadge(`خط الهبوط (${scriptSpec.descenderPts} نقاط - كؤوس النون والجيم)`, yDescender, "#6ee7b7", "rgba(6, 78, 59, 0.88)", "▼");
+          }
+        }
+      }
+
+      gridCtx.restore();
+
+      const ptUnit = Math.round(getCalligraphyPointUnit());
+      const badge = document.getElementById('header-pts-badge');
+      if (badge) badge.textContent = `النقطة: ${ptUnit}px`;
+    }
+
+    function updateGridState(enabled) {
+      state.showGrid = enabled;
+      const toggle = document.getElementById('toggle-grid-active');
+      if (toggle) toggle.checked = enabled;
+      if (gridCanvas) gridCanvas.classList.toggle('hidden', !enabled);
+      
+      const toggleGridBtn = document.getElementById('toggle-grid-btn');
+      if (toggleGridBtn) {
+        if (enabled) {
+          toggleGridBtn.classList.add('text-blue-400', 'bg-white/10');
+          toggleGridBtn.classList.remove('text-gray-300');
+        } else {
+          toggleGridBtn.classList.remove('text-blue-400', 'bg-white/10');
+          toggleGridBtn.classList.add('text-gray-300');
+        }
+      }
+
+      drawGuidelinesAndGrid();
+    }
+
+    function setBrushSize(newSize) {
+      state.size = Math.max(4, Math.min(150, Math.round(newSize)));
+      const slider = document.getElementById('slider-size');
+      if (slider) slider.value = state.size;
+      const label = document.getElementById('slider-size-val');
+      if (label) label.textContent = `${state.size}px`;
+      
+      if (state.syncGuidelinesToBrush && state.showGrid) {
+        drawGuidelinesAndGrid();
+      }
+    }
+
+    function matchBrushSizeToCurrentPreset() {
+      const spec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+      setBrushSize(spec.defaultSize);
+      showToast(`تم تعيين الحجم المعياري للـ${spec.name}: ${spec.defaultSize}px`);
+    }
+
+    // Modal Triggers
+    safeBind('open-calligraphy-guide-btn', 'click', () => {
+      if (calligraphyGuideModal) calligraphyGuideModal.classList.remove('hidden');
+    });
+
+    safeBind('close-calligraphy-guide-btn', 'click', () => {
+      if (calligraphyGuideModal) calligraphyGuideModal.classList.add('hidden');
+    });
+
+    safeBind('open-guide-from-grid-btn', 'click', () => {
+      if (gridSettingsPopover) gridSettingsPopover.classList.add('hidden');
+      if (calligraphyGuideModal) calligraphyGuideModal.classList.remove('hidden');
+    });
+
+    safeBind('guide-modal-apply-btn', 'click', () => {
+      if (calligraphyGuideModal) calligraphyGuideModal.classList.add('hidden');
+      matchBrushSizeToCurrentPreset();
+      state.gridMode = 'calligraphy';
+      state.showGuidelineLabels = true;
+      state.showDiamondDots = true;
+      const tLabels = document.getElementById('toggle-guideline-labels');
+      if (tLabels) tLabels.checked = true;
+      const tDots = document.getElementById('toggle-diamond-dots');
+      if (tDots) tDots.checked = true;
+      updateGridState(true);
+      showToast('تمت مطابقة حجم القلم مع ميزان السطور بنجاح');
+    });
+
+    safeBind('quick-match-size-btn', 'click', () => {
+      matchBrushSizeToCurrentPreset();
+      updateGridState(true);
+    });
+
+    safeBind('apply-default-size-btn', 'click', () => {
+      matchBrushSizeToCurrentPreset();
+    });
+
+    safeBind('toggle-sync-guidelines', 'change', (e) => {
+      state.syncGuidelinesToBrush = e.target.checked;
+      drawGuidelinesAndGrid();
+      showToast(state.syncGuidelinesToBrush ? 'تم تفعيل مزامنة السطور مع مقاس الفرشاة' : 'السطور ثابتة ومستقلة');
+    });
+
+    safeBind('toggle-diamond-dots', 'change', (e) => {
+      state.showDiamondDots = e.target.checked;
+      drawGuidelinesAndGrid();
+    });
+
+    safeBind('toggle-grid-btn', 'click', () => {
+      updateGridState(!state.showGrid);
+      showToast(state.showGrid ? 'تم إظهار شبكة المساعد وميزان السطور' : 'تم إخفاء الشبكة');
+    });
+
+    safeBind('grid-settings-btn', 'click', () => {
+      togglePopover(gridSettingsPopover);
+    });
+
+    safeBind('close-grid-settings', 'click', () => {
+      if (gridSettingsPopover) gridSettingsPopover.classList.add('hidden');
+    });
+
+    safeBind('toggle-grid-active', 'change', (e) => {
+      updateGridState(e.target.checked);
+    });
+
+    safeBind('toggle-guideline-labels', 'change', (e) => {
+      state.showGuidelineLabels = e.target.checked;
+      if (state.showGrid) drawGuidelinesAndGrid();
+    });
+
+    safeBind('input-grid-opacity', 'input', (e) => {
+      state.gridOpacity = parseInt(e.target.value) / 100;
+      const label = document.getElementById('grid-opacity-label');
+      if (label) label.textContent = `${Math.round(state.gridOpacity * 100)}%`;
+      if (state.showGrid) drawGuidelinesAndGrid();
+    });
+
+    document.querySelectorAll('.grid-mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.gridMode = btn.dataset.mode;
+        document.querySelectorAll('.grid-mode-btn').forEach(b => {
+          b.className = 'grid-mode-btn py-1.5 rounded-lg text-center font-medium transition text-gray-400 hover:text-white';
+        });
+        btn.className = 'grid-mode-btn py-1.5 rounded-lg text-center font-medium transition bg-blue-600 text-white shadow';
+        if (!state.showGrid) updateGridState(true);
+        else drawGuidelinesAndGrid();
+        showToast(`نمط المساعد: ${btn.innerText.trim()}`);
+      });
+    });
+
+    // ----------------------------------------------------
+    // 8. NIB COMPASS PREVIEW & SYNCHRONIZATION
+    // ----------------------------------------------------
+    function updateNibPreview() {
+      if (!nibPreviewCtx || !nibPreviewCanvas) return;
+      const w = nibPreviewCanvas.width;
+      const h = nibPreviewCanvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      nibPreviewCtx.clearRect(0, 0, w, h);
+
+      const rad = (state.nibAngleDeg * Math.PI) / 180;
+      const majorR = 34;
+      const minorR = Math.max(2.5, majorR * state.nibRoundness);
+
+      nibPreviewCtx.save();
+      nibPreviewCtx.translate(cx, cy);
+      nibPreviewCtx.rotate(-rad);
+
+      nibPreviewCtx.fillStyle = '#f59e0b';
+      nibPreviewCtx.beginPath();
+      nibPreviewCtx.ellipse(0, 0, majorR, minorR, 0, 0, Math.PI * 2);
+      nibPreviewCtx.fill();
+
+      nibPreviewCtx.strokeStyle = '#ffffff';
+      nibPreviewCtx.lineWidth = 2;
+      nibPreviewCtx.beginPath();
+      nibPreviewCtx.moveTo(-majorR - 6, 0);
+      nibPreviewCtx.lineTo(majorR + 6, 0);
+      nibPreviewCtx.stroke();
+
+      nibPreviewCtx.restore();
+
+      const setText = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = txt;
+      };
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+      };
+
+      setText('nib-angle-display', `${state.nibAngleDeg}°`);
+      setText('nib-round-display', `${Math.round(state.nibRoundness * 100)}%`);
+      setText('label-nib-angle', `${state.nibAngleDeg}°`);
+      setText('label-nib-roundness', `${Math.round(state.nibRoundness * 100)}%`);
+      setText('label-nib-smoothness', `${Math.round(state.nibSmoothness * 100)}%`);
+      setText('header-geometry-badge', `${state.nibAngleDeg}° / ${Math.round(state.nibRoundness * 100)}%`);
+      
+      setVal('input-shape-angle', state.nibAngleDeg);
+      setText('val-shape-angle', `${state.nibAngleDeg}°`);
+      setVal('input-shape-roundness', Math.round(state.nibRoundness * 100));
+      setText('val-shape-roundness', `${Math.round(state.nibRoundness * 100)}%`);
+      setVal('input-streamline', Math.round(state.nibSmoothness * 100));
+      setText('val-streamline', `${Math.round(state.nibSmoothness * 100)}%`);
+    }
+
+    function applyPreset(key) {
+      const preset = SCRIPT_METRICS[key];
+      if (!preset) return;
+
+      state.activePresetKey = key;
+      state.nibAngleDeg = preset.angleDeg;
+      state.nibRoundness = preset.roundness;
+      state.nibSmoothness = preset.smoothness;
+
+      setBrushSize(preset.defaultSize);
+
+      const setVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+      };
+      const setText = (id, txt) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = txt;
+      };
+
+      setVal('input-nib-angle', preset.angleDeg);
+      setVal('input-nib-roundness', Math.round(preset.roundness * 100));
+      setVal('input-nib-smoothness', Math.round(preset.smoothness * 100));
+      setText('brush-badge', preset.badge);
+      setText('header-active-brush-title', `فرشاة ${preset.name}`);
+      setText('studio-active-brush-badge', preset.name);
+      
+      const applyBtn = document.getElementById('apply-default-size-btn');
+      if (applyBtn) applyBtn.textContent = `تطبيق ${preset.defaultSize}px`;
+      const ptHeight = Math.round(preset.defaultSize * Math.sin((preset.angleDeg * Math.PI) / 180));
+      setText('current-default-size-txt', `${preset.name}: ${preset.defaultSize}px (نقطة = ${ptHeight}px)`);
+
+      updateNibPreview();
+
+      if (state.showGrid) {
+        drawGuidelinesAndGrid();
+      }
+
+      document.querySelectorAll('.brush-preset').forEach(btn => {
+        if (btn.dataset.preset === key) {
+          btn.className = 'brush-preset text-right p-2.5 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-white flex items-center justify-between group transition active:scale-[0.98]';
+        } else {
+          btn.className = 'brush-preset text-right p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 flex items-center justify-between group transition active:scale-[0.98]';
+        }
+      });
+
+      showToast(`تم تفعيل: ${preset.name} (المقاس المعياري: ${preset.defaultSize}px)`);
+    }
+
+    document.querySelectorAll('.brush-preset').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyPreset(btn.dataset.preset);
+      });
+    });
+
+    safeBind('input-nib-angle', 'input', (e) => {
+      state.nibAngleDeg = parseInt(e.target.value);
+      updateNibPreview();
+      if (state.showGrid) drawGuidelinesAndGrid();
+    });
+
+    safeBind('input-nib-roundness', 'input', (e) => {
+      state.nibRoundness = parseInt(e.target.value) / 100;
+      updateNibPreview();
+    });
+
+    safeBind('input-nib-smoothness', 'input', (e) => {
+      state.nibSmoothness = parseInt(e.target.value) / 100;
+      updateNibPreview();
+    });
+
+    safeBind('toggle-pressure', 'change', (e) => {
+      state.usePressure = e.target.checked;
+      showToast(state.usePressure ? 'حساسية ضغط القلم مفعلة' : 'الضغط ثابت (وضع الماوس)');
+    });
+
+    // ----------------------------------------------------
+    // 9. BRUSH STUDIO MODAL & TABS
+    // ----------------------------------------------------
+    document.querySelectorAll('.studio-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.studio-tab-btn').forEach(b => {
+          b.className = 'studio-tab-btn w-full text-right px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:text-gray-200 hover:bg-white/5 flex items-center gap-2.5 transition';
+        });
+        btn.className = 'studio-tab-btn active w-full text-right px-3 py-2 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition bg-blue-600 text-white shadow';
+
+        const tabKey = btn.dataset.tab;
+        document.querySelectorAll('.studio-panel').forEach(p => p.classList.add('hidden'));
+
+        const targetPanel = document.getElementById(`panel-${tabKey}`);
+        if (targetPanel) targetPanel.classList.remove('hidden');
+      });
+    });
+
+    safeBind('input-spacing', 'input', (e) => {
+      state.spacing = parseInt(e.target.value);
+      const val = document.getElementById('val-spacing');
+      if (val) val.textContent = state.spacing === 0 ? 'None' : `${state.spacing}%`;
+    });
+
+    safeBind('input-streamline', 'input', (e) => {
+      state.nibSmoothness = parseInt(e.target.value) / 100;
+      const vStream = document.getElementById('val-streamline');
+      if (vStream) vStream.textContent = state.nibSmoothness === 0 ? 'None' : `${Math.round(state.nibSmoothness * 100)}%`;
+      const iNibSmooth = document.getElementById('input-nib-smoothness');
+      if (iNibSmooth) iNibSmooth.value = Math.round(state.nibSmoothness * 100);
+      const lNibSmooth = document.getElementById('label-nib-smoothness');
+      if (lNibSmooth) lNibSmooth.textContent = `${Math.round(state.nibSmoothness * 100)}%`;
+    });
+
+    safeBind('input-jitter', 'input', (e) => {
+      state.jitter = parseInt(e.target.value);
+      const val = document.getElementById('val-jitter');
+      if (val) val.textContent = state.jitter === 0 ? 'None' : `${state.jitter}%`;
+    });
+
+    safeBind('input-falloff', 'input', (e) => {
+      state.falloff = parseInt(e.target.value);
+      const val = document.getElementById('val-falloff');
+      if (val) val.textContent = state.falloff === 0 ? 'None' : `${state.falloff * 10}px`;
+    });
+
+    safeBind('input-shape-angle', 'input', (e) => {
+      state.nibAngleDeg = parseInt(e.target.value);
+      const iNibAngle = document.getElementById('input-nib-angle');
+      if (iNibAngle) iNibAngle.value = state.nibAngleDeg;
+      updateNibPreview();
+      if (state.showGrid) drawGuidelinesAndGrid();
+    });
+
+    safeBind('input-shape-roundness', 'input', (e) => {
+      state.nibRoundness = parseInt(e.target.value) / 100;
+      const iNibRound = document.getElementById('input-nib-roundness');
+      if (iNibRound) iNibRound.value = Math.round(state.nibRoundness * 100);
+      updateNibPreview();
+    });
+
+    safeBind('input-pressure-size', 'input', (e) => {
+      state.pressureSize = parseInt(e.target.value);
+      const val = document.getElementById('val-pressure-size');
+      if (val) val.textContent = `${state.pressureSize}%`;
+    });
+
+    function openBrushStudio() {
+      updateNibPreview();
+      if (brushStudioModal) brushStudioModal.classList.remove('hidden');
+    }
+
+    safeBind('open-studio-btn', 'click', openBrushStudio);
+    safeBind('open-studio-from-popover', 'click', () => {
+      if (brushLibraryPopover) brushLibraryPopover.classList.add('hidden');
+      openBrushStudio();
+    });
+
+    safeBind('studio-done-btn', 'click', () => {
+      if (brushStudioModal) brushStudioModal.classList.add('hidden');
+      showToast('تم حفظ إعدادات الفرشاة');
+    });
+
+    safeBind('studio-reset-btn', 'click', () => {
+      applyPreset(state.activePresetKey);
+      showToast('تمت استعادة الإعدادات الأصلية للفرشاة');
+    });
+
+    // Scratchpad interactive testing
+    let isDrawingPad = false;
+    let lastPadPoint = null;
+
+    function getPadPoint(e) {
+      const rect = studioPadCanvas.getBoundingClientRect();
+      const scaleX = studioPadCanvas.width / rect.width;
+      const scaleY = studioPadCanvas.height / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY,
+        pressure: (e.pressure && e.pressure > 0) ? e.pressure : 0.65
+      };
+    }
+
+    if (studioPadCanvas) {
+      studioPadCanvas.addEventListener('pointerdown', (e) => {
+        isDrawingPad = true;
+        const p = getPadPoint(e);
+        lastPadPoint = p;
+        renderCalligraphicSegment(studioPadCtx, p, p, 32, '#60a5fa', 1.0);
+      });
+
+      studioPadCanvas.addEventListener('pointermove', (e) => {
+        if (!isDrawingPad) return;
+        const p = getPadPoint(e);
+        renderCalligraphicSegment(studioPadCtx, lastPadPoint, p, 32, '#60a5fa', 1.0);
+        lastPadPoint = p;
+      });
+
+      window.addEventListener('pointerup', () => { isDrawingPad = false; });
+    }
+
+    safeBind('studio-clear-pad', 'click', () => {
+      if (studioPadCtx && studioPadCanvas) {
+        studioPadCtx.clearRect(0, 0, studioPadCanvas.width, studioPadCanvas.height);
+      }
+    });
+
+    // ----------------------------------------------------
+    // 10. PROCREATE VERTICAL SLIDERS & CONTROLS
+    // ----------------------------------------------------
+    safeBind('slider-size', 'input', (e) => {
+      setBrushSize(parseInt(e.target.value));
+    });
+
+    safeBind('slider-opacity', 'input', (e) => {
+      const v = parseInt(e.target.value);
+      state.opacity = v / 100;
+      const val = document.getElementById('slider-opacity-val');
+      if (val) val.textContent = `${v}%`;
+    });
+
+    function selectTool(toolName) {
+      state.tool = toolName;
+      [toolBrushBtn, toolSmudgeBtn, toolEraserBtn].forEach(b => {
+        if (b) b.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition';
+      });
+
+      if (toolName === 'brush') {
+        if (toolBrushBtn) toolBrushBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-blue-400 bg-blue-600/20 border border-blue-500/40 transition relative shadow';
+        togglePopover(brushLibraryPopover);
+      } else {
+        if (brushLibraryPopover) brushLibraryPopover.classList.add('hidden');
+      }
+
+      if (toolName === 'smudge') {
+        if (toolSmudgeBtn) toolSmudgeBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-amber-400 bg-amber-600/20 border border-amber-500/40 transition shadow';
+        showToast('أداة الدمج والتلطيخ (Smudge)');
+      }
+
+      if (toolName === 'eraser') {
+        if (toolEraserBtn) toolEraserBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-rose-400 bg-rose-600/20 border border-rose-500/40 transition shadow';
+        showToast('الممحاة (Eraser)');
+      }
+    }
+
+    if (toolBrushBtn) toolBrushBtn.addEventListener('click', () => selectTool('brush'));
+    if (toolSmudgeBtn) toolSmudgeBtn.addEventListener('click', () => selectTool('smudge'));
+    if (toolEraserBtn) toolEraserBtn.addEventListener('click', () => selectTool('eraser'));
+
+    function togglePopover(panel) {
+      if (!panel) return;
+      const isHidden = panel.classList.contains('hidden');
+      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover].forEach(p => {
+        if (p) p.classList.add('hidden');
+      });
+      if (isHidden) panel.classList.remove('hidden');
+    }
+
+    safeBind('nib-settings-btn', 'click', () => {
+      updateNibPreview();
+      togglePopover(nibStudioPopover);
+    });
+
+    safeBind('close-nib-studio', 'click', () => {
+      if (nibStudioPopover) nibStudioPopover.classList.add('hidden');
+    });
+
+    safeBind('close-brush-library', 'click', () => {
+      if (brushLibraryPopover) brushLibraryPopover.classList.add('hidden');
+    });
+
+    safeBind('layers-btn', 'click', () => {
+      togglePopover(layersPanel);
+    });
+
+    safeBind('gallery-btn', 'click', () => {
+      showToast('معرض الأعمال: تم حفظ العمل تلقائياً');
+    });
+
+    safeBind('add-layer-btn', 'click', () => {
+      createLayer();
+      showToast('تمت إضافة طبقة جديدة');
+    });
+
+    safeBind('clear-layer-btn', 'click', () => {
+      const activeLayer = getActiveLayer();
+      if (activeLayer) {
+        activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+        renderComposite();
+        saveState();
+        showToast('تم مسح محتوى الطبقة النشطة');
+      }
+    });
+
+    safeBind('bg-color-picker', 'input', (e) => {
+      state.backgroundColor = e.target.value;
+      renderComposite();
+    });
+
+    // ----------------------------------------------------
+    // 11. COLOR DISC (HSV WHEEL & TRADITIONAL PALETTE)
+    // ----------------------------------------------------
+    const colorWheel = document.getElementById('color-wheel-canvas');
+    const wheelCtx = colorWheel ? colorWheel.getContext('2d') : null;
+
+    function drawColorDisc() {
+      if (!wheelCtx || !colorWheel) return;
+      const w = colorWheel.width;
+      const h = colorWheel.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const outerR = cx - 4;
+      const innerR = outerR - 26;
+
+      wheelCtx.clearRect(0, 0, w, h);
+
+      for (let angle = 0; angle < 360; angle += 1) {
+        const startRad = (angle - 1) * Math.PI / 180;
+        const endRad = (angle + 1) * Math.PI / 180;
+        wheelCtx.beginPath();
+        wheelCtx.arc(cx, cy, (outerR + innerR) / 2, startRad, endRad);
+        wheelCtx.lineWidth = outerR - innerR;
+        wheelCtx.strokeStyle = `hsl(${angle}, 100%, 50%)`;
+        wheelCtx.stroke();
+      }
+
+      const sqSize = innerR * 1.25;
+      const sqX = cx - sqSize / 2;
+      const sqY = cy - sqSize / 2;
+
+      wheelCtx.fillStyle = `hsl(${state.hsv.h}, 100%, 50%)`;
+      wheelCtx.fillRect(sqX, sqY, sqSize, sqSize);
+
+      const whiteGrad = wheelCtx.createLinearGradient(sqX, 0, sqX + sqSize, 0);
+      whiteGrad.addColorStop(0, '#ffffff');
+      whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
+      wheelCtx.fillStyle = whiteGrad;
+      wheelCtx.fillRect(sqX, sqY, sqSize, sqSize);
+
+      const blackGrad = wheelCtx.createLinearGradient(0, sqY, 0, sqY + sqSize);
+      blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      blackGrad.addColorStop(1, '#000000');
+      wheelCtx.fillStyle = blackGrad;
+      wheelCtx.fillRect(sqX, sqY, sqSize, sqSize);
+    }
+
+    function hsvToRgb(h, s, v) {
+      s /= 100; v /= 100;
+      let c = v * s;
+      let x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+      let m = v - c;
+      let r = 0, g = 0, b = 0;
+
+      if (h < 60) { r = c; g = x; b = 0; }
+      else if (h < 120) { r = x; g = c; b = 0; }
+      else if (h < 180) { r = 0; g = c; b = x; }
+      else if (h < 240) { r = 0; g = x; b = 0; }
+      else if (h < 300) { r = x; g = 0; b = c; }
+      else { r = c; g = 0; b = x; }
+
+      return {
+        r: Math.round((r + m) * 255),
+        g: Math.round((g + m) * 255),
+        b: Math.round((b + m) * 255)
+      };
+    }
+
+    function rgbToHex(r, g, b) {
+      return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function hexToRgb(hex) {
+      const match = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return match ? {
+        r: parseInt(match[1], 16),
+        g: parseInt(match[2], 16),
+        b: parseInt(match[3], 16)
+      } : { r: 30, g: 41, b: 59 };
+    }
+
+    function setColor(colorHex) {
+      state.color = colorHex;
+      state.rgb = hexToRgb(colorHex);
+      if (colorPreviewCircle) colorPreviewCircle.style.backgroundColor = colorHex;
+      if (activeColorBadge) activeColorBadge.style.backgroundColor = colorHex;
+      if (hexInput) hexInput.value = colorHex.toUpperCase();
+    }
+
+    let isColorInteracting = false;
+    if (colorWheel) {
+      colorWheel.addEventListener('pointerdown', (e) => {
+        isColorInteracting = true;
+        handleWheelClick(e);
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (isColorInteracting) handleWheelClick(e);
+      });
+
+      window.addEventListener('pointerup', () => { isColorInteracting = false; });
+    }
+
+    function handleWheelClick(e) {
+      if (!colorWheel) return;
+      const rect = colorWheel.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cx = colorWheel.width / 2;
+      const cy = colorWheel.height / 2;
+      const dx = x - cx;
+      const dy = y - cy;
+      const dist = Math.hypot(dx, dy);
+
+      const outerR = cx - 4;
+      const innerR = outerR - 26;
+
+      if (dist >= innerR - 5 && dist <= outerR + 5) {
+        let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle < 0) angle += 360;
+        state.hsv.h = Math.round(angle);
+        drawColorDisc();
+        updateColorFromHSV();
+      } else if (dist < innerR) {
+        const sqSize = innerR * 1.25;
+        const sqX = cx - sqSize / 2;
+        const sqY = cy - sqSize / 2;
+
+        let sat = ((x - sqX) / sqSize) * 100;
+        let val = (1 - (y - sqY) / sqSize) * 100;
+
+        state.hsv.s = Math.max(0, Math.min(100, Math.round(sat)));
+        state.hsv.v = Math.max(0, Math.min(100, Math.round(val)));
+        updateColorFromHSV();
+      }
+    }
+
+    function updateColorFromHSV() {
+      const rgb = hsvToRgb(state.hsv.h, state.hsv.s, state.hsv.v);
+      const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+      setColor(hex);
+    }
+
+    const traditionalInks = [
+      '#111827', '#1e293b', '#3b0764', '#1e1b4b', '#7c2d12', '#831843', '#064e3b', '#b45309',
+      '#000000', '#1f2937', '#4b5563', '#991b1b', '#1e40af', '#065f46', '#92400e', '#ffffff'
+    ];
+
+    const swatchesContainer = document.getElementById('color-swatches');
+    if (swatchesContainer) {
+      traditionalInks.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'w-6 h-6 rounded-md border border-white/20 active:scale-90 transition';
+        btn.style.backgroundColor = c;
+        btn.addEventListener('click', () => {
+          setColor(c);
+          drawColorDisc();
+        });
+        swatchesContainer.appendChild(btn);
+      });
+    }
+
+    safeBind('color-btn', 'click', () => {
+      drawColorDisc();
+      togglePopover(colorPanel);
+    });
+
+    safeBind('hex-input', 'change', (e) => {
+      let val = e.target.value;
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9A-F]{6}$/i.test(val)) {
+        setColor(val);
+        drawColorDisc();
+      }
+    });
+
+    // ----------------------------------------------------
+    // 12. UNDO / REDO & ACTIONS MENU
+    // ----------------------------------------------------
+    function saveState() {
+      const activeLayer = getActiveLayer();
+      if (!activeLayer) return;
+
+      const snapshot = activeLayer.ctx.getImageData(0, 0, state.canvasWidth, state.canvasHeight);
+      state.history.push({
+        layerId: activeLayer.id,
+        data: snapshot
+      });
+
+      if (state.history.length > state.maxHistory) {
+        state.history.shift();
+      }
+      state.redoStack = [];
+    }
+
+    function undo() {
+      if (state.history.length <= 1) {
+        showToast('لا يوجد تراجع إضافي');
+        return;
+      }
+      const current = state.history.pop();
+      state.redoStack.push(current);
+
+      const previous = state.history[state.history.length - 1];
+      const targetLayer = state.layers.find(l => l.id === previous.layerId) || getActiveLayer();
+      if (targetLayer) {
+        targetLayer.ctx.putImageData(previous.data, 0, 0);
+        renderComposite();
+        showToast('تراجع (Undo)');
+      }
+    }
+
+    function redo() {
+      if (state.redoStack.length === 0) {
+        showToast('لا يوجد أمر للإعادة');
+        return;
+      }
+      const next = state.redoStack.pop();
+      state.history.push(next);
+      const targetLayer = state.layers.find(l => l.id === next.layerId) || getActiveLayer();
+      if (targetLayer) {
+        targetLayer.ctx.putImageData(next.data, 0, 0);
+        renderComposite();
+        showToast('إعادة (Redo)');
+      }
+    }
+
+    safeBind('undo-btn', 'click', undo);
+    safeBind('redo-btn', 'click', redo);
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) redo();
+        else undo();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        redo();
+      } else if (e.key.toLowerCase() === 'b') {
+        selectTool('brush');
+      } else if (e.key.toLowerCase() === 'e') {
+        selectTool('eraser');
+      } else if (e.key.toLowerCase() === 's' && !e.ctrlKey) {
+        selectTool('smudge');
+      }
+    });
+
+    safeBind('actions-btn', 'click', () => {
+      togglePopover(actionsPanel);
+    });
+
+    safeBind('export-png-btn', 'click', () => {
+      if (!displayCanvas) return;
+      const link = document.createElement('a');
+      link.download = `Procreate-Artwork-${Date.now()}.png`;
+      link.href = displayCanvas.toDataURL('image/png');
+      link.click();
+      if (actionsPanel) actionsPanel.classList.add('hidden');
+      showToast('تم تصدير اللوحة بصيغة PNG');
+    });
+
+    safeBind('export-jpg-btn', 'click', () => {
+      if (!displayCanvas) return;
+      const link = document.createElement('a');
+      link.download = `Procreate-Artwork-${Date.now()}.jpg`;
+      link.href = displayCanvas.toDataURL('image/jpeg', 0.95);
+      link.click();
+      if (actionsPanel) actionsPanel.classList.add('hidden');
+      showToast('تم تصدير اللوحة بصيغة JPG');
+    });
+
+    safeBind('flip-h-btn', 'click', () => {
+      const activeLayer = getActiveLayer();
+      if (!activeLayer) return;
+      const temp = document.createElement('canvas');
+      temp.width = state.canvasWidth;
+      temp.height = state.canvasHeight;
+      const tCtx = temp.getContext('2d');
+      tCtx.translate(state.canvasWidth, 0);
+      tCtx.scale(-1, 1);
+      tCtx.drawImage(activeLayer.canvas, 0, 0);
+      activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      activeLayer.ctx.drawImage(temp, 0, 0);
+      renderComposite();
+      saveState();
+      if (actionsPanel) actionsPanel.classList.add('hidden');
+      showToast('تم قلب اللوحة أفقياً');
+    });
+
+    safeBind('flip-v-btn', 'click', () => {
+      const activeLayer = getActiveLayer();
+      if (!activeLayer) return;
+      const temp = document.createElement('canvas');
+      temp.width = state.canvasWidth;
+      temp.height = state.canvasHeight;
+      const tCtx = temp.getContext('2d');
+      tCtx.translate(0, state.canvasHeight);
+      tCtx.scale(1, -1);
+      tCtx.drawImage(activeLayer.canvas, 0, 0);
+      activeLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      activeLayer.ctx.drawImage(temp, 0, 0);
+      renderComposite();
+      saveState();
+      if (actionsPanel) actionsPanel.classList.add('hidden');
+      showToast('تم قلب اللوحة رأسياً');
+    });
+
+    function resizeCanvasToFit() {
+      if (!canvasContainer || !canvasContainer.parentElement) return;
+      const containerWidth = canvasContainer.parentElement.clientWidth - 40;
+      const containerHeight = canvasContainer.parentElement.clientHeight - 40;
+      const targetAspect = state.canvasWidth / state.canvasHeight;
+      const parentAspect = containerWidth / containerHeight;
+
+      let displayW, displayH;
+      if (parentAspect > targetAspect) {
+        displayH = containerHeight;
+        displayW = displayH * targetAspect;
+      } else {
+        displayW = containerWidth;
+        displayH = displayW / targetAspect;
+      }
+
+      if (displayCanvas) {
+        displayCanvas.style.width = `${Math.floor(displayW)}px`;
+        displayCanvas.style.height = `${Math.floor(displayH)}px`;
+      }
+      if (gridCanvas) {
+        gridCanvas.style.width = `${Math.floor(displayW)}px`;
+        gridCanvas.style.height = `${Math.floor(displayH)}px`;
+      }
+      const ghost = document.getElementById('training-ghost-canvas');
+      if (ghost) {
+        ghost.style.width = `${Math.floor(displayW)}px`;
+        ghost.style.height = `${Math.floor(displayH)}px`;
+      }
+    }
+
+    window.addEventListener('resize', resizeCanvasToFit);
+    safeBind('fit-screen-btn', 'click', () => {
+      resizeCanvasToFit();
+      showToast('تمت ملاءمة اللوحة مع الشاشة');
+    });
+
+    let toastTimeout = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast-msg');
+      const text = document.getElementById('toast-text');
+      if (!toast || !text) return;
+      text.textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-3');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-3');
+      }, 2200);
+    }
+
+    // ----------------------------------------------------
+    // 13. INITIALIZATION
+    // ----------------------------------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvasToFit();
+      
+      createLayer('الخلفية والمسودة');
+      createLayer('لوحة الخط العربي');
+
+      setColor('#1e293b');
+      drawColorDisc();
+      applyPreset('naskh'); // Sets default size to 34px, angle 72°, roundness 12%
+      updateNibPreview();
+      updateGridState(true);
+
+      // Initialize Interactive Calligraphy Learning Studio
+      CalligraphyInteractiveStudio.init();
+
+      // Render introductory Naskh calligraphy demonstration
+      const topLayer = getActiveLayer();
+      if (topLayer) {
+        topLayer.ctx.save();
+        const cx = 800, cy = 600;
+        let lastPt = null;
+        for (let a = -Math.PI * 0.85; a <= Math.PI * 0.75; a += 0.02) {
+          const pt = {
+            x: cx + Math.cos(a) * 220,
+            y: cy + Math.sin(a) * 140,
+            pressure: 0.4 + 0.6 * Math.abs(Math.sin(a))
+          };
+          if (lastPt) {
+            renderCalligraphicSegment(topLayer.ctx, lastPt, pt);
+          }
+          lastPt = pt;
+        }
+
+        // Classic diamond dot
+        renderCalligraphicSegment(topLayer.ctx, { x: cx, y: cy - 70, pressure: 0.8 }, { x: cx, y: cy - 70, pressure: 0.8 });
+        topLayer.ctx.restore();
+        renderComposite();
+        saveState();
+      }
+
+      showToast('تم تشغيل الاستوديو وحل كافة الأخطاء بنجاح');
+    });
+  </script>
+
+  <!-- PWA Service Worker Registration & Installation -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then((reg) => {
+            console.log('[PWA] Service Worker registered successfully, scope:', reg.scope);
+          })
+          .catch((err) => {
+            console.warn('[PWA] Service Worker registration failed:', err);
+          });
+      });
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('pwa-install-btn');
+      if (installBtn) {
+        installBtn.classList.remove('hidden');
+      }
+    });
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('[PWA] User accepted installation');
+          }
+          deferredPrompt = null;
+          const installBtn = document.getElementById('pwa-install-btn');
+          if (installBtn) installBtn.classList.add('hidden');
+        });
+      }
+    }
+  </script>
+</body>
+</html>
