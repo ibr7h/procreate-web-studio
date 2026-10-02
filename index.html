@@ -153,6 +153,12 @@
         <span>المعرض</span>
       </button>
 
+      <!-- App Version Badge Button (Opens Updates & About Modal) -->
+      <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
+        <span id="header-version-label">v2.6.0</span>
+      </button>
+
       <div class="h-5 w-px bg-white/10 mx-1"></div>
 
       <!-- Actions (Wrench) -->
@@ -1509,6 +1515,159 @@
         <span>قلب اللوحة رأسياً (Flip Vertical)</span>
         <i class="fa-solid fa-arrows-up-down text-gray-400"></i>
       </button>
+
+      <div class="h-px bg-white/10 my-1"></div>
+
+      <!-- Check for Updates Button in Actions -->
+      <button id="actions-check-updates-btn" class="w-full text-right px-3 py-2 rounded-xl text-xs hover:bg-white/10 flex items-center justify-between text-emerald-300 hover:text-emerald-200 transition">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
+          <span>التحقق من وجود تحديثات</span>
+        </div>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.6.0</span>
+      </button>
+
+      <!-- About Studio & Version Info Button -->
+      <button id="open-about-modal-btn" class="w-full text-right px-3 py-2 rounded-xl text-xs hover:bg-white/10 flex items-center justify-between text-gray-200 transition">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-blue-400"></i>
+          <span>حول الاستوديو وسجل التحديثات</span>
+        </div>
+        <i class="fa-solid fa-chevron-left text-[10px] text-gray-400"></i>
+      </button>
+    </div>
+
+    <!-- PWA Update Available Floating Banner -->
+    <div id="pwa-update-banner" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 max-w-md w-[92vw] bg-[#1a1a24]/95 backdrop-blur-2xl border border-emerald-500/40 rounded-2xl p-3.5 shadow-2xl transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-4 hidden flex-col gap-2.5">
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+            <i class="fa-solid fa-sparkles text-sm animate-bounce"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span>تحديث جديد متوفر للاستوديو!</span>
+              <span id="update-banner-version-badge" class="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">v...</span>
+            </h4>
+            <p class="text-[11px] text-gray-300 mt-0.5">يتوفر إصدار جديد يتضمن تحسينات ومزايا جديدة، قم بالتحديث فوراً.</p>
+          </div>
+        </div>
+        <button id="dismiss-update-banner-btn" class="w-6 h-6 rounded-md hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center text-xs flex-shrink-0">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="flex items-center gap-2 pt-1 border-t border-white/10">
+        <button id="apply-update-btn" class="flex-1 py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow">
+          <i class="fa-solid fa-rotate text-xs"></i>
+          <span>تحديث وإعادة التحميل الآن</span>
+        </button>
+        <button id="view-release-notes-btn" class="py-1.5 px-3 rounded-xl bg-white/10 hover:bg-white/15 text-gray-300 text-xs font-semibold transition active:scale-95">
+          <span>سجل التغييرات</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Dedicated About & Updates Modal -->
+    <div id="app-updates-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 hidden">
+      <div class="bg-[#16161c] border border-white/15 rounded-3xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between p-4 border-b border-white/10 bg-white/5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+              <i class="fa-solid fa-feather-pointed text-base"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm text-white">حول استوديو الخط العربي والتحديثات</h3>
+              <p class="text-[10px] text-gray-400">Procreate Web Studio Calligraphy PWA</p>
+            </div>
+          </div>
+          <button id="close-about-modal-btn" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <!-- Body Scrollable Content -->
+        <div class="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs">
+          <!-- Version Info Card -->
+          <div class="p-3.5 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
+            <div class="space-y-1">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.6.0</span>
+                <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
+              </div>
+              <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-calendar-day text-[10px]"></i>
+                <span id="modal-build-date">تاريخ الإصدار: 2 أكتوبر 2026</span>
+              </div>
+            </div>
+            <!-- Check Button inside card -->
+            <button id="modal-check-updates-btn" class="px-3 py-2 rounded-xl bg-blue-600/25 hover:bg-blue-600/40 border border-blue-500/40 text-blue-300 font-bold active:scale-95 transition flex items-center gap-2 shadow">
+              <i class="fa-solid fa-arrows-rotate text-xs" id="modal-check-spinner"></i>
+              <span id="modal-check-text">فحص التحديثات</span>
+            </button>
+          </div>
+
+          <!-- Update Status Banner Area -->
+          <div id="modal-update-status-box" class="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5 text-emerald-300">
+            <i class="fa-solid fa-circle-check text-base text-emerald-400" id="modal-status-icon"></i>
+            <div>
+              <div class="font-bold text-xs" id="modal-status-title">أنت تستخدم أحدث إصدار متوفر</div>
+              <div class="text-[10px] text-emerald-400/80" id="modal-status-desc">التطبيق محدث بالكامل وجاهز للعمل دون اتصال بالإنترنت (Offline PWA).</div>
+            </div>
+          </div>
+
+          <!-- Action Box when update is ready -->
+          <div id="modal-update-action-box" class="hidden p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/15 to-emerald-500/15 border border-emerald-500/30 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-white text-xs">يتوفر إصدار جديد جاهز للتثبيت!</div>
+              <div class="text-[10px] text-gray-300 mt-0.5">انقر لإعادة التحميل وتفعيل كافة التحسينات فوراً.</div>
+            </div>
+            <button id="modal-apply-update-btn" class="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold text-xs flex items-center gap-1.5 shadow transition">
+              <i class="fa-solid fa-cloud-arrow-down"></i>
+              <span>تثبيت التحديث الآن</span>
+            </button>
+          </div>
+
+          <!-- What's New / Changelog List -->
+          <div>
+            <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check text-amber-400"></i>
+              <span>ما الجديد في الإصدار الحالي (v2.6.0):</span>
+            </h4>
+            <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
+              <li><strong class="text-white">إلغاء ثقل الكتابة:</strong> محرك فائق السرعة ومحاذاة 120Hz/240Hz منخفضة التأخير وخوارزمية التنعيم التكيفي مع السرعة.</li>
+              <li><strong class="text-white">أزرار مخصصة للممحاة:</strong> أزرار مباشرة (+ / -) لتكبير وتصغير حجم الممحاة مع نافذة استوديو مخصصة وحفظ مستقل لحجم الممحاة.</li>
+              <li><strong class="text-white">مسجل أشرطة الخط العربي (Tape Deck):</strong> لوحة كاسيت فيزيائية بمؤشرات وبكرات تدور لتسجيل وتشغيل وتبطيء وتسريع المحاكاة مع شريط تمرير زمني.</li>
+              <li><strong class="text-white">محاكاة وتسجيل الكلمات المتصلة:</strong> دعم كتابة الكلمات العربية ككتلة متصلة وحفظها بدقة وتوسيطها تلقائياً.</li>
+              <li><strong class="text-white">مكتبة الكلمات الجاهزة:</strong> نماذج كلاسيكية مثل (بسم الله، محمد ﷺ، سلام، الحمد لله...) مع إمكانية حفظ كلماتك الخاصة.</li>
+              <li><strong class="text-white">نظام التحقق من التحديثات:</strong> فحص فوري للتحديثات وتثبيتها دون الحاجة لإعادة التثبيت اليدوي.</li>
+            </ul>
+          </div>
+
+          <!-- Technical Specs -->
+          <div class="grid grid-cols-2 gap-2 text-[10px] text-gray-400 pt-1">
+            <div class="bg-white/5 p-2 rounded-xl">
+              <span class="block text-gray-500">حالة التخزين غير المتصل:</span>
+              <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
+                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v4 + LocalStorage
+              </span>
+            </div>
+            <div class="bg-white/5 p-2 rounded-xl">
+              <span class="block text-gray-500">تقنية الرسم:</span>
+              <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
+                <i class="fa-solid fa-microchip text-emerald-400"></i> HTML5 Canvas (Desynchronized 2D)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-3 border-t border-white/10 bg-white/5 flex items-center justify-between text-[11px] text-gray-400">
+          <span>استوديو الخط العربي للمحترفين</span>
+          <span class="font-mono text-gray-500">Build 2026.10.02</span>
+        </div>
+      </div>
     </div>
 
     <!-- Toast Notification Message -->
@@ -5324,19 +5483,317 @@
     });
   </script>
 
-  <!-- PWA Service Worker Registration & Installation -->
+  <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then((reg) => {
-            console.log('[PWA] Service Worker registered successfully, scope:', reg.scope);
-          })
-          .catch((err) => {
-            console.warn('[PWA] Service Worker registration failed:', err);
+    const APP_VERSION = '2.6.0';
+    const BUILD_DATE = '2026-10-02';
+
+    const UpdateManager = {
+      currentVersion: APP_VERSION,
+      buildDate: BUILD_DATE,
+      registration: null,
+      waitingWorker: null,
+      isChecking: false,
+      updateAvailable: false,
+      latestVersion: APP_VERSION,
+
+      init() {
+        this.bindUI();
+        this.registerServiceWorker();
+
+        // Automatic quiet update check 2.5 seconds after load
+        setTimeout(() => {
+          this.checkForUpdates(false);
+        }, 2500);
+
+        // Check for updates when returning to the tab / window focus
+        window.addEventListener('focus', () => {
+          this.checkForUpdates(false);
+        });
+      },
+
+      bindUI() {
+        // Header version pill button -> opens updates modal
+        safeBind('app-version-badge-btn', 'click', () => {
+          this.openAboutModal();
+        });
+
+        // Actions panel buttons
+        safeBind('actions-check-updates-btn', 'click', () => {
+          if (actionsPanel) actionsPanel.classList.add('hidden');
+          this.openAboutModal();
+          this.checkForUpdates(true);
+        });
+
+        safeBind('open-about-modal-btn', 'click', () => {
+          if (actionsPanel) actionsPanel.classList.add('hidden');
+          this.openAboutModal();
+        });
+
+        // Modal triggers
+        safeBind('modal-check-updates-btn', 'click', () => {
+          this.checkForUpdates(true);
+        });
+
+        safeBind('close-about-modal-btn', 'click', () => {
+          this.closeAboutModal();
+        });
+
+        safeBind('modal-apply-update-btn', 'click', () => {
+          this.applyUpdate();
+        });
+
+        // Floating banner buttons
+        safeBind('apply-update-btn', 'click', () => {
+          this.applyUpdate();
+        });
+
+        safeBind('dismiss-update-banner-btn', 'click', () => {
+          this.dismissBanner();
+        });
+
+        safeBind('view-release-notes-btn', 'click', () => {
+          this.dismissBanner();
+          this.openAboutModal();
+        });
+
+        // Background click to close modal
+        const modal = document.getElementById('app-updates-modal');
+        if (modal) {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) this.closeAboutModal();
           });
-      });
-    }
+        }
+      },
+
+      openAboutModal() {
+        const modal = document.getElementById('app-updates-modal');
+        if (modal) modal.classList.remove('hidden');
+      },
+
+      closeAboutModal() {
+        const modal = document.getElementById('app-updates-modal');
+        if (modal) modal.classList.add('hidden');
+      },
+
+      registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) {
+          console.warn('[PWA] Service Workers not supported in this browser environment');
+          return;
+        }
+
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js')
+            .then((reg) => {
+              this.registration = reg;
+              console.log('[PWA] Service Worker registered, scope:', reg.scope);
+
+              // Check if there is already a waiting service worker
+              if (reg.waiting) {
+                this.waitingWorker = reg.waiting;
+                this.onUpdateFound({ version: this.latestVersion });
+              }
+
+              // Listen for updatefound event
+              reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                if (!newWorker) return;
+
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    this.waitingWorker = newWorker;
+                    this.onUpdateFound({ version: this.latestVersion });
+                  }
+                });
+              });
+            })
+            .catch((err) => {
+              console.warn('[PWA] Service Worker registration failed:', err);
+            });
+        });
+
+        // Listen for controllerchange to reload page when new SW takes control
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (refreshing) return;
+          refreshing = true;
+          window.location.reload();
+        });
+      },
+
+      async checkForUpdates(isUserInitiated = false) {
+        if (this.isChecking) return;
+        this.isChecking = true;
+        this.updateCheckUI(true, 'جاري الفحص...');
+
+        try {
+          // 1. Ask Service Worker to check with server
+          if (this.registration) {
+            await this.registration.update().catch(() => {});
+          }
+
+          // 2. Query version.json with cache buster
+          const response = await fetch(`./version.json?_t=${Date.now()}`, {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-cache',
+              'Pragma': 'no-cache'
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const remoteVersion = data.version || this.currentVersion;
+            this.latestVersion = remoteVersion;
+
+            if (this.compareVersions(remoteVersion, this.currentVersion) > 0) {
+              this.onUpdateFound(data);
+              if (isUserInitiated) {
+                showToast(`يتوفر تحديث جديد: v${remoteVersion}`);
+              }
+            } else {
+              this.onAlreadyUpToDate(isUserInitiated);
+            }
+          } else {
+            // Fallback to checking waiting service worker
+            if (this.registration && this.registration.waiting) {
+              this.waitingWorker = this.registration.waiting;
+              this.onUpdateFound({ version: this.latestVersion });
+            } else {
+              this.onAlreadyUpToDate(isUserInitiated);
+            }
+          }
+        } catch (err) {
+          console.warn('[UpdateManager] Check error:', err);
+          if (this.registration && this.registration.waiting) {
+            this.waitingWorker = this.registration.waiting;
+            this.onUpdateFound({ version: this.latestVersion });
+          } else {
+            this.onAlreadyUpToDate(isUserInitiated);
+          }
+        } finally {
+          this.isChecking = false;
+          this.updateCheckUI(false);
+        }
+      },
+
+      compareVersions(v1, v2) {
+        const p1 = String(v1).replace(/^v/, '').split('.').map(Number);
+        const p2 = String(v2).replace(/^v/, '').split('.').map(Number);
+        for (let i = 0; i < Math.max(p1.length, p2.length); i++) {
+          const n1 = p1[i] || 0;
+          const n2 = p2[i] || 0;
+          if (n1 > n2) return 1;
+          if (n1 < n2) return -1;
+        }
+        return 0;
+      },
+
+      onUpdateFound(versionData) {
+        this.updateAvailable = true;
+        const v = versionData.version || this.latestVersion;
+
+        // Show floating banner
+        const banner = document.getElementById('pwa-update-banner');
+        const bannerBadge = document.getElementById('update-banner-version-badge');
+        if (banner) {
+          banner.classList.remove('hidden');
+          setTimeout(() => {
+            banner.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
+          }, 50);
+        }
+        if (bannerBadge) bannerBadge.textContent = `v${v}`;
+
+        // Update modal status box
+        const statusBox = document.getElementById('modal-update-status-box');
+        const statusIcon = document.getElementById('modal-status-icon');
+        const statusTitle = document.getElementById('modal-status-title');
+        const statusDesc = document.getElementById('modal-status-desc');
+        const actionBox = document.getElementById('modal-update-action-box');
+
+        if (statusBox) {
+          statusBox.className = 'p-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center gap-2.5 text-amber-300';
+        }
+        if (statusIcon) statusIcon.className = 'fa-solid fa-sparkles text-base text-amber-400 animate-bounce';
+        if (statusTitle) statusTitle.textContent = `يتوفر تحديث جديد: v${v}`;
+        if (statusDesc) statusDesc.textContent = 'تم العثور على إصدار أحدث يتضمن تحسينات هامة وميزات جديدة. انقر لتثبيته فوراً.';
+        if (actionBox) actionBox.classList.remove('hidden');
+
+        // Header dot turns amber
+        const dot = document.getElementById('version-status-dot');
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping';
+      },
+
+      onAlreadyUpToDate(showFeedback = false) {
+        const statusBox = document.getElementById('modal-update-status-box');
+        const statusIcon = document.getElementById('modal-status-icon');
+        const statusTitle = document.getElementById('modal-status-title');
+        const statusDesc = document.getElementById('modal-status-desc');
+        const actionBox = document.getElementById('modal-update-action-box');
+
+        if (statusBox) {
+          statusBox.className = 'p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-2.5 text-emerald-300';
+        }
+        if (statusIcon) statusIcon.className = 'fa-solid fa-circle-check text-base text-emerald-400';
+        if (statusTitle) statusTitle.textContent = 'أنت تستخدم أحدث إصدار متوفر';
+        if (statusDesc) statusDesc.textContent = `الإصدار ${this.currentVersion} محدث بالكامل وجاهز للعمل دون اتصال بالإنترنت (Offline PWA).`;
+        if (actionBox) actionBox.classList.add('hidden');
+
+        const dot = document.getElementById('version-status-dot');
+        if (dot) dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse';
+
+        if (showFeedback) {
+          showToast(`أنت تستخدم أحدث إصدار بالفعل (v${this.currentVersion})!`);
+        }
+      },
+
+      updateCheckUI(checking, label = null) {
+        const spinner = document.getElementById('modal-check-spinner');
+        const text = document.getElementById('modal-check-text');
+        const actionsIcon = document.getElementById('actions-update-icon');
+
+        if (checking) {
+          if (spinner) spinner.classList.add('animate-spin');
+          if (text) text.textContent = label || 'جاري الفحص...';
+          if (actionsIcon) actionsIcon.classList.add('animate-spin');
+        } else {
+          if (spinner) spinner.classList.remove('animate-spin');
+          if (text) text.textContent = 'فحص التحديثات';
+          if (actionsIcon) actionsIcon.classList.remove('animate-spin');
+        }
+      },
+
+      applyUpdate() {
+        showToast('جاري تثبيت التحديث وتحديث ملفات الاستوديو...');
+
+        if (this.waitingWorker) {
+          this.waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+        } else if (navigator.serviceWorker) {
+          navigator.serviceWorker.getRegistration().then((reg) => {
+            if (reg && reg.waiting) {
+              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            } else {
+              window.location.reload();
+            }
+          });
+        } else {
+          window.location.reload();
+        }
+      },
+
+      dismissBanner() {
+        const banner = document.getElementById('pwa-update-banner');
+        if (banner) {
+          banner.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+          setTimeout(() => banner.classList.add('hidden'), 300);
+        }
+      }
+    };
+
+    // Initialize UpdateManager when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      UpdateManager.init();
+    });
 
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {

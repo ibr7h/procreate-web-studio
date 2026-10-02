@@ -1,9 +1,10 @@
 // Procreate Web Studio - Progressive Web App Service Worker
-const CACHE_NAME = 'procreate-web-studio-v3';
+const CACHE_NAME = 'procreate-web-studio-v4';
 
 const STATIC_ASSETS = [
   './',
   './index.html',
+  './version.json',
   './manifest.webmanifest',
   './manifest.json',
   './icons/icon-192.png',
@@ -42,6 +43,14 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// Listen for SKIP_WAITING message to trigger instant PWA updates
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[PWA SW] Received SKIP_WAITING message, skipping wait...');
+    self.skipWaiting();
+  }
+});
+
 // 3. Fetch event: Stale-While-Revalidate with Cache Fallback
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
@@ -50,6 +59,14 @@ self.addEventListener('fetch', (event) => {
 
   // Ignore browser extensions and non-http schemes
   if (!url.protocol.startsWith('http')) return;
+
+  // Always fetch version.json from network first for accurate update checking
+  if (url.pathname.endsWith('version.json')) {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
