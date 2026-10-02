@@ -156,7 +156,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.6.0</span>
+        <span id="header-version-label">v2.6.1</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -1169,7 +1169,7 @@
     <!-- ========================================== -->
     <!-- BRUSH LIBRARY POPOVER                      -->
     <!-- ========================================== -->
-    <div id="brush-library-popover" class="fixed top-16 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-24 w-84 sm:w-96 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
+    <div id="brush-library-popover" class="fixed top-16 left-3 sm:left-28 w-84 sm:w-96 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
       <div class="flex items-center justify-between pb-2.5 border-b border-white/10">
         <div class="flex items-center gap-2">
           <div class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs">
@@ -1266,7 +1266,7 @@
     <!-- ========================================== -->
     <!-- LAYERS DRAWER MODAL                        -->
     <!-- ========================================== -->
-    <div id="layers-panel" class="fixed top-16 right-4 sm:right-16 w-80 sm:w-92 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3">
+    <div id="layers-panel" class="fixed top-16 left-3 sm:left-14 w-80 sm:w-92 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-white/10">
         <div class="flex items-center gap-2 font-bold text-sm text-gray-200">
           <i class="fa-solid fa-layer-group text-blue-400"></i>
@@ -1400,7 +1400,7 @@
     <!-- ========================================== -->
     <!-- COLOR DISC POPOVER                         -->
     <!-- ========================================== -->
-    <div id="color-panel" class="fixed top-16 right-4 sm:right-12 w-80 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3">
+    <div id="color-panel" class="fixed top-16 left-3 sm:left-5 w-80 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
       <div class="flex items-center justify-between pb-2 border-b border-white/10">
         <span class="text-xs font-bold text-gray-300">قرص الألوان (Color Disc)</span>
         <div class="flex items-center gap-2">
@@ -1422,7 +1422,7 @@
     <!-- ========================================== -->
     <!-- DEDICATED ERASER STUDIO POPOVER            -->
     <!-- ========================================== -->
-    <div id="eraser-studio-popover" class="fixed top-16 right-4 sm:right-28 w-80 procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl border border-white/10">
+    <div id="eraser-studio-popover" class="fixed top-16 left-3 sm:left-24 w-80 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl border border-white/10">
       <div class="flex items-center justify-between pb-2 border-b border-white/10">
         <div class="flex items-center gap-2">
           <div class="w-7 h-7 rounded-lg bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-400">
@@ -1489,7 +1489,7 @@
     <!-- ========================================== -->
     <!-- ACTIONS & EXPORT POPOVER                   -->
     <!-- ========================================== -->
-    <div id="actions-panel" class="fixed top-16 left-4 sm:left-12 w-72 procreate-popover rounded-2xl p-4 hidden z-50 flex-col gap-2">
+    <div id="actions-panel" class="fixed top-16 right-3 sm:right-12 w-72 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-2xl p-4 hidden z-50 flex-col gap-2 shadow-2xl">
       <div class="text-xs font-bold text-gray-300 pb-2 border-b border-white/10 flex items-center gap-2">
         <i class="fa-solid fa-wrench text-blue-400"></i> الإجراءات والتصدير
       </div>
@@ -1524,7 +1524,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.6.0</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.6.1</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -1593,7 +1593,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.6.0</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.6.1</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -1633,9 +1633,10 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.6.0):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.6.1):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
+              <li><strong class="text-white">محاذاة النوافذ وقرص الألوان (RTL):</strong> فتح قرص الألوان والطبقات والممحاة مباشرة في أقصى اليسار تحت أزرارها بدقة، ومحاذاة نافذة الأدوات لليمين.</li>
               <li><strong class="text-white">إلغاء ثقل الكتابة:</strong> محرك فائق السرعة ومحاذاة 120Hz/240Hz منخفضة التأخير وخوارزمية التنعيم التكيفي مع السرعة.</li>
               <li><strong class="text-white">أزرار مخصصة للممحاة:</strong> أزرار مباشرة (+ / -) لتكبير وتصغير حجم الممحاة مع نافذة استوديو مخصصة وحفظ مستقل لحجم الممحاة.</li>
               <li><strong class="text-white">مسجل أشرطة الخط العربي (Tape Deck):</strong> لوحة كاسيت فيزيائية بمؤشرات وبكرات تدور لتسجيل وتشغيل وتبطيء وتسريع المحاكاة مع شريط تمرير زمني.</li>
@@ -5485,7 +5486,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.6.0';
+    const APP_VERSION = '2.6.1';
     const BUILD_DATE = '2026-10-02';
 
     const UpdateManager = {
