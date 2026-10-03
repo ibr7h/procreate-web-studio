@@ -239,10 +239,50 @@
       border-color: #bfdbfe !important;
       color: #1d4ed8 !important;
     }
-    #studio-tape-recorder.tape-theme-light #tape-btn-speed {
+    #studio-tape-recorder.tape-theme-light #tape-speed-group {
       background: #f3e8ff !important;
       border-color: #e9d5ff !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-btn-speed-down,
+    #studio-tape-recorder.tape-theme-light #tape-btn-speed-up {
       color: #7e22ce !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-btn-speed-down:hover,
+    #studio-tape-recorder.tape-theme-light #tape-btn-speed-up:hover {
+      background: #e9d5ff !important;
+      color: #581c87 !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-btn-speed {
+      background: transparent !important;
+      border-color: transparent !important;
+      color: #7e22ce !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-speed-popover {
+      background: rgba(255, 255, 255, 0.98) !important;
+      border-color: #e9d5ff !important;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18) !important;
+      color: #1e293b !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-speed-popover .border-b,
+    #studio-tape-recorder.tape-theme-light #tape-speed-popover .border-t {
+      border-color: #f1f5f9 !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-speed-popover .text-white {
+      color: #0f172a !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-speed-popover .bg-white\/5 {
+      background: #f8fafc !important;
+      color: #475569 !important;
+      border-color: #e2e8f0 !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-speed-popover .bg-white\/5:hover {
+      background: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-speed-desc-label {
+      background: #f3e8ff !important;
+      border-color: #e9d5ff !important;
+      color: #6b21a8 !important;
     }
     #studio-tape-recorder.tape-theme-light #tape-btn-loop {
       background: #f1f5f9 !important;
@@ -360,8 +400,25 @@
       font-size: 11px !important;
       flex-shrink: 0 !important;
     }
+    #studio-tape-recorder.tape-mode-compact #tape-speed-group {
+      height: 2rem !important;
+      border-radius: 0.65rem !important;
+      padding: 0.1rem !important;
+      gap: 0 !important;
+      flex-shrink: 0 !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-btn-speed-down,
+    #studio-tape-recorder.tape-mode-compact #tape-btn-speed-up {
+      width: 1.5rem !important;
+      min-width: 1.5rem !important;
+      height: 1.7rem !important;
+      padding: 0 !important;
+      font-size: 9px !important;
+    }
     #studio-tape-recorder.tape-mode-compact #tape-btn-speed {
-      padding: 0.2rem 0.4rem !important;
+      min-width: 1.9rem !important;
+      padding: 0 0.25rem !important;
+      height: 1.7rem !important;
       font-size: 10px !important;
     }
     #studio-tape-recorder.tape-mode-compact #tape-btn-speed i {
@@ -392,7 +449,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.9.0</span>
+        <span id="header-version-label">v2.10.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -732,11 +789,72 @@
               <i class="fa-solid fa-backward-step text-blue-400 text-xs"></i>
             </button>
 
-            <!-- SPEED CYCLER (0.5x, 1x, 2x, 4x ⏩) -->
-            <button id="tape-btn-speed" title="تغيير سرعة المحاكاة" class="px-2.5 sm:px-3 py-2 rounded-xl bg-purple-500/15 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 font-mono font-bold text-xs flex items-center gap-1 transition active:scale-90">
-              <i class="fa-solid fa-forward-step text-[10px]"></i>
-              <span id="tape-speed-badge">1x</span>
-            </button>
+            <!-- SPEED CONTROLS CAPSULE WITH POPUP (التحكم في السرعة: أزرار تبطيء وتسريع مباشر وقائمة خيارات شاملة) -->
+            <div class="relative inline-flex items-center" id="tape-speed-capsule-wrapper">
+              <div id="tape-speed-group" class="inline-flex items-center rounded-xl bg-purple-500/15 border border-purple-500/30 p-0.5 shadow-sm">
+                <!-- Direct Speed Down Button (إبطاء السرعة مباشرة بنقرة واحدة) -->
+                <button id="tape-btn-speed-down" title="إبطاء السرعة مباشرة (Slow Down)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-purple-500/30 text-purple-300 hover:text-white flex items-center justify-center transition active:scale-90">
+                  <i class="fa-solid fa-minus text-[10px]"></i>
+                </button>
+                <!-- Main Speed Badge / Popover Trigger (عرض السرعة الحالية وفتح لوحة الخيارات الشاملة) -->
+                <button id="tape-btn-speed" title="خيارات سرعة المحاكاة (اضغط لفتح القائمة، أو حرّك عجلة الماوس للتبطيء والتسريع)" class="px-2 sm:px-2.5 h-7 sm:h-8 rounded-lg hover:bg-purple-500/30 text-purple-200 font-mono font-bold text-xs flex items-center gap-1 transition active:scale-95">
+                  <i class="fa-solid fa-gauge-high text-[11px] text-purple-400"></i>
+                  <span id="tape-speed-badge">1x</span>
+                </button>
+                <!-- Direct Speed Up Button (تسريع السرعة مباشرة بنقرة واحدة) -->
+                <button id="tape-btn-speed-up" title="زيادة السرعة مباشرة (Speed Up)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg hover:bg-purple-500/30 text-purple-300 hover:text-white flex items-center justify-center transition active:scale-90">
+                  <i class="fa-solid fa-plus text-[10px]"></i>
+                </button>
+              </div>
+
+              <!-- Speed Control Floating Popover (لوحة تحكم السرعة المنبثقة) -->
+              <div id="tape-speed-popover" class="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 z-50 w-72 sm:w-80 max-w-[92vw] bg-[#16161f]/95 backdrop-blur-2xl border border-purple-500/35 rounded-2xl p-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.85)] text-gray-200 hidden select-none transition-all duration-200">
+                <!-- Popover Header -->
+                <div class="flex items-center justify-between pb-2 border-b border-white/10 mb-2">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-purple-500/20 text-purple-300 flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <span class="font-bold text-xs text-white">سرعة محاكاة الخط</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <span id="tape-popover-speed-val" class="px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-500/40 text-purple-300 font-mono font-bold text-xs">1.0x</span>
+                    <button id="close-tape-speed-popover-btn" class="w-6 h-6 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white flex items-center justify-center text-xs">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Speed Description Label -->
+                <div id="tape-speed-desc-label" class="text-[11px] text-purple-300/90 mb-2.5 text-center font-medium bg-purple-500/10 py-1 px-2 rounded-lg border border-purple-500/20">
+                  ✨ السرعة الطبيعية (1.0x) - سرعة اليد الواقعية
+                </div>
+
+                <!-- Quick Presets Grid -->
+                <div class="mb-3">
+                  <div class="text-[10px] text-gray-400 mb-1.5 font-medium flex items-center justify-between">
+                    <span>سرعات جاهزة بنقرة واحدة:</span>
+                    <button id="tape-speed-reset-btn" class="text-purple-400 hover:text-purple-300 text-[10px] underline">إعادة ضبط 1x</button>
+                  </div>
+                  <div class="grid grid-cols-4 gap-1.5" id="tape-speed-presets-grid">
+                    <!-- Populated dynamically via renderSpeedPresets() -->
+                  </div>
+                </div>
+
+                <!-- Precision Slider -->
+                <div class="pt-2 border-t border-white/10">
+                  <div class="flex items-center justify-between text-[10px] text-gray-400 mb-1">
+                    <span>شريط ضبط دقيق وسلس:</span>
+                    <span class="font-mono text-purple-300">0.1x — 5.0x</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-gray-400 font-mono">0.1x</span>
+                    <input type="range" id="tape-speed-slider" min="0.1" max="5.0" step="0.05" value="1.0" class="flex-1 h-1.5 bg-white/10 hover:bg-white/20 rounded-lg appearance-none cursor-pointer accent-purple-500">
+                    <span class="text-[10px] text-gray-400 font-mono">5.0x</span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- LOOP TOGGLE (تكرار مستمر 🔁) -->
             <button id="tape-btn-loop" title="تشغيل متكرر مستمر (Loop)" class="px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 font-bold text-xs flex items-center gap-1 transition active:scale-90">
@@ -1930,7 +2048,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.9.0</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.10.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -1999,7 +2117,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.9.0</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.10.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2039,9 +2157,10 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.9.0):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.10.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
+              <li><strong class="text-white">تحكم متطور وشامل في سرعة المسجل:</strong> أزرار تبطيء [-] وتسريع [+] مباشرة بنقرة واحدة لتفادي الدوران، لوحة منبثقة عائمة تفصيلية بخيارات وسرعات جاهزة (من 0.25x البطيء جداً لدراسة ضربات القصبة وميزان النقط حتى 4x)، شريط تمرير دقيق (0.1x - 5.0x)، دعم عجلة الفأرة، وضبط فيزيائي حقيقي لدوران البكرات ومعدل رندرة الإطارات.</li>
               <li><strong class="text-white">وضعان لحجم المسجل (كامل بالشكل الحالي / مصغر أيقونات فقط):</strong> إمكانية التبديل بنقرة زر واحدة بين مظهر الكاسيت الكلاسيكي الكامل ووضع الشريط المدمج الصغير الخفيف بالأيقونات فقط، مع حفظ التفضيل تلقائياً لتوفير أقصى مساحة للرسم والكتابة.</li>
               <li><strong class="text-white">مظهر المسجل الفاتح (Light Mode Deck):</strong> أيقونة مخصصة في شريط المسجل للتبديل الفوري بين المظهر الكلاسيكي الداكن ومظهر لايت الفاتح العصري مع حفظ التفضيل تلقائياً.</li>
               <li><strong class="text-white">تحديد منطقة تصدير الفيديو:</strong> خيار تصدير كامل اللوحة (Full Canvas) أو اقتصاص ذكي مركز حول الكلمة والمخطوطة بأبعاد مثالية للنشر كـ Story / Reels.</li>
@@ -2059,7 +2178,7 @@
             <div class="bg-white/5 p-2 rounded-xl">
               <span class="block text-gray-500">حالة التخزين غير المتصل:</span>
               <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
-                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v9 + LocalStorage
+                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v10 + LocalStorage
               </span>
             </div>
             <div class="bg-white/5 p-2 rounded-xl">
@@ -3717,6 +3836,13 @@
       rewindBtn: null,
       speedBtn: null,
       speedBadge: null,
+      speedDownBtn: null,
+      speedUpBtn: null,
+      speedPopoverEl: null,
+      speedSliderEl: null,
+      speedSteps: [0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0, 5.0],
+      speedPresets: [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0],
+      playbackAccumulator: 0,
       loopBtn: null,
       sliderEl: null,
       statusLed: null,
@@ -3738,6 +3864,10 @@
         this.rewindBtn = document.getElementById('tape-btn-rewind');
         this.speedBtn = document.getElementById('tape-btn-speed');
         this.speedBadge = document.getElementById('tape-speed-badge');
+        this.speedDownBtn = document.getElementById('tape-btn-speed-down');
+        this.speedUpBtn = document.getElementById('tape-btn-speed-up');
+        this.speedPopoverEl = document.getElementById('tape-speed-popover');
+        this.speedSliderEl = document.getElementById('tape-speed-slider');
         this.loopBtn = document.getElementById('tape-btn-loop');
         this.sliderEl = document.getElementById('tape-timeline-slider');
         this.statusLed = document.getElementById('tape-status-led');
@@ -3768,6 +3898,18 @@
         } catch(e) {}
         this.applySizeMode();
 
+        // استعادة سرعة المسجل المحفوظة
+        try {
+          const savedSpeed = localStorage.getItem('procreate_tape_speed');
+          if (savedSpeed) {
+            const parsed = parseFloat(savedSpeed);
+            if (!isNaN(parsed) && parsed >= 0.1 && parsed <= 5.0) {
+              this.speedMultiplier = parsed;
+            }
+          }
+        } catch(e) {}
+        this.updateSpeedUI();
+
         this.bindEvents();
         this.loadSavedWordsFromStorage();
         this.renderWordsLibrary();
@@ -3783,7 +3925,60 @@
         safeBind('tape-btn-play', 'click', () => this.play());
         safeBind('tape-btn-pause', 'click', () => this.pause());
         safeBind('tape-btn-rewind', 'click', () => this.rewind());
-        safeBind('tape-btn-speed', 'click', () => this.cycleSpeed());
+        safeBind('tape-btn-speed', 'click', (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          this.toggleSpeedPopover();
+        });
+        safeBind('tape-btn-speed-down', 'click', (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          this.decreaseSpeed();
+        });
+        safeBind('tape-btn-speed-up', 'click', (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          this.increaseSpeed();
+        });
+        safeBind('close-tape-speed-popover-btn', 'click', (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          this.toggleSpeedPopover(false);
+        });
+        safeBind('tape-speed-reset-btn', 'click', (e) => {
+          if (e && e.stopPropagation) e.stopPropagation();
+          this.setSpeed(1.0, true);
+        });
+
+        const speedSlider = document.getElementById('tape-speed-slider');
+        if (speedSlider) {
+          speedSlider.addEventListener('input', (e) => {
+            this.setSpeed(parseFloat(e.target.value), false);
+          });
+          speedSlider.addEventListener('change', (e) => {
+            this.setSpeed(parseFloat(e.target.value), true);
+          });
+        }
+
+        // عجلة الفأرة على كبسولة السرعة لتعديل سلس فوري
+        const speedGroup = document.getElementById('tape-speed-group');
+        if (speedGroup) {
+          speedGroup.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0) {
+              this.increaseSpeed();
+            } else {
+              this.decreaseSpeed();
+            }
+          }, { passive: false });
+        }
+
+        // إغلاق لوحة خيارات السرعة المنبثقة عند النقر خارجها
+        document.addEventListener('click', (e) => {
+          const wrapper = document.getElementById('tape-speed-capsule-wrapper');
+          const popover = document.getElementById('tape-speed-popover');
+          if (popover && !popover.classList.contains('hidden')) {
+            if (wrapper && !wrapper.contains(e.target)) {
+              popover.classList.add('hidden');
+            }
+          }
+        });
         safeBind('tape-btn-loop', 'click', () => this.toggleLoop());
         safeBind('tape-btn-export-video', 'click', () => this.openVideoExportModal());
         safeBind('tape-btn-share-link', 'click', () => this.shareSessionLink());
@@ -4348,19 +4543,15 @@
 
       startSpools() {
         if (!this.spoolLeft || !this.spoolRight) return;
-        const speedClass = this.speedMultiplier >= 2.0
-          ? 'spool-spinning-fast'
-          : (this.speedMultiplier <= 0.5 ? 'spool-spinning-slow' : 'spool-spinning');
-        this.spoolLeft.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
-        this.spoolRight.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
-        this.spoolLeft.classList.add(speedClass);
-        this.spoolRight.classList.add(speedClass);
+        const dur = (2.4 / Math.max(0.1, this.speedMultiplier)).toFixed(2);
+        this.spoolLeft.style.animation = `spin-cw ${dur}s linear infinite`;
+        this.spoolRight.style.animation = `spin-cw ${dur}s linear infinite`;
       },
 
       stopSpools() {
         if (!this.spoolLeft || !this.spoolRight) return;
-        this.spoolLeft.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
-        this.spoolRight.classList.remove('spool-spinning', 'spool-spinning-fast', 'spool-spinning-slow');
+        this.spoolLeft.style.animation = '';
+        this.spoolRight.style.animation = '';
       },
 
       stop() {
@@ -4445,6 +4636,7 @@
         this.playbackPointIdx = 0;
         this.playbackStartTime = performance.now();
         this.playbackCurrentTime = 0;
+        this.playbackAccumulator = 0;
 
         if (this.statusLed) this.statusLed.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0';
         if (this.modeLabel) {
@@ -4475,7 +4667,10 @@
           return;
         }
 
-        const stepsPerFrame = Math.max(1, Math.round(2 * this.speedMultiplier));
+        // حساب الخطوات وفق مضاعف السرعة بدقة تامة وتراكمية (Fractional Step Accumulator)
+        this.playbackAccumulator = (this.playbackAccumulator || 0) + (2 * this.speedMultiplier);
+        const stepsPerFrame = Math.floor(this.playbackAccumulator);
+        this.playbackAccumulator -= stepsPerFrame;
         const nib = document.getElementById('simulated-nib-pointer');
 
         for (let s = 0; s < stepsPerFrame; s++) {
@@ -4602,6 +4797,7 @@
         this.playbackStrokeIdx = 0;
         this.playbackPointIdx = 0;
         this.playbackCurrentTime = 0;
+        this.playbackAccumulator = 0;
         if (this.sliderEl) this.sliderEl.value = 0;
         if (this.currentPosLabel) this.currentPosLabel.textContent = '00:00';
         if (this.isPlaying) {
@@ -4611,16 +4807,165 @@
         }
       },
 
-      cycleSpeed() {
-        const speeds = [0.5, 1.0, 2.0, 4.0];
-        const currIdx = speeds.indexOf(this.speedMultiplier);
-        const nextIdx = (currIdx + 1) % speeds.length;
-        this.speedMultiplier = speeds[nextIdx];
-        if (this.speedBadge) this.speedBadge.textContent = this.speedMultiplier + 'x';
+      /**
+       * ضبط سرعة المحاكاة مع التحديث الشامل للواجهة والبكرات والحفظ
+       * @param {number} speed السرعة المستهدفة
+       * @param {boolean} notify إظهار تنبيه توست
+       */
+      setSpeed(speed, notify = true) {
+        const rounded = Math.round(Math.max(0.1, Math.min(5.0, Number(speed))) * 100) / 100;
+        this.speedMultiplier = rounded;
+
+        // حفظ في التخزين المحلي
+        try {
+          localStorage.setItem('procreate_tape_speed', String(this.speedMultiplier));
+        } catch(e) {}
+
+        this.updateSpeedUI();
+
         if (this.isPlaying || this.isRecording) {
           this.startSpools();
         }
-        showToast(`سرعة المسجل: ${this.speedMultiplier}x`);
+
+        if (notify) {
+          showToast(`سرعة المسجل: ${this.speedMultiplier}x — ${this.getSpeedDescription(this.speedMultiplier)}`);
+        }
+      },
+
+      /**
+       * إبطاء السرعة مباشرة خطوة واحدة للأسفل دون دوران
+       */
+      decreaseSpeed() {
+        const current = this.speedMultiplier;
+        const lowerSteps = this.speedSteps.filter(s => s < current - 0.01);
+        if (lowerSteps.length > 0) {
+          const target = lowerSteps[lowerSteps.length - 1];
+          this.setSpeed(target, true);
+        } else {
+          showToast('أقل سرعة تشغيل متاحة (0.1x)');
+        }
+      },
+
+      /**
+       * تسريع السرعة مباشرة خطوة واحدة للأعلى دون دوران
+       */
+      increaseSpeed() {
+        const current = this.speedMultiplier;
+        const higherSteps = this.speedSteps.filter(s => s > current + 0.01);
+        if (higherSteps.length > 0) {
+          const target = higherSteps[0];
+          this.setSpeed(target, true);
+        } else {
+          showToast('أقصى سرعة تشغيل متاحة (5.0x)');
+        }
+      },
+
+      /**
+       * إظهار / إخفاء لوحة خيارات وسرعات المسجل المنبثقة
+       * @param {boolean} [force] إجبار الإظهار أو الإخفاء
+       */
+      toggleSpeedPopover(force) {
+        const popover = document.getElementById('tape-speed-popover');
+        if (!popover) return;
+        const isHidden = popover.classList.contains('hidden');
+        const show = typeof force === 'boolean' ? force : isHidden;
+        if (show) {
+          this.renderSpeedPresets();
+          this.updateSpeedUI();
+          popover.classList.remove('hidden');
+        } else {
+          popover.classList.add('hidden');
+        }
+      },
+
+      /**
+       * توليد شبكة أزرار السرعات الجاهزة بضغطة زر واحدة
+       */
+      renderSpeedPresets() {
+        const grid = document.getElementById('tape-speed-presets-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        this.speedPresets.forEach(speed => {
+          const isActive = Math.abs(this.speedMultiplier - speed) < 0.02;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = isActive
+            ? 'py-1.5 px-1 rounded-xl bg-purple-600 text-white font-mono font-bold text-xs shadow-md border border-purple-400 flex items-center justify-center transition active:scale-95'
+            : 'py-1.5 px-1 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white font-mono text-xs border border-white/5 flex items-center justify-center transition active:scale-95';
+          btn.textContent = `${speed}x`;
+          btn.title = `ضبط السرعة على ${speed}x`;
+          btn.addEventListener('click', (e) => {
+            if (e && e.stopPropagation) e.stopPropagation();
+            this.setSpeed(speed, true);
+          });
+          grid.appendChild(btn);
+        });
+      },
+
+      /**
+       * تحديث كافة عناصر واجهة السرعة (الشارة، السلايدر، الوصف، والأزرار)
+       */
+      updateSpeedUI() {
+        const displayStr = `${this.speedMultiplier}x`;
+
+        // 1. الشارة الرئيسية في الشريط
+        if (this.speedBadge) {
+          this.speedBadge.textContent = displayStr;
+        }
+
+        // 2. الشارة داخل لوحة الخيارات المنبثقة
+        const popoverVal = document.getElementById('tape-popover-speed-val');
+        if (popoverVal) {
+          popoverVal.textContent = displayStr;
+        }
+
+        // 3. شريط الضبط الدقيق (السلايدر)
+        const slider = document.getElementById('tape-speed-slider');
+        if (slider && Math.abs(Number(slider.value) - this.speedMultiplier) > 0.01) {
+          slider.value = this.speedMultiplier;
+        }
+
+        // 4. وصف وتفاصيل السرعة
+        const descEl = document.getElementById('tape-speed-desc-label');
+        if (descEl) {
+          descEl.textContent = this.getSpeedDescription(this.speedMultiplier);
+        }
+
+        // 5. تمييز الزر النشط في شبكة السرعات الجاهزة
+        const grid = document.getElementById('tape-speed-presets-grid');
+        if (grid) {
+          const buttons = grid.querySelectorAll('button');
+          buttons.forEach(btn => {
+            const val = parseFloat(btn.textContent);
+            const isActive = Math.abs(this.speedMultiplier - val) < 0.02;
+            btn.className = isActive
+              ? 'py-1.5 px-1 rounded-xl bg-purple-600 text-white font-mono font-bold text-xs shadow-md border border-purple-400 flex items-center justify-center transition active:scale-95'
+              : 'py-1.5 px-1 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white font-mono text-xs border border-white/5 flex items-center justify-center transition active:scale-95';
+          });
+        }
+      },
+
+      /**
+       * الحصول على وصف فني لسرعة المحاكاة الحالية
+       * @param {number} speed
+       * @returns {string}
+       */
+      getSpeedDescription(speed) {
+        if (speed <= 0.25) return '🔍 بطيء جداً (0.25x) - تدقيق حركة القصبة وميزان النقط';
+        if (speed <= 0.5) return '🐢 نصف السرعة (0.5x) - تدقيق مريح وتأمل لمسار الخط';
+        if (speed <= 0.75) return '🍃 حركة متأنية (0.75x) - انسيابية عالية وهدوء';
+        if (Math.abs(speed - 1.0) < 0.02) return '✨ السرعة الطبيعية (1.0x) - سرعة اليد الواقعية';
+        if (speed <= 1.5) return '⚡ حركة رشيقة (1.5x) - مراجعة سريعة للحروف';
+        if (speed <= 2.0) return '🚀 سرعة مضاعفة (2.0x) - تايم لابس سريع';
+        if (speed <= 3.0) return '⏩ سرعة ثلاثية (3.0x) - استعراض سريع جداً للوحة';
+        return '🔥 سرعة فائقة (4.0x+) - إنجاز فوري';
+      },
+
+      /**
+       * التبديل التلقائي للسرعة للتوافق مع أي استدعاء قديم
+       */
+      cycleSpeed() {
+        this.toggleSpeedPopover();
       },
 
       toggleLoop() {
@@ -6708,7 +7053,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.9.0';
+    const APP_VERSION = '2.10.0';
     const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
