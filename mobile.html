@@ -448,7 +448,7 @@
       align-items: center !important;
     }
   </style>
-  <link rel="stylesheet" href="mobile.css">
+  <link rel="stylesheet" href="mobile.css?v=2.12.0">
 </head>
 <body class="mobile-page h-screen w-screen flex flex-col justify-between select-none">
 
@@ -465,7 +465,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.11.0</span>
+        <span id="header-version-label">v2.12.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -2074,7 +2074,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.11.0</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.12.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -2143,7 +2143,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.11.0</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.12.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2183,7 +2183,7 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.11.0):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.12.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
               <li><strong class="text-white">تثبيت الموقع الأصلي الدقيق للكلمات والمحفوظات:</strong> تم حل مشكلة انزياح الكلمات عند تشغيلها من المكتبة؛ حيث أصبحت المحفوظات تحتفظ بإحداثياتها وموقعها الحقيقي الصريح على اللوحة (Raw Screen Coordinates)، وتُكتب بدقة متناهية في نفس الموضع الذي خطته يدك دون أي توسيط أو قفز إلى المنتصف.</li>
@@ -7264,7 +7264,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.11.0';
+    const APP_VERSION = '2.12.0';
     const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
@@ -7411,8 +7411,8 @@
             await this.registration.update().catch(() => {});
           }
 
-          // 2. Query version.json with cache buster
-          const response = await fetch(`./version.json?_t=${Date.now()}`, {
+          // 2. Query mobile-version.json with cache buster
+          const response = await fetch(`./mobile-mobile-version.json?_t=${Date.now()}`, {
             cache: 'no-store',
             headers: {
               'Cache-Control': 'no-cache',
@@ -7543,21 +7543,15 @@
       },
 
       applyUpdate() {
-        showToast('جاري تثبيت التحديث وتحديث ملفات الاستوديو...');
+        showToast('جاري تثبيت تحديث نسخة الجوال...');
 
-        if (this.waitingWorker) {
-          this.waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-        } else if (navigator.serviceWorker) {
-          navigator.serviceWorker.getRegistration().then((reg) => {
-            if (reg && reg.waiting) {
-              reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-            } else {
-              window.location.reload();
-            }
-          });
-        } else {
-          window.location.reload();
-        }
+        // Mobile releases use their own version source. Navigate with a unique
+        // cache-busting URL so an older Service Worker cache cannot serve stale HTML.
+        const nextVersion = this.latestVersion || this.currentVersion;
+        const freshUrl = new URL('./mobile.html', window.location.href);
+        freshUrl.searchParams.set('v', nextVersion);
+        freshUrl.searchParams.set('_t', String(Date.now()));
+        window.location.replace(freshUrl.toString());
       },
 
       dismissBanner() {
@@ -7658,6 +7652,6 @@
 
   <button id="mobile-focus-exit" aria-label="الخروج من وضع التركيز"><i class="fa-solid fa-compress"></i></button>
 
-  <script src="mobile-ui.js"></script>
+  <script src="mobile-ui.js?v=2.12.0"></script>
 </body>
 </html>
