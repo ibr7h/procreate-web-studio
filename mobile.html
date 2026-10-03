@@ -7601,39 +7601,53 @@
 
   <!-- Dedicated Mobile UI (mobile.html only) -->
   <div id="mobile-orientation-hint">
-    <span><i class="fa-solid fa-mobile-screen-button ml-1"></i> للوحات رسم أكبر، جرّب الوضع الأفقي.</span>
+    <span><i class="fa-solid fa-mobile-screen-button ml-1"></i> الوضع الأفقي يمنح مساحة أفضل للخط.</span>
     <button id="mobile-orientation-dismiss" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
   </div>
 
-  <nav id="mobile-bottom-dock" aria-label="أدوات الجوال الرئيسية">
+  <nav id="mobile-bottom-dock" aria-label="أدوات الخط الرئيسية">
     <button class="mobile-dock-btn is-active" data-proxy="tool-brush" aria-label="الفرشاة">
-      <i class="fa-solid fa-paintbrush"></i><span>الفرشاة</span>
+      <i class="fa-solid fa-pen-nib"></i><span>القلم</span>
     </button>
     <button class="mobile-dock-btn" data-proxy="tool-eraser" aria-label="الممحاة">
       <i class="fa-solid fa-eraser"></i><span>الممحاة</span>
     </button>
+    <button id="mobile-recorder-toggle" class="mobile-dock-btn mobile-dock-recorder" data-proxy="tape-recorder-btn" aria-label="مسجل الخط">
+      <span class="mobile-recorder-orb"><i class="fa-solid fa-record-vinyl"></i></span><span>المسجل</span>
+    </button>
     <button class="mobile-dock-btn" data-proxy="layers-btn" aria-label="الطبقات">
       <i class="fa-solid fa-layer-group"></i><span>الطبقات</span>
-    </button>
-    <button class="mobile-dock-btn" data-proxy="color-btn" aria-label="الألوان">
-      <span id="mobile-color-dot"></span><span>اللون</span>
     </button>
     <button id="mobile-more-toggle" class="mobile-dock-btn" aria-label="المزيد">
       <i class="fa-solid fa-ellipsis"></i><span>المزيد</span>
     </button>
   </nav>
 
-  <section id="mobile-more-sheet" aria-label="المزيد من الأدوات">
+  <section id="mobile-more-sheet" aria-label="لوحة أدوات الخط">
     <div class="mobile-sheet-handle"></div>
+    <div class="mobile-menu-heading">
+      <div class="mobile-menu-emblem">۞</div>
+      <div>
+        <div class="mobile-menu-title">ديوان الخط</div>
+        <div class="mobile-menu-subtitle">أدوات الخط العربي</div>
+      </div>
+    </div>
+
     <div class="mobile-more-grid">
-      <button class="mobile-more-btn mobile-accent" data-proxy="actions-btn"><i class="fa-solid fa-wrench"></i><span>الإجراءات</span></button>
-      <button class="mobile-more-btn mobile-accent" data-proxy="open-studio-btn"><i class="fa-solid fa-sliders"></i><span>Brush Studio</span></button>
-      <button class="mobile-more-btn" data-proxy="nib-settings-btn"><i class="fa-solid fa-compass-drafting"></i><span>قطة القلم</span></button>
-      <button class="mobile-more-btn" data-proxy="grid-settings-btn"><i class="fa-solid fa-border-all"></i><span>الشبكة والسطور</span></button>
+      <div class="mobile-section-title"><span>أدوات الخط</span></div>
+      <button class="mobile-more-btn mobile-accent" data-proxy="open-studio-btn"><i class="fa-solid fa-sliders"></i><span>استوديو القلم</span></button>
+      <button class="mobile-more-btn" data-proxy="nib-settings-btn"><i class="fa-solid fa-compass-drafting"></i><span>قَطّة القلم</span></button>
+      <button class="mobile-more-btn" data-proxy="grid-settings-btn"><i class="fa-solid fa-ruler-combined"></i><span>ميزان السطور</span></button>
+      <button class="mobile-more-btn" data-proxy="color-btn"><span class="mobile-menu-color-dot" id="mobile-color-dot"></span><span>لون الحبر</span></button>
+
+      <div class="mobile-section-title"><span>التدريب والتسجيل</span></div>
+      <button class="mobile-more-btn mobile-record-action" data-proxy="tape-recorder-btn"><i class="fa-solid fa-record-vinyl"></i><span>مسجل الخط</span></button>
       <button class="mobile-more-btn" data-proxy="auto-write-btn"><i class="fa-solid fa-wand-magic-sparkles"></i><span>التدريب</span></button>
-      <button class="mobile-more-btn" data-proxy="tape-recorder-btn"><i class="fa-solid fa-record-vinyl"></i><span>مسجل الخط</span></button>
       <button class="mobile-more-btn" data-proxy="reed-sound-btn"><i class="fa-solid fa-volume-high"></i><span>صوت القصبة</span></button>
       <button class="mobile-more-btn" data-proxy="fit-screen-btn"><i class="fa-solid fa-expand"></i><span>ملاءمة اللوحة</span></button>
+
+      <div class="mobile-section-title"><span>المشروع والعرض</span></div>
+      <button class="mobile-more-btn mobile-accent" data-proxy="actions-btn"><i class="fa-solid fa-wrench"></i><span>الإجراءات</span></button>
       <button class="mobile-more-btn" data-proxy="undo-btn"><i class="fa-solid fa-arrow-rotate-left"></i><span>تراجع</span></button>
       <button class="mobile-more-btn" data-proxy="redo-btn"><i class="fa-solid fa-arrow-rotate-right"></i><span>إعادة</span></button>
       <button class="mobile-more-btn" data-mobile-action="focus"><i class="fa-solid fa-maximize"></i><span>وضع التركيز</span></button>
