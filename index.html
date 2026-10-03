@@ -198,14 +198,16 @@
     }
     #studio-tape-recorder.tape-theme-light #tape-words-lib-btn,
     #studio-tape-recorder.tape-theme-light #tape-deck-close-btn,
-    #studio-tape-recorder.tape-theme-light #tape-theme-toggle-btn {
+    #studio-tape-recorder.tape-theme-light #tape-theme-toggle-btn,
+    #studio-tape-recorder.tape-theme-light #tape-size-toggle-btn {
       background: #e2e8f0 !important;
       border-color: #cbd5e1 !important;
       color: #334155 !important;
     }
     #studio-tape-recorder.tape-theme-light #tape-words-lib-btn:hover,
     #studio-tape-recorder.tape-theme-light #tape-deck-close-btn:hover,
-    #studio-tape-recorder.tape-theme-light #tape-theme-toggle-btn:hover {
+    #studio-tape-recorder.tape-theme-light #tape-theme-toggle-btn:hover,
+    #studio-tape-recorder.tape-theme-light #tape-size-toggle-btn:hover {
       background: #cbd5e1 !important;
       color: #0f172a !important;
     }
@@ -266,6 +268,113 @@
       background: #fee2e2 !important;
       color: #dc2626 !important;
     }
+
+    /* ======================================================== */
+    /* Tape Deck - Compact Mini Mode (وضع حجم أصغر أيقونات فقط) */
+    /* ======================================================== */
+    #studio-tape-recorder.tape-mode-compact {
+      max-width: 580px !important;
+      width: 95% !important;
+      bottom: 1rem !important;
+    }
+    #studio-tape-recorder.tape-mode-compact > div {
+      padding: 0.5rem 0.65rem !important;
+      border-radius: 1.25rem !important;
+      gap: 0.35rem !important;
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.85) !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-top-bar {
+      padding: 0.25rem 0.5rem !important;
+      border-radius: 0.85rem !important;
+      gap: 0.35rem !important;
+    }
+    /* إخفاء بكرات الكاسيت في وضع الحجم الصغير لتوفير المساحة */
+    #studio-tape-recorder.tape-mode-compact #tape-spools-box {
+      display: none !important;
+    }
+    /* إخفاء عنوان الجلسة الطويل والعداد المفصل في الشاشة بالوضع المصغر */
+    #studio-tape-recorder.tape-mode-compact #tape-session-title,
+    #studio-tape-recorder.tape-mode-compact #tape-stroke-counter,
+    #studio-tape-recorder.tape-mode-compact #tape-top-bar .text-white\/20 {
+      display: none !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-lcd-screen {
+      padding: 0.2rem 0.45rem !important;
+    }
+    /* جعل شريط التمرير الزمني ناعماً ونحيفاً */
+    #studio-tape-recorder.tape-mode-compact #tape-timeline-container {
+      padding: 0 0.25rem !important;
+      gap: 0.35rem !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-timeline-slider {
+      height: 4px !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-current-pos-label,
+    #studio-tape-recorder.tape-mode-compact #tape-total-duration-label {
+      width: 2rem !important;
+      font-size: 9px !important;
+    }
+    /* شريط الأزرار السفلي في الوضع المصغر: شريط أفقي موحد للأيقونات فقط */
+    #studio-tape-recorder.tape-mode-compact #tape-bottom-controls-bar {
+      padding-top: 0.25rem !important;
+      gap: 0.25rem !important;
+      justify-content: center !important;
+      flex-wrap: nowrap !important;
+      overflow-x: auto !important;
+      scrollbar-width: none !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-bottom-controls-bar::-webkit-scrollbar {
+      display: none !important;
+    }
+    #studio-tape-recorder.tape-mode-compact .tape-controls-cluster {
+      gap: 0.25rem !important;
+      flex-wrap: nowrap !important;
+    }
+    #studio-tape-recorder.tape-mode-compact .tape-cluster-divider {
+      display: block !important;
+      width: 1px !important;
+      height: 1.25rem !important;
+      background: rgba(255, 255, 255, 0.15) !important;
+      margin: 0 0.15rem !important;
+      flex-shrink: 0 !important;
+    }
+    #studio-tape-recorder.tape-theme-light.tape-mode-compact .tape-cluster-divider {
+      background: rgba(0, 0, 0, 0.15) !important;
+    }
+    /* إخفاء كافة النصوص المكتوبة داخل الأزرار بالوضع المصغر لتبقى أيقونات فقط */
+    #studio-tape-recorder.tape-mode-compact #tape-bottom-controls-bar button span:not(#tape-speed-badge) {
+      display: none !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-words-lib-btn span {
+      display: none !important;
+    }
+    /* تحويل الأزرار إلى مربعات أيقونات متناسقة ومريحة للمس */
+    #studio-tape-recorder.tape-mode-compact #tape-bottom-controls-bar button {
+      padding: 0.35rem 0.5rem !important;
+      min-width: 2rem !important;
+      height: 2rem !important;
+      border-radius: 0.65rem !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 0 !important;
+      font-size: 11px !important;
+      flex-shrink: 0 !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-btn-speed {
+      padding: 0.2rem 0.4rem !important;
+      font-size: 10px !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-btn-speed i {
+      display: none !important;
+    }
+    #studio-tape-recorder.tape-mode-compact #tape-top-bar button {
+      width: 1.85rem !important;
+      height: 1.85rem !important;
+      border-radius: 0.65rem !important;
+      padding: 0 !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
   </style>
 </head>
 <body class="h-screen w-screen flex flex-col justify-between select-none">
@@ -283,7 +392,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.8.0</span>
+        <span id="header-version-label">v2.9.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -559,8 +668,12 @@
             </div>
           </div>
 
-          <!-- Header Mini Controls: Word Library & Theme Toggle & Close -->
+          <!-- Header Mini Controls: Word Library & Theme Toggle & Size Mode & Close -->
           <div class="flex items-center gap-1.5 shrink-0">
+            <!-- Tape Size Mode Toggle (التحويل بين الوضع الكامل والوضع المصغر أيقونات فقط) -->
+            <button id="tape-size-toggle-btn" title="التحويل إلى وضع الحجم الصغير (أيقونات فقط)" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/15 text-blue-300 hover:text-blue-200 flex items-center justify-center transition active:scale-95 border border-white/10 shadow-sm">
+              <i class="fa-solid fa-compress text-xs" id="tape-size-icon"></i>
+            </button>
             <!-- Tape Theme Toggle (التحويل بين النمط الكلاسيكي الداكن ومظهر لايت الفاتح) -->
             <button id="tape-theme-toggle-btn" title="تبديل مظهر المسجل (داكن / لايت)" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/15 text-amber-300 hover:text-amber-200 flex items-center justify-center transition active:scale-95 border border-white/10 shadow-sm">
               <i class="fa-solid fa-sun text-xs" id="tape-theme-icon"></i>
@@ -577,7 +690,7 @@
         </div>
 
         <!-- Scrubber Timeline Slider (شريط التمرير الزمني لشريط الكاسيت) -->
-        <div class="flex items-center gap-2 px-1">
+        <div id="tape-timeline-container" class="flex items-center gap-2 px-1">
           <span class="text-[10px] font-mono text-gray-400 w-10 text-right" id="tape-current-pos-label">00:00</span>
           <div class="flex-1 relative flex items-center">
             <input type="range" id="tape-timeline-slider" min="0" max="100" value="0" step="0.2" class="w-full h-1.5 bg-white/10 hover:bg-white/20 rounded-lg appearance-none cursor-pointer accent-emerald-500 transition">
@@ -589,7 +702,7 @@
         <div id="tape-bottom-controls-bar" class="flex items-center justify-between flex-wrap gap-2 pt-1 border-t border-white/10">
           
           <!-- Primary Tape Cluster: REC, STOP, PLAY, PAUSE, REWIND, SPEED, LOOP -->
-          <div class="flex items-center gap-1 sm:gap-2 flex-wrap">
+          <div id="tape-primary-cluster" class="flex items-center gap-1 sm:gap-2 flex-wrap tape-controls-cluster">
             
             <!-- RECORD BUTTON (تسجيل 🔴) -->
             <button id="tape-btn-rec" title="تسجيل جديد (Record) - اضغط ثم اكتب بالفرشاة" class="px-3 sm:px-4 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/35 border border-rose-500/50 text-rose-300 font-bold text-xs flex items-center gap-2 transition active:scale-90 shadow">
@@ -632,8 +745,11 @@
 
           </div>
 
+          <!-- Divider between clusters (visible in compact mode) -->
+          <div class="tape-cluster-divider hidden" id="tape-cluster-divider"></div>
+
           <!-- Secondary Actions: Save Word, Export Video, Share Link, Clear -->
-          <div class="flex items-center gap-1.5 sm:gap-2">
+          <div id="tape-secondary-cluster" class="flex items-center gap-1.5 sm:gap-2 tape-controls-cluster">
             <!-- Export Video Timelapse Button (تصدير فيديو ومتحركة للخط) -->
             <button id="tape-btn-export-video" title="تصدير فيديو ومتحركة للخط (Timelapse Video) لمشاركته" class="px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-600/30 to-teal-600/30 hover:from-emerald-600/40 hover:to-teal-600/40 border border-emerald-500/40 text-emerald-200 font-bold text-xs flex items-center gap-1.5 transition active:scale-95 shadow">
               <i class="fa-solid fa-video text-emerald-400" id="tape-export-video-icon"></i>
@@ -1814,7 +1930,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.8.0</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.9.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -1883,7 +1999,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.8.0</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.9.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -1923,9 +2039,10 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.8.0):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.9.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
+              <li><strong class="text-white">وضعان لحجم المسجل (كامل بالشكل الحالي / مصغر أيقونات فقط):</strong> إمكانية التبديل بنقرة زر واحدة بين مظهر الكاسيت الكلاسيكي الكامل ووضع الشريط المدمج الصغير الخفيف بالأيقونات فقط، مع حفظ التفضيل تلقائياً لتوفير أقصى مساحة للرسم والكتابة.</li>
               <li><strong class="text-white">مظهر المسجل الفاتح (Light Mode Deck):</strong> أيقونة مخصصة في شريط المسجل للتبديل الفوري بين المظهر الكلاسيكي الداكن ومظهر لايت الفاتح العصري مع حفظ التفضيل تلقائياً.</li>
               <li><strong class="text-white">تحديد منطقة تصدير الفيديو:</strong> خيار تصدير كامل اللوحة (Full Canvas) أو اقتصاص ذكي مركز حول الكلمة والمخطوطة بأبعاد مثالية للنشر كـ Story / Reels.</li>
               <li><strong class="text-white">خلفية بيضاء نقية للفيديو:</strong> إمكانية اختيار خلفية بيضاء صافية ناصعة (#ffffff) للتصدير بدقة عالية أو الإبقاء على خامة الورق التراثي الحالية.</li>
@@ -1942,7 +2059,7 @@
             <div class="bg-white/5 p-2 rounded-xl">
               <span class="block text-gray-500">حالة التخزين غير المتصل:</span>
               <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
-                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v8 + LocalStorage
+                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v9 + LocalStorage
               </span>
             </div>
             <div class="bg-white/5 p-2 rounded-xl">
@@ -3584,6 +3701,7 @@
       playbackAnimId: null,
 
       theme: 'dark', // 'dark' | 'light'
+      sizeMode: 'full', // 'full' (الوضع الكامل بالشكل الحالي) | 'compact' (وضع حجم أصغر أيقونات فقط)
       onPlaybackFrameHook: null,
       activeVideoRecorder: null,
       activeRecordCanvas: null,
@@ -3641,6 +3759,15 @@
         } catch(e) {}
         this.applyTheme();
 
+        // استعادة وضع حجم المسجل المحفوظ (كامل / مصغر أيقونات فقط)
+        try {
+          const savedSize = localStorage.getItem('procreate_tape_size_mode');
+          if (savedSize === 'compact' || savedSize === 'full') {
+            this.sizeMode = savedSize;
+          }
+        } catch(e) {}
+        this.applySizeMode();
+
         this.bindEvents();
         this.loadSavedWordsFromStorage();
         this.renderWordsLibrary();
@@ -3650,6 +3777,7 @@
         safeBind('tape-recorder-btn', 'click', () => this.toggleDeck());
         safeBind('tape-deck-close-btn', 'click', () => this.hideDeck());
         safeBind('tape-theme-toggle-btn', 'click', () => this.toggleTheme());
+        safeBind('tape-size-toggle-btn', 'click', () => this.toggleSizeMode());
         safeBind('tape-btn-rec', 'click', () => this.startRecording());
         safeBind('tape-btn-stop', 'click', () => this.stop());
         safeBind('tape-btn-play', 'click', () => this.play());
@@ -3754,6 +3882,36 @@
           this.deckEl.classList.remove('tape-theme-light');
           if (icon) icon.className = 'fa-solid fa-sun text-xs text-amber-400';
           if (btn) btn.title = 'التحويل إلى مظهر لايت الفاتح (Light Deck)';
+        }
+      },
+
+      /**
+       * التبديل بين وضع المسجل بالحجم الكامل (الشكل الحالي) والوضع المصغر (أيقونات فقط)
+       */
+      toggleSizeMode() {
+        this.sizeMode = (this.sizeMode === 'full') ? 'compact' : 'full';
+        this.applySizeMode();
+        try {
+          localStorage.setItem('procreate_tape_size_mode', this.sizeMode);
+        } catch(e) {}
+        showToast(this.sizeMode === 'compact' ? 'تم تفعيل وضع المسجل المصغر (أيقونات فقط) 🗜️' : 'تم تفعيل وضع المسجل الكامل (الشكل الحالي) 🎛️');
+      },
+
+      /**
+       * تطبيق كلاسات وأيقونات وضع الحجم
+       */
+      applySizeMode() {
+        if (!this.deckEl) return;
+        const icon = document.getElementById('tape-size-icon');
+        const btn = document.getElementById('tape-size-toggle-btn');
+        if (this.sizeMode === 'compact') {
+          this.deckEl.classList.add('tape-mode-compact');
+          if (icon) icon.className = 'fa-solid fa-expand text-xs text-blue-400';
+          if (btn) btn.title = 'التحويل إلى الوضع الكامل (الشكل الحالي)';
+        } else {
+          this.deckEl.classList.remove('tape-mode-compact');
+          if (icon) icon.className = 'fa-solid fa-compress text-xs text-blue-300';
+          if (btn) btn.title = 'التحويل إلى وضع الحجم الصغير (أيقونات فقط)';
         }
       },
 
@@ -6550,7 +6708,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.8.0';
+    const APP_VERSION = '2.9.0';
     const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
