@@ -1679,3 +1679,59 @@ body.mobile-page.mobile-recorder-open > main {
     padding-top: 4px !important;
   }
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.14.1 — aspect-ratio integrity
+   The frame and all canvas layers must always share 4:3.
+   ============================================================ */
+
+body.mobile-page #canvas-container {
+  aspect-ratio: 4 / 3 !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* Portrait: width is the limiting dimension. */
+@media (orientation: portrait) and (max-width: 900px) {
+  body.mobile-page #canvas-container {
+    width: calc(100vw - 12px) !important;
+    max-width: calc(100vw - 12px) !important;
+  }
+}
+
+/* Landscape: height is the limiting dimension. Derive width from the
+   remaining viewport height so 4:3 is never stretched horizontally. */
+@media (orientation: landscape) and (max-height: 700px) {
+  body.mobile-page #canvas-container {
+    width: min(
+      calc(100vw - 24px),
+      calc(
+        (
+          100dvh - var(--mobile-topbar-h) - var(--mobile-dock-h) -
+          var(--mobile-controls-h) - var(--safe-bottom) - 22px
+        ) * 4 / 3
+      )
+    ) !important;
+    max-width: none !important;
+    aspect-ratio: 4 / 3 !important;
+    height: auto !important;
+  }
+}
+
+/* Canvas layers fill exactly the frame; JS no longer gives them a competing size. */
+body.mobile-page #display-canvas,
+body.mobile-page #grid-canvas,
+body.mobile-page #training-ghost-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  inset: 0 !important;
+}
+
+/* Keep the orientation suggestion unobtrusive and below the title bar. */
+#mobile-orientation-hint {
+  max-width: calc(100vw - 36px) !important;
+  min-height: 38px;
+  padding: 7px 10px !important;
+  font-size: 11px !important;
+}
