@@ -424,3 +424,534 @@ body.mobile-page.mobile-focus #mobile-focus-exit { display: flex; }
   body.mobile-page main > aside { gap: 3px !important; padding-inline: 5px !important; }
   body.mobile-page main > aside > div.relative > span:first-child { display: none; }
 }
+
+
+/* ============================================================
+   Mobile UX v2 — Arabic Calligraphy / Andalusian design system
+   Prevents fixed mobile surfaces from overlapping the recorder.
+   ============================================================ */
+
+:root {
+  --calligraphy-ink: #0b2423;
+  --calligraphy-ink-2: #103532;
+  --calligraphy-emerald: #1c6a61;
+  --calligraphy-gold: #c6a45f;
+  --calligraphy-gold-soft: #e4cf9c;
+  --calligraphy-paper: #f2ead9;
+  --calligraphy-muted: #9ca7a2;
+  --mobile-recorder-h: 176px;
+}
+
+/* Subtle geometric ambience inspired by Andalusian tilework. */
+body.mobile-page {
+  background-color: #071715 !important;
+  background-image:
+    linear-gradient(30deg, rgba(198,164,95,.035) 12%, transparent 12.5%, transparent 87%, rgba(198,164,95,.035) 87.5%, rgba(198,164,95,.035)),
+    linear-gradient(150deg, rgba(198,164,95,.035) 12%, transparent 12.5%, transparent 87%, rgba(198,164,95,.035) 87.5%, rgba(198,164,95,.035)),
+    linear-gradient(30deg, rgba(198,164,95,.035) 12%, transparent 12.5%, transparent 87%, rgba(198,164,95,.035) 87.5%, rgba(198,164,95,.035)),
+    linear-gradient(150deg, rgba(198,164,95,.035) 12%, transparent 12.5%, transparent 87%, rgba(198,164,95,.035) 87.5%, rgba(198,164,95,.035)),
+    linear-gradient(60deg, rgba(255,255,255,.018) 25%, transparent 25.5%, transparent 75%, rgba(255,255,255,.018) 75%);
+  background-size: 42px 74px;
+  background-position: 0 0, 0 0, 21px 37px, 21px 37px, 0 0;
+}
+
+body.mobile-page > header {
+  background:
+    linear-gradient(180deg, rgba(17,57,53,.98), rgba(8,31,29,.98)) !important;
+  border-bottom: 1px solid rgba(198,164,95,.34) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,.28);
+}
+
+body.mobile-page > header::after {
+  content: "ديوان الخط";
+  font-family: 'Amiri', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--calligraphy-paper);
+  letter-spacing: 0;
+  text-shadow: 0 1px 12px rgba(198,164,95,.15);
+}
+
+body.mobile-page > header::before {
+  content: "۞";
+  position: absolute;
+  left: calc(50% + 47px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--calligraphy-gold);
+  font-size: 12px;
+  opacity: .86;
+  pointer-events: none;
+}
+
+body.mobile-page #app-version-badge-btn {
+  background: rgba(198,164,95,.10) !important;
+  border-color: rgba(198,164,95,.26) !important;
+  color: var(--calligraphy-gold-soft) !important;
+}
+
+body.mobile-page > main {
+  background:
+    radial-gradient(circle at 50% 28%, rgba(28,106,97,.10), transparent 38%),
+    linear-gradient(rgba(7,23,21,.80), rgba(7,23,21,.96)) !important;
+  transition: padding .22s ease;
+}
+
+body.mobile-page #canvas-container {
+  border: 1px solid rgba(198,164,95,.34) !important;
+  outline: 3px solid rgba(28,106,97,.14);
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.52),
+    0 0 0 1px rgba(242,234,217,.04) inset !important;
+  transition: width .22s ease, height .22s ease, max-height .22s ease;
+}
+
+/* Compact control rail */
+body.mobile-page main > aside {
+  background:
+    linear-gradient(180deg, rgba(18,57,53,.97), rgba(8,32,30,.97)) !important;
+  border: 1px solid rgba(198,164,95,.28) !important;
+  box-shadow: 0 12px 35px rgba(0,0,0,.42);
+  transition: bottom .22s ease, opacity .22s ease, transform .22s ease;
+}
+
+body.mobile-page .procreate-vertical-slider {
+  background: rgba(242,234,217,.10) !important;
+  border-color: rgba(198,164,95,.22) !important;
+}
+
+body.mobile-page .procreate-vertical-slider::-webkit-slider-thumb {
+  background: var(--calligraphy-paper) !important;
+  border-color: var(--calligraphy-gold) !important;
+}
+
+/* Main dock: a dedicated calligraphy tool dock with recorder in the center. */
+#mobile-bottom-dock {
+  background:
+    linear-gradient(180deg, rgba(17,58,54,.985), rgba(7,28,27,.985)) !important;
+  border: 1px solid rgba(198,164,95,.34) !important;
+  border-radius: 20px 20px 14px 14px !important;
+  box-shadow:
+    0 -14px 34px rgba(0,0,0,.36),
+    0 1px 0 rgba(242,234,217,.035) inset !important;
+}
+
+#mobile-bottom-dock::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 18%;
+  right: 18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(198,164,95,.45), transparent);
+  pointer-events: none;
+}
+
+.mobile-dock-btn {
+  min-height: 46px;
+  color: #bdc8c2 !important;
+}
+
+.mobile-dock-btn i {
+  color: var(--calligraphy-gold-soft);
+}
+
+.mobile-dock-btn.is-active {
+  color: var(--calligraphy-paper) !important;
+  background: rgba(198,164,95,.11) !important;
+  box-shadow: inset 0 0 0 1px rgba(198,164,95,.20) !important;
+}
+
+.mobile-dock-recorder {
+  position: relative;
+  color: var(--calligraphy-paper) !important;
+}
+
+.mobile-recorder-orb {
+  width: 31px;
+  height: 31px;
+  margin-top: -12px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 40% 35%, #d9bc79, #9b7334 62%, #61441c 100%);
+  color: #102d29;
+  border: 2px solid rgba(242,234,217,.78);
+  box-shadow: 0 5px 15px rgba(0,0,0,.42), 0 0 0 4px rgba(198,164,95,.10);
+}
+
+.mobile-recorder-orb i {
+  color: #102d29 !important;
+  font-size: 14px !important;
+}
+
+/* Calligraphy menu */
+#mobile-more-sheet {
+  overflow: auto;
+  max-height: min(76dvh, 640px);
+  background:
+    linear-gradient(180deg, rgba(18,58,54,.99), rgba(8,31,29,.99)) !important;
+  border-color: rgba(198,164,95,.36) !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.62) !important;
+}
+
+#mobile-more-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(198,164,95,.08);
+  border-radius: 17px;
+  pointer-events: none;
+}
+
+.mobile-sheet-handle {
+  background: rgba(198,164,95,.48) !important;
+}
+
+.mobile-menu-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 10px;
+  border-bottom: 1px solid rgba(198,164,95,.15);
+  margin-bottom: 9px;
+}
+
+.mobile-menu-emblem {
+  width: 38px;
+  height: 38px;
+  border-radius: 50% 50% 42% 42%;
+  display: grid;
+  place-items: center;
+  color: var(--calligraphy-gold-soft);
+  font-size: 20px;
+  border: 1px solid rgba(198,164,95,.30);
+  background: rgba(198,164,95,.07);
+}
+
+.mobile-menu-title {
+  font-family: 'Amiri', serif;
+  font-size: 18px;
+  line-height: 1.1;
+  color: var(--calligraphy-paper);
+  font-weight: 700;
+}
+
+.mobile-menu-subtitle {
+  font-size: 9px;
+  margin-top: 2px;
+  color: #91aaa2;
+}
+
+.mobile-section-title {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 2px;
+  color: var(--calligraphy-gold-soft);
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.mobile-section-title::before,
+.mobile-section-title::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, rgba(198,164,95,.28));
+}
+
+.mobile-section-title::after {
+  background: linear-gradient(90deg, rgba(198,164,95,.28), transparent);
+}
+
+.mobile-more-btn {
+  min-height: 62px;
+  color: #d8dedb !important;
+  background:
+    linear-gradient(180deg, rgba(242,234,217,.055), rgba(242,234,217,.025)) !important;
+  border-color: rgba(198,164,95,.12) !important;
+  border-radius: 15px 15px 12px 12px !important;
+}
+
+.mobile-more-btn i {
+  color: var(--calligraphy-gold-soft);
+}
+
+.mobile-more-btn.mobile-accent,
+.mobile-more-btn.mobile-record-action {
+  color: var(--calligraphy-paper) !important;
+  border-color: rgba(198,164,95,.24) !important;
+  background: rgba(198,164,95,.085) !important;
+}
+
+.mobile-menu-color-dot {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  border: 2px solid rgba(228,207,156,.85);
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0,0,0,.38);
+}
+
+/* All popovers use one visual language and one mobile placement rule. */
+body.mobile-page #brush-library-popover,
+body.mobile-page #layers-panel,
+body.mobile-page #grid-settings-popover,
+body.mobile-page #color-panel,
+body.mobile-page #actions-panel,
+body.mobile-page #nib-studio-popover,
+body.mobile-page #eraser-studio-popover {
+  background:
+    linear-gradient(180deg, rgba(18,58,54,.99), rgba(9,31,29,.99)) !important;
+  border-color: rgba(198,164,95,.30) !important;
+  box-shadow: 0 20px 60px rgba(0,0,0,.60) !important;
+}
+
+/* Recorder mode: reserve a real layout zone instead of stacking fixed controls.
+   - Main dock hides.
+   - Size/opacity rail moves directly above recorder.
+   - Canvas shrinks to remain unobscured.
+   - Recorder gets the bottom zone exclusively. */
+body.mobile-page.mobile-recorder-open {
+  --mobile-recorder-h: 176px;
+}
+
+body.mobile-page.mobile-recorder-open #mobile-bottom-dock,
+body.mobile-page.mobile-recorder-open #mobile-more-sheet {
+  display: none !important;
+}
+
+body.mobile-page.mobile-recorder-open > main {
+  padding-top: 6px !important;
+  padding-bottom: calc(var(--mobile-recorder-h) + var(--mobile-controls-h) + var(--safe-bottom) + 18px) !important;
+}
+
+body.mobile-page.mobile-recorder-open #canvas-container {
+  max-height: calc(100dvh - var(--mobile-topbar-h) - var(--mobile-recorder-h) - var(--mobile-controls-h) - var(--safe-bottom) - 28px) !important;
+}
+
+body.mobile-page.mobile-recorder-open main > aside {
+  bottom: calc(var(--mobile-recorder-h) + var(--safe-bottom) + 8px) !important;
+  z-index: 78 !important;
+}
+
+body.mobile-page #studio-tape-recorder {
+  transition: bottom .22s ease, max-height .22s ease, width .22s ease !important;
+}
+
+body.mobile-page.mobile-recorder-open #studio-tape-recorder {
+  left: 5px !important;
+  right: 5px !important;
+  bottom: max(4px, var(--safe-bottom)) !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: none !important;
+  height: var(--mobile-recorder-h);
+  max-height: var(--mobile-recorder-h) !important;
+  z-index: 85 !important;
+}
+
+body.mobile-page.mobile-recorder-open #studio-tape-recorder > div {
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  padding: 7px !important;
+  gap: 5px !important;
+  border-radius: 18px 18px 13px 13px !important;
+  background:
+    linear-gradient(180deg, rgba(16,55,51,.985), rgba(7,29,27,.99)) !important;
+  border: 1px solid rgba(198,164,95,.33) !important;
+  box-shadow:
+    0 -14px 40px rgba(0,0,0,.42),
+    0 0 0 1px rgba(242,234,217,.03) inset !important;
+}
+
+/* Mobile recorder is intentionally compact even when the desktop full mode is selected. */
+body.mobile-page.mobile-recorder-open #tape-top-bar {
+  min-height: 42px;
+  padding: 5px 6px !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px !important;
+  background: rgba(4,19,18,.56) !important;
+  border-color: rgba(198,164,95,.16) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-spools-box {
+  display: none !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-lcd-screen {
+  min-width: 0;
+  padding: 5px 7px !important;
+  border-color: rgba(198,164,95,.14) !important;
+  background: rgba(3,14,13,.82) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-session-title {
+  max-width: 34vw;
+  color: var(--calligraphy-gold-soft) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-top-bar > div:last-child {
+  gap: 3px !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-top-bar > div:last-child button {
+  width: 30px !important;
+  min-width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-words-lib-btn {
+  display: none !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-timeline-container {
+  min-height: 22px;
+  padding-inline: 3px !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-bottom-controls-bar {
+  flex: 1 1 auto;
+  min-height: 52px;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 4px 2px 1px !important;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  border-color: rgba(198,164,95,.13) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-bottom-controls-bar::-webkit-scrollbar {
+  display: none;
+}
+
+body.mobile-page.mobile-recorder-open .tape-controls-cluster {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 5px !important;
+  flex: 0 0 auto;
+}
+
+body.mobile-page.mobile-recorder-open #tape-bottom-controls-bar button {
+  min-height: 40px !important;
+  min-width: 42px;
+  padding: 7px 10px !important;
+  border-radius: 12px !important;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+body.mobile-page.mobile-recorder-open #tape-bottom-controls-bar button span:not(#tape-speed-badge) {
+  display: none !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-speed-group {
+  min-height: 40px;
+  flex: 0 0 auto;
+  border-color: rgba(198,164,95,.18) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-speed-popover {
+  position: fixed !important;
+  left: 6px !important;
+  right: 6px !important;
+  bottom: calc(var(--mobile-recorder-h) + var(--safe-bottom) + 7px) !important;
+  transform: none !important;
+  width: auto !important;
+  max-width: none !important;
+  max-height: 44dvh !important;
+  overflow-y: auto !important;
+  z-index: 115 !important;
+  background: rgba(11,40,37,.99) !important;
+  border-color: rgba(198,164,95,.35) !important;
+}
+
+/* Any standard popover opened while the recorder is active is placed above both
+   recorder and size/opacity rail; it can never cover recorder controls. */
+body.mobile-page.mobile-recorder-open #brush-library-popover,
+body.mobile-page.mobile-recorder-open #layers-panel,
+body.mobile-page.mobile-recorder-open #grid-settings-popover,
+body.mobile-page.mobile-recorder-open #color-panel,
+body.mobile-page.mobile-recorder-open #actions-panel,
+body.mobile-page.mobile-recorder-open #nib-studio-popover,
+body.mobile-page.mobile-recorder-open #eraser-studio-popover {
+  bottom: calc(var(--mobile-recorder-h) + var(--mobile-controls-h) + var(--safe-bottom) + 14px) !important;
+  max-height: calc(100dvh - var(--mobile-topbar-h) - var(--mobile-recorder-h) - var(--mobile-controls-h) - var(--safe-bottom) - 28px) !important;
+}
+
+/* Training/simulation controls must also remain above the recording zone. */
+body.mobile-page.mobile-recorder-open #training-active-banner {
+  top: calc(var(--mobile-topbar-h) + 6px) !important;
+  max-height: 92px;
+  overflow-y: auto;
+}
+
+body.mobile-page.mobile-recorder-open #sim-active-bar {
+  bottom: calc(var(--mobile-recorder-h) + var(--mobile-controls-h) + var(--safe-bottom) + 14px) !important;
+}
+
+/* Recording state indicator on the promoted dock button. */
+body.mobile-page.mobile-recorder-open .mobile-recorder-orb {
+  background: radial-gradient(circle at 40% 35%, #f1d38f, #b98a3f 62%, #6f4b1e 100%);
+}
+
+/* Landscape: keep recorder compact and give more room to the canvas. */
+@media (orientation: landscape) and (max-height: 600px) {
+  body.mobile-page.mobile-recorder-open {
+    --mobile-recorder-h: 118px;
+    --mobile-controls-h: 44px;
+  }
+
+  body.mobile-page.mobile-recorder-open #tape-top-bar {
+    min-height: 34px;
+  }
+
+  body.mobile-page.mobile-recorder-open #tape-lcd-screen {
+    padding-block: 3px !important;
+  }
+
+  body.mobile-page.mobile-recorder-open #tape-timeline-container {
+    min-height: 16px;
+  }
+
+  body.mobile-page.mobile-recorder-open #tape-bottom-controls-bar button {
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 5px 8px !important;
+  }
+
+  body.mobile-page.mobile-recorder-open main > aside {
+    height: 42px !important;
+  }
+}
+
+/* Small iPhones: simplify without hiding essential controls. */
+@media (max-width: 380px) {
+  .mobile-more-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  body.mobile-page.mobile-recorder-open {
+    --mobile-recorder-h: 168px;
+  }
+
+  body.mobile-page.mobile-recorder-open #tape-session-title {
+    max-width: 25vw;
+  }
+
+  body.mobile-page.mobile-recorder-open #tape-top-bar > div:last-child #tape-theme-toggle-btn {
+    display: none !important;
+  }
+}
