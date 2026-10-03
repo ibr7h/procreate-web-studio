@@ -2,7 +2,7 @@
   "name": "Procreate Web Studio Mobile",
   "short_name": "Procreate Mobile",
   "description": "واجهة جوال مخصصة لاستوديو الخط العربي والرسم الرقمي",
-  "start_url": "./mobile.html",
+  "start_url": "./mobile.html?v=2.12.0",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -29,5 +29,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "./mobile.html"
 }
