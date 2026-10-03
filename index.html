@@ -289,6 +289,21 @@
       border-color: #cbd5e1 !important;
       color: #64748b !important;
     }
+    #studio-tape-recorder.tape-theme-light #tape-btn-toggle-nib,
+    #studio-tape-recorder.tape-theme-light #tape-nib-top-toggle-btn {
+      background: #f1f5f9 !important;
+      border-color: #cbd5e1 !important;
+      color: #64748b !important;
+    }
+    #studio-tape-recorder.tape-theme-light #tape-btn-toggle-nib.tape-nib-active,
+    #studio-tape-recorder.tape-theme-light #tape-nib-top-toggle-btn.tape-nib-active {
+      background: #dcfce7 !important;
+      border-color: #86efac !important;
+      color: #15803d !important;
+    }
+    #studio-tape-recorder.tape-theme-light .tape-nib-active i {
+      color: #16a34a !important;
+    }
     #studio-tape-recorder.tape-theme-light #tape-btn-share-link {
       background: #dbeafe !important;
       border-color: #bfdbfe !important;
@@ -449,7 +464,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.10.0</span>
+        <span id="header-version-label">v2.11.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -735,6 +750,10 @@
             <button id="tape-theme-toggle-btn" title="تبديل مظهر المسجل (داكن / لايت)" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/15 text-amber-300 hover:text-amber-200 flex items-center justify-center transition active:scale-95 border border-white/10 shadow-sm">
               <i class="fa-solid fa-sun text-xs" id="tape-theme-icon"></i>
             </button>
+            <!-- Tape Nib Pointer Quick Toggle (إظهار / إخفاء القصبة أثناء المحاكاة 🖋️) -->
+            <button id="tape-nib-top-toggle-btn" title="إظهار / إخفاء مؤشر القصبة أثناء التشغيل" class="w-8 h-8 rounded-xl bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/50 text-emerald-300 flex items-center justify-center transition active:scale-95 shadow-sm">
+              <i class="fa-solid fa-pen-nib text-xs text-emerald-400" id="tape-nib-top-icon"></i>
+            </button>
             <button id="tape-words-lib-btn" title="مكتبة الكلمات والحروف الجاهزة والمسجلة" class="px-2.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-gray-200 text-xs font-bold flex items-center gap-1.5 transition active:scale-95">
               <i class="fa-solid fa-book-bookmark text-amber-400 text-xs"></i>
               <span class="hidden md:inline">مكتبة الكلمات</span>
@@ -859,6 +878,12 @@
             <!-- LOOP TOGGLE (تكرار مستمر 🔁) -->
             <button id="tape-btn-loop" title="تشغيل متكرر مستمر (Loop)" class="px-2.5 sm:px-3 py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-gray-400 font-bold text-xs flex items-center gap-1 transition active:scale-90">
               <i class="fa-solid fa-repeat text-xs"></i>
+            </button>
+
+            <!-- NIB POINTER TOGGLE (إظهار أو إخفاء القصبة أثناء المحاكاة 🖋️) -->
+            <button id="tape-btn-toggle-nib" title="إظهار / إخفاء مؤشر القصبة أثناء التشغيل" class="px-2.5 sm:px-3 py-2 rounded-xl bg-emerald-600/25 border border-emerald-500/50 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition active:scale-90 shadow-sm">
+              <i class="fa-solid fa-pen-nib text-xs text-emerald-400" id="tape-nib-toggle-icon"></i>
+              <span class="hidden sm:inline" id="tape-nib-toggle-label">القصبة</span>
             </button>
 
           </div>
@@ -2048,7 +2073,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.10.0</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.11.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -2117,7 +2142,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.10.0</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.11.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2157,9 +2182,12 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.10.0):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.11.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
+              <li><strong class="text-white">تثبيت الموقع الأصلي الدقيق للكلمات والمحفوظات:</strong> تم حل مشكلة انزياح الكلمات عند تشغيلها من المكتبة؛ حيث أصبحت المحفوظات تحتفظ بإحداثياتها وموقعها الحقيقي الصريح على اللوحة (Raw Screen Coordinates)، وتُكتب بدقة متناهية في نفس الموضع الذي خطته يدك دون أي توسيط أو قفز إلى المنتصف.</li>
+              <li><strong class="text-white">رمز ومؤشر القصبة التفاعلي في المسجل:</strong> إضافة زر مخصص لأيقونة القصبة (🖋️) في مسجل الكاسيت والشريط العلوي لإظهار أو إخفاء مؤشر القصبة/الريشة التفاعلي أثناء المحاكاة والكتابة بمرونة، مع حفظ التفضيل تلقائياً في التخزين المحلي.</li>
+              <li><strong class="text-white">وسم الموقع الأصلي في مكتبة الكلمات:</strong> تمييز الكلمات المحفوظة بدقة بمؤشر (📍 موقع أصلي) مع إمكانية تشغيلها مباشرة بالنقر على بطاقة الكلمة أو زر التشغيل.</li>
               <li><strong class="text-white">تحكم متطور وشامل في سرعة المسجل:</strong> أزرار تبطيء [-] وتسريع [+] مباشرة بنقرة واحدة لتفادي الدوران، لوحة منبثقة عائمة تفصيلية بخيارات وسرعات جاهزة (من 0.25x البطيء جداً لدراسة ضربات القصبة وميزان النقط حتى 4x)، شريط تمرير دقيق (0.1x - 5.0x)، دعم عجلة الفأرة، وضبط فيزيائي حقيقي لدوران البكرات ومعدل رندرة الإطارات.</li>
               <li><strong class="text-white">وضعان لحجم المسجل (كامل بالشكل الحالي / مصغر أيقونات فقط):</strong> إمكانية التبديل بنقرة زر واحدة بين مظهر الكاسيت الكلاسيكي الكامل ووضع الشريط المدمج الصغير الخفيف بالأيقونات فقط، مع حفظ التفضيل تلقائياً لتوفير أقصى مساحة للرسم والكتابة.</li>
               <li><strong class="text-white">مظهر المسجل الفاتح (Light Mode Deck):</strong> أيقونة مخصصة في شريط المسجل للتبديل الفوري بين المظهر الكلاسيكي الداكن ومظهر لايت الفاتح العصري مع حفظ التفضيل تلقائياً.</li>
@@ -2168,8 +2196,6 @@
               <li><strong class="text-white">تضمين خطوط وميزان الخط:</strong> خيار لتضمين خطوط الارتكاز والصعود والهبوط وميزان النقط الماسية وشبكة الخط داخل الفيديو المسجل لإبراز ميزان الحروف للجمهور.</li>
               <li><strong class="text-white">صوت صرير القصبة الأصيل:</strong> محاكي صوتي فيزيائي ديناميكي (Web Audio API) تفاعلي مع سرعة وضغط القلم مع زر تحكم في الشريط العلوي.</li>
               <li><strong class="text-white">خامات الورق المقهر والتراثي:</strong> دعم 5 خامات تراثية أصيلة (الورق المقهر، المخطوطات الأثرية، ورق البردي، الحجر الأردوازي، الأبيض النقي).</li>
-              <li><strong class="text-white">أحبار المخطوطات التاريخية:</strong> 16 صبغة وحبر تراثي معتمد لدى كبار الخطاطين بأسماء كلاسيكية.</li>
-              <li><strong class="text-white">مشاركة المخطوطات برابط فوري:</strong> نسخ رابط مباشر لمشاهدة كتابة الكلمة تلقائياً في أي متصفح.</li>
             </ul>
           </div>
 
@@ -2178,7 +2204,7 @@
             <div class="bg-white/5 p-2 rounded-xl">
               <span class="block text-gray-500">حالة التخزين غير المتصل:</span>
               <span class="font-semibold text-gray-300 flex items-center gap-1 mt-0.5">
-                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v10 + LocalStorage
+                <i class="fa-solid fa-hard-drive text-blue-400"></i> PWA Cache v11 + LocalStorage
               </span>
             </div>
             <div class="bg-white/5 p-2 rounded-xl">
@@ -3513,6 +3539,21 @@
           }));
         });
 
+        // حفظ الضربات الفعلية بإحداثياتها الدقيقة على اللوحة
+        const rawStrokesCopy = this.trainingCapturedStrokes.map(stroke => ({
+          color: state.color,
+          size: state.size,
+          opacity: state.opacity,
+          nibAngleDeg: state.nibAngleDeg,
+          nibRoundness: state.nibRoundness,
+          points: stroke.map(p => ({
+            x: p.x,
+            y: p.y,
+            pressure: p.pressure !== undefined ? p.pressure : 0.75,
+            t: 0
+          }))
+        }));
+
         const modelData = {
           id: this.activeTrainingGlyphKey,
           char: cleanChar,
@@ -3520,6 +3561,9 @@
           widthPts: totalWidthPts,
           isCustomLearned: true,
           isWord: isWord,
+          rawStrokes: rawStrokesCopy,
+          bounds: { minX, maxX, minY, maxY, baselineY: this.trainingBaselineY },
+          canvasDimensions: { width: state.canvasWidth, height: state.canvasHeight },
           strokes: normalizedStrokes
         };
 
@@ -3649,7 +3693,15 @@
         // 1. Direct or fuzzy lookup in learned memory or saved words
         const found = findGlyphOrWord(textOrKey);
         if (found) {
-          this.playbackStrokes = buildGlyphPoints(found);
+          if (found.rawStrokes && Array.isArray(found.rawStrokes) && found.rawStrokes.length > 0) {
+            this.playbackStrokes = found.rawStrokes.map(st => (st.points || []).map(p => ({
+              x: p.x,
+              y: p.y,
+              pressure: p.pressure !== undefined ? p.pressure : 0.75
+            })));
+          } else {
+            this.playbackStrokes = buildGlyphPoints(found);
+          }
           return true;
         }
 
@@ -3843,6 +3895,9 @@
       speedSteps: [0.1, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0, 4.0, 5.0],
       speedPresets: [0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 2.0, 3.0],
       playbackAccumulator: 0,
+      showNibPointer: true, // إظهار أو إخفاء مؤشر القصبة أثناء المحاكاة والتشغيل
+      nibToggleBtn: null,
+      nibTopToggleBtn: null,
       loopBtn: null,
       sliderEl: null,
       statusLed: null,
@@ -3868,6 +3923,8 @@
         this.speedUpBtn = document.getElementById('tape-btn-speed-up');
         this.speedPopoverEl = document.getElementById('tape-speed-popover');
         this.speedSliderEl = document.getElementById('tape-speed-slider');
+        this.nibToggleBtn = document.getElementById('tape-btn-toggle-nib');
+        this.nibTopToggleBtn = document.getElementById('tape-nib-top-toggle-btn');
         this.loopBtn = document.getElementById('tape-btn-loop');
         this.sliderEl = document.getElementById('tape-timeline-slider');
         this.statusLed = document.getElementById('tape-status-led');
@@ -3910,6 +3967,15 @@
         } catch(e) {}
         this.updateSpeedUI();
 
+        // استعادة تفضيل إظهار مؤشر القصبة (افتراضياً مفعل)
+        try {
+          const savedNib = localStorage.getItem('procreate_tape_show_nib');
+          if (savedNib !== null) {
+            this.showNibPointer = savedNib === 'true';
+          }
+        } catch(e) {}
+        this.applyNibPointerState();
+
         this.bindEvents();
         this.loadSavedWordsFromStorage();
         this.renderWordsLibrary();
@@ -3920,6 +3986,8 @@
         safeBind('tape-deck-close-btn', 'click', () => this.hideDeck());
         safeBind('tape-theme-toggle-btn', 'click', () => this.toggleTheme());
         safeBind('tape-size-toggle-btn', 'click', () => this.toggleSizeMode());
+        safeBind('tape-btn-toggle-nib', 'click', () => this.toggleNibPointer());
+        safeBind('tape-nib-top-toggle-btn', 'click', () => this.toggleNibPointer());
         safeBind('tape-btn-rec', 'click', () => this.startRecording());
         safeBind('tape-btn-stop', 'click', () => this.stop());
         safeBind('tape-btn-play', 'click', () => this.play());
@@ -4107,6 +4175,79 @@
           this.deckEl.classList.remove('tape-mode-compact');
           if (icon) icon.className = 'fa-solid fa-compress text-xs text-blue-300';
           if (btn) btn.title = 'التحويل إلى وضع الحجم الصغير (أيقونات فقط)';
+        }
+      },
+
+      /**
+       * التبديل بين إظهار وإخفاء مؤشر القصبة أثناء المحاكاة
+       */
+      toggleNibPointer() {
+        this.showNibPointer = !this.showNibPointer;
+        try {
+          localStorage.setItem('procreate_tape_show_nib', String(this.showNibPointer));
+        } catch(e) {}
+        this.applyNibPointerState();
+
+        const nib = document.getElementById('simulated-nib-pointer');
+        if (nib) {
+          if (this.showNibPointer && this.isPlaying && !this.isPaused) {
+            nib.classList.remove('hidden');
+          } else {
+            nib.classList.add('hidden');
+          }
+        }
+
+        showToast(this.showNibPointer ? 'مؤشر القصبة: مفعّل ومُضاء أثناء الكتابة 🖋️' : 'مؤشر القصبة: مخفي أثناء الكتابة ✍️');
+      },
+
+      /**
+       * تطبيق حالة زر مؤشر القصبة وتلوين الأيقونة
+       */
+      applyNibPointerState() {
+        const btn = document.getElementById('tape-btn-toggle-nib');
+        const topBtn = document.getElementById('tape-nib-top-toggle-btn');
+        const icon = document.getElementById('tape-nib-toggle-icon');
+        const topIcon = document.getElementById('tape-nib-top-icon');
+        const label = document.getElementById('tape-nib-toggle-label');
+
+        if (this.showNibPointer) {
+          if (btn) {
+            btn.classList.add('tape-nib-active');
+            btn.classList.remove('text-gray-400', 'bg-white/5');
+            btn.classList.add('bg-emerald-600/25', 'border-emerald-500/50', 'text-emerald-300');
+            btn.title = 'مؤشر القصبة: مفعّل (اضغط لإخفائه أثناء التشغيل)';
+          }
+          if (topBtn) {
+            topBtn.classList.add('tape-nib-active');
+            topBtn.classList.remove('text-gray-400');
+            topBtn.classList.add('bg-emerald-600/25', 'border-emerald-500/50', 'text-emerald-300');
+            topBtn.title = 'مؤشر القصبة: مفعّل (اضغط لإخفائه أثناء التشغيل)';
+          }
+          if (icon) {
+            icon.className = 'fa-solid fa-pen-nib text-xs text-emerald-400';
+          }
+          if (topIcon) {
+            topIcon.className = 'fa-solid fa-pen-nib text-xs text-emerald-400';
+          }
+          if (label) label.textContent = 'القصبة ✓';
+        } else {
+          if (btn) {
+            btn.classList.remove('tape-nib-active', 'bg-emerald-600/25', 'border-emerald-500/50', 'text-emerald-300');
+            btn.classList.add('bg-white/5', 'text-gray-400', 'border-white/10');
+            btn.title = 'مؤشر القصبة: مخفي (اضغط لإظهاره أثناء التشغيل)';
+          }
+          if (topBtn) {
+            topBtn.classList.remove('tape-nib-active', 'bg-emerald-600/25', 'border-emerald-500/50', 'text-emerald-300');
+            topBtn.classList.add('text-gray-400');
+            topBtn.title = 'مؤشر القصبة: مخفي (اضغط لإظهاره أثناء التشغيل)';
+          }
+          if (icon) {
+            icon.className = 'fa-solid fa-pen-nib text-xs text-gray-400';
+          }
+          if (topIcon) {
+            topIcon.className = 'fa-solid fa-pen-nib text-xs text-gray-400';
+          }
+          if (label) label.textContent = 'القصبة';
         }
       },
 
@@ -4622,6 +4763,11 @@
             this.modeLabel.textContent = 'PLAY';
             this.modeLabel.className = 'font-bold text-emerald-400 uppercase tracking-wider text-[11px] shrink-0';
           }
+          const nib = document.getElementById('simulated-nib-pointer');
+          if (nib) {
+            if (this.showNibPointer) nib.classList.remove('hidden');
+            else nib.classList.add('hidden');
+          }
           this.startSpools();
           this.startTimer();
           this.tickPlayback();
@@ -4645,7 +4791,10 @@
         }
 
         const nib = document.getElementById('simulated-nib-pointer');
-        if (nib) nib.classList.remove('hidden');
+        if (nib) {
+          if (this.showNibPointer) nib.classList.remove('hidden');
+          else nib.classList.add('hidden');
+        }
 
         this.startSpools();
         this.startTimer();
@@ -4721,7 +4870,7 @@
             );
           }
 
-          if (nib) {
+          if (nib && this.showNibPointer) {
             nib.style.left = `${(p1.x / state.canvasWidth) * 100}%`;
             nib.style.top = `${(p1.y / state.canvasHeight) * 100}%`;
           }
@@ -5055,6 +5204,21 @@
         const baselineY = Math.round((minY + maxY) / 2);
         const totalWidthPts = Math.max(1.0, (maxX - minX) / pt);
 
+        // نسخة طبق الأصل من الضربات الأصلية بكامل إحداثياتها وموقعها الدقيق الفعلي على اللوحة
+        const rawStrokesCopy = this.recordedStrokes.map(st => ({
+          color: st.color || state.color,
+          size: st.size || state.size,
+          opacity: st.opacity !== undefined ? st.opacity : state.opacity,
+          nibAngleDeg: st.nibAngleDeg !== undefined ? st.nibAngleDeg : state.nibAngleDeg,
+          nibRoundness: st.nibRoundness !== undefined ? st.nibRoundness : state.nibRoundness,
+          points: (st.points || []).map(p => ({
+            x: p.x,
+            y: p.y,
+            pressure: p.pressure !== undefined ? p.pressure : 0.75,
+            t: p.t || 0
+          }))
+        }));
+
         // Normalize relative to right edge maxX (Arabic RTL) and baseline
         const normalizedStrokes = this.recordedStrokes.map(st => {
           return st.points.map(p => ({
@@ -5073,6 +5237,10 @@
           widthPts: totalWidthPts,
           isWord: clean.length > 1,
           isCustomLearned: true,
+          // حفظ الضربات الحقيقية بموقعها الفعلي الأصلي على اللوحة
+          rawStrokes: rawStrokesCopy,
+          bounds: { minX, maxX, minY, maxY, baselineY },
+          canvasDimensions: { width: state.canvasWidth, height: state.canvasHeight },
           strokes: normalizedStrokes,
           strokeCount: this.recordedStrokes.length,
           durationMs: this.totalDurationMs
@@ -5090,7 +5258,7 @@
           CalligraphyInteractiveStudio.renderPresetsGrid();
           CalligraphyInteractiveStudio.updateMemoryBadge();
         }
-        showToast(`✓ تم بنجاح حفظ كلمة "${clean}" في مكتبة الأشرطة والذاكرة الدائمة!`);
+        showToast(`✓ تم بنجاح حفظ كلمة "${clean}" في موقعها الأصلي بمكتبة الأشرطة والذاكرة!`);
       },
 
       persistSavedWords() {
@@ -5159,14 +5327,17 @@
           } else {
             this.savedWords.forEach(item => {
               const card = document.createElement('div');
-              card.className = 'p-3 rounded-2xl bg-amber-600/15 border border-amber-500/40 flex items-center justify-between text-gray-200';
+              card.className = 'p-3 rounded-2xl bg-amber-600/15 border border-amber-500/40 flex items-center justify-between text-gray-200 transition hover:bg-amber-600/20';
               card.innerHTML = `
-                <div class="cursor-pointer flex-1" title="تشغيل الكلمة">
-                  <span class="text-base font-bold text-amber-300 font-serif block">${item.char}</span>
-                  <span class="text-[10px] text-gray-400 font-mono">${item.strokeCount || item.strokes.length} ضربات</span>
+                <div class="cursor-pointer flex-1" title="تشغيل الكلمة بموقعها الأصلي">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-base font-bold text-amber-300 font-serif block">${item.char}</span>
+                    ${item.rawStrokes ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">📍 موقع أصلي</span>' : ''}
+                  </div>
+                  <span class="text-[10px] text-gray-400 font-mono">${item.strokeCount || (item.strokes ? item.strokes.length : 0)} ضربات</span>
                 </div>
                 <div class="flex items-center gap-1">
-                  <button class="play-btn w-8 h-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center text-xs transition active:scale-90" title="تشغيل">
+                  <button class="play-btn w-8 h-8 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center text-xs transition active:scale-90" title="تشغيل في الموقع الأصلي">
                     <i class="fa-solid fa-play"></i>
                   </button>
                   <button class="delete-btn w-8 h-8 rounded-xl bg-white/5 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 flex items-center justify-center text-xs transition active:scale-90" title="حذف">
@@ -5174,13 +5345,25 @@
                   </button>
                 </div>
               `;
-              card.querySelector('.play-btn').addEventListener('click', () => {
-                this.loadWordFromLibrary(item.char);
-              });
-              card.querySelector('.delete-btn').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.deleteSavedWord(item.id);
-              });
+              const clickTarget = card.querySelector('.cursor-pointer');
+              if (clickTarget) {
+                clickTarget.addEventListener('click', () => {
+                  this.loadWordFromLibrary(item.id || item.char);
+                });
+              }
+              const playBtn = card.querySelector('.play-btn');
+              if (playBtn) {
+                playBtn.addEventListener('click', () => {
+                  this.loadWordFromLibrary(item.id || item.char);
+                });
+              }
+              const deleteBtn = card.querySelector('.delete-btn');
+              if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                  e.stopPropagation();
+                  this.deleteSavedWord(item.id);
+                });
+              }
               customGrid.appendChild(card);
             });
           }
@@ -5218,6 +5401,33 @@
         const item = findGlyphOrWord(keyOrText);
         if (!item) {
           showToast('تعذر العثور على الكلمة المحددة');
+          return;
+        }
+
+        // إذا كانت الكلمة تحتوي على الضربات الحقيقية بموقعها الدقيق الأصلي (rawStrokes)
+        if (item.rawStrokes && Array.isArray(item.rawStrokes) && item.rawStrokes.length > 0) {
+          this.recordedStrokes = item.rawStrokes.map(st => ({
+            color: st.color || state.color,
+            size: st.size || state.size,
+            opacity: st.opacity !== undefined ? st.opacity : state.opacity,
+            nibAngleDeg: st.nibAngleDeg !== undefined ? st.nibAngleDeg : state.nibAngleDeg,
+            nibRoundness: st.nibRoundness !== undefined ? st.nibRoundness : state.nibRoundness,
+            points: (st.points || []).map(p => ({
+              x: p.x,
+              y: p.y,
+              pressure: p.pressure !== undefined ? p.pressure : 0.75,
+              t: p.t || 0
+            }))
+          }));
+          this.totalDurationMs = item.durationMs || 3000;
+          this.currentTitle = `كلمة: ${item.label || item.char}`;
+          if (this.titleLabel) this.titleLabel.textContent = this.currentTitle;
+          this.updateCounters();
+          this.updateTotalDurationDisplay(this.totalDurationMs);
+          this.closeWordsLibrary();
+          this.showDeck();
+          this.play();
+          showToast(`تشغيل كلمة "${item.label || item.char}" في موقعها الأصلي الدقيق 📍`);
           return;
         }
 
@@ -7053,7 +7263,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.10.0';
+    const APP_VERSION = '2.11.0';
     const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
