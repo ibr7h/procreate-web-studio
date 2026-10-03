@@ -1,8 +1,8 @@
 {
-  "name": "Procreate Web Studio Mobile",
-  "short_name": "Procreate Mobile",
-  "description": "واجهة جوال مخصصة لاستوديو الخط العربي والرسم الرقمي",
-  "start_url": "./mobile.html?v=2.12.0",
+  "name": "ديوان الخط — استوديو الخط العربي",
+  "short_name": "ديوان الخط",
+  "description": "استوديو عربي للخط والتدريب والتسجيل الرقمي",
+  "start_url": "./mobile.html?v=2.12.1",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
