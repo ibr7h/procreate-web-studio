@@ -1420,3 +1420,262 @@ body.mobile-page .text-amber-300,
 body.mobile-page .text-amber-400 {
   color: var(--andalus-gold) !important;
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.14 — Alhambra Minimal spatial refinement
+   Canvas-first portrait composition + restrained Andalusian details
+   ============================================================ */
+
+:root {
+  --mobile-topbar-h: 52px;
+  --mobile-dock-h: 58px;
+  --mobile-controls-h: 48px;
+  --alhambra-canvas-gap: 10px;
+}
+
+/* Canvas is the hero: top-align it directly under the architectural header. */
+body.mobile-page > main {
+  align-items: flex-start !important;
+  justify-content: center !important;
+  padding:
+    var(--alhambra-canvas-gap)
+    4px
+    calc(var(--mobile-dock-h) + var(--safe-bottom) + 10px)
+    !important;
+}
+
+body.mobile-page #canvas-container {
+  width: calc(100vw - 12px) !important;
+  height: calc((100vw - 12px) * .75) !important;
+  max-width: calc(100vw - 12px) !important;
+  max-height: calc(
+    100dvh - var(--mobile-topbar-h) - var(--mobile-dock-h) -
+    var(--mobile-controls-h) - var(--safe-bottom) - 30px
+  ) !important;
+  border-radius: 15px !important;
+  margin: 0 !important;
+}
+
+/* Portrait: place the precision controls immediately below the canvas.
+   This removes the large dead zone visible on tall phones. */
+@media (orientation: portrait) and (max-width: 900px) {
+  body.mobile-page main > aside {
+    top: calc(
+      var(--mobile-topbar-h) +
+      var(--alhambra-canvas-gap) +
+      ((100vw - 12px) * .75) +
+      10px
+    ) !important;
+    bottom: auto !important;
+    height: var(--mobile-controls-h) !important;
+    width: calc(100vw - 20px) !important;
+    padding: 4px 7px !important;
+    border-radius: 15px !important;
+    gap: 5px !important;
+  }
+
+  body.mobile-page main > aside > div.relative {
+    height: 38px !important;
+    gap: 4px !important;
+  }
+
+  body.mobile-page main > aside > div.relative > div.h-36 {
+    height: 24px !important;
+    min-width: 54px !important;
+  }
+
+  body.mobile-page .procreate-vertical-slider {
+    height: 20px !important;
+  }
+
+  body.mobile-page .procreate-vertical-slider::-webkit-slider-thumb {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  body.mobile-page main > aside > div.relative > span:first-child {
+    font-size: 8px !important;
+  }
+
+  body.mobile-page main > aside > div.relative > span:last-child {
+    min-width: 31px !important;
+    font-size: 9px !important;
+  }
+
+  body.mobile-page #fit-screen-btn,
+  body.mobile-page main > aside #undo-btn,
+  body.mobile-page main > aside #redo-btn {
+    width: 28px !important;
+    height: 28px !important;
+    flex-basis: 28px !important;
+  }
+}
+
+/* Three visual depths: plaster shell -> ivory controls -> near-white writing surface. */
+body.mobile-page {
+  background-color: #E9DABD !important;
+}
+
+body.mobile-page > main {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,.70), transparent 44%),
+    linear-gradient(180deg, #EEE1CC 0%, #E7D6B8 100%) !important;
+}
+
+body.mobile-page #canvas-container {
+  background: #FFFDF8 !important;
+  border-color: rgba(111,74,55,.20) !important;
+  outline: 1px solid rgba(182,138,60,.22) !important;
+  box-shadow:
+    0 12px 26px rgba(92,64,45,.13),
+    0 0 0 5px rgba(251,247,239,.78) !important;
+}
+
+body.mobile-page main > aside,
+#mobile-bottom-dock,
+#mobile-more-sheet {
+  background:
+    linear-gradient(180deg, rgba(252,248,240,.995), rgba(239,224,199,.995)) !important;
+}
+
+/* Reduce modern iOS pill/glass feel: thinner rims, flatter depth. */
+body.mobile-page main > aside {
+  border-color: rgba(111,74,55,.18) !important;
+  box-shadow:
+    0 6px 16px rgba(90,61,43,.10),
+    inset 0 1px 0 rgba(255,255,255,.70) !important;
+}
+
+#mobile-bottom-dock {
+  left: 10px !important;
+  right: 10px !important;
+  height: 54px !important;
+  padding: 4px 5px !important;
+  border-radius: 16px 16px 10px 10px !important;
+  border-color: rgba(111,74,55,.18) !important;
+  box-shadow:
+    0 -5px 16px rgba(90,61,43,.09),
+    inset 0 1px 0 rgba(255,255,255,.68) !important;
+}
+
+/* Small Alhambra-inspired tile strip: decoration only, not a filled motif. */
+body.mobile-page > header {
+  background-image:
+    linear-gradient(180deg, #29476E 0%, #23395B 88%, #23395B 100%),
+    repeating-linear-gradient(
+      45deg,
+      transparent 0 7px,
+      rgba(216,190,128,.18) 7px 8px,
+      transparent 8px 15px
+    ) !important;
+  background-blend-mode: normal, screen;
+}
+
+body.mobile-page > header {
+  box-shadow:
+    0 1px 0 rgba(216,190,128,.64),
+    0 4px 0 rgba(47,93,140,.08),
+    0 8px 20px rgba(35,57,91,.16) !important;
+}
+
+/* Title treatment: balanced, symmetrical, and quieter. */
+body.mobile-page > header::after {
+  content: "✦  ديوان الخط  ✦" !important;
+  font-size: 18px !important;
+  letter-spacing: 0 !important;
+}
+body.mobile-page > header::before {
+  content: "" !important;
+}
+
+/* Dock top ornament: a very thin zellige-like rhythm. */
+#mobile-bottom-dock::before {
+  top: 1px !important;
+  left: 19% !important;
+  right: 19% !important;
+  height: 2px !important;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 7px,
+      rgba(47,93,140,.16) 7px 8px,
+      rgba(182,138,60,.30) 8px 9px,
+      transparent 9px 16px
+    ) !important;
+}
+
+/* More architectural than pill-like. */
+.mobile-dock-btn {
+  border-radius: 10px !important;
+}
+.mobile-dock-btn.is-active {
+  background: rgba(45,140,130,.09) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(45,140,130,.18),
+    inset 0 3px 0 rgba(45,140,130,.08) !important;
+}
+
+.mobile-recorder-orb {
+  width: 29px !important;
+  height: 29px !important;
+  margin-top: -9px !important;
+  box-shadow:
+    0 3px 10px rgba(143,67,43,.22),
+    0 0 0 3px rgba(184,92,56,.06) !important;
+}
+
+/* Sheets receive a restrained inner plaster frame. */
+#mobile-more-sheet::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(182,138,60,.08);
+  pointer-events: none;
+}
+.mobile-more-btn {
+  border-radius: 11px !important;
+  box-shadow: none !important;
+}
+
+/* The writing plane must remain free of ornament. */
+body.mobile-page #display-canvas,
+body.mobile-page #grid-canvas,
+body.mobile-page #training-ghost-canvas {
+  border-radius: inherit;
+}
+
+/* Recorder mode preserves its collision-free dedicated zone. */
+body.mobile-page.mobile-recorder-open > main {
+  align-items: flex-start !important;
+}
+@media (orientation: portrait) and (max-width: 900px) {
+  body.mobile-page.mobile-recorder-open main > aside {
+    top: auto !important;
+    bottom: calc(var(--mobile-recorder-h) + var(--safe-bottom) + 8px) !important;
+  }
+}
+
+/* Very tall phones: keep the canvas and precision rail visually grouped. */
+@media (orientation: portrait) and (min-height: 780px) {
+  body.mobile-page #canvas-container {
+    margin-top: 2px !important;
+  }
+}
+
+/* Short portrait screens: revert rail to bottom reservation to avoid collisions. */
+@media (orientation: portrait) and (max-height: 690px) {
+  body.mobile-page main > aside {
+    top: auto !important;
+    bottom: calc(var(--mobile-dock-h) + var(--safe-bottom) + 7px) !important;
+  }
+}
+
+/* Landscape remains compact and centered vertically where width is abundant. */
+@media (orientation: landscape) and (max-height: 600px) {
+  body.mobile-page > main {
+    align-items: center !important;
+    padding-top: 4px !important;
+  }
+}
