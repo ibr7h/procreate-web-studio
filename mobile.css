@@ -955,3 +955,468 @@ body.mobile-page.mobile-recorder-open .mobile-recorder-orb {
     display: none !important;
   }
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.13 — Authentic Andalusian Light Visual System
+   Palette ratio: plaster 60% / indigo 20% / turquoise 10%
+                  terracotta+wood 7% / antique gold 3%
+   Layout logic above remains unchanged.
+   ============================================================ */
+
+:root {
+  --andalus-bg: #F5EBDD;
+  --andalus-plaster: #F0E2C9;
+  --andalus-plaster-2: #E7D6B8;
+  --andalus-paper: #FBF7EF;
+  --andalus-indigo: #23395B;
+  --andalus-blue: #2F5D8C;
+  --andalus-turquoise: #2D8C82;
+  --andalus-terracotta: #B85C38;
+  --andalus-terracotta-dark: #8F432B;
+  --andalus-wood: #6F4A37;
+  --andalus-gold: #B68A3C;
+  --andalus-gold-soft: #D8BE80;
+  --andalus-text: #2C2926;
+  --andalus-muted: #736B63;
+  --andalus-border: rgba(111, 74, 55, .18);
+}
+
+/* 60% — warm plaster foundation, with low-contrast zellige geometry. */
+body.mobile-page {
+  color: var(--andalus-text) !important;
+  background-color: var(--andalus-bg) !important;
+  background-image:
+    linear-gradient(30deg, rgba(47,93,140,.035) 12%, transparent 12.5%, transparent 87%, rgba(47,93,140,.035) 87.5%, rgba(47,93,140,.035)),
+    linear-gradient(150deg, rgba(47,93,140,.035) 12%, transparent 12.5%, transparent 87%, rgba(47,93,140,.035) 87.5%, rgba(47,93,140,.035)),
+    linear-gradient(30deg, rgba(45,140,130,.028) 12%, transparent 12.5%, transparent 87%, rgba(45,140,130,.028) 87.5%, rgba(45,140,130,.028)),
+    linear-gradient(150deg, rgba(45,140,130,.028) 12%, transparent 12.5%, transparent 87%, rgba(45,140,130,.028) 87.5%, rgba(45,140,130,.028));
+  background-size: 48px 84px;
+  background-position: 0 0, 0 0, 24px 42px, 24px 42px;
+}
+
+/* 20% — indigo architectural header, like painted Andalusian woodwork. */
+body.mobile-page > header {
+  color: var(--andalus-paper) !important;
+  background:
+    linear-gradient(180deg, #29476E 0%, var(--andalus-indigo) 100%) !important;
+  border-bottom: 1px solid rgba(216,190,128,.52) !important;
+  box-shadow: 0 8px 22px rgba(35,57,91,.20) !important;
+}
+
+body.mobile-page > header::after {
+  content: "ديوان الخط";
+  color: #FFF8EA !important;
+  font-family: 'Amiri', serif;
+  font-size: 19px;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(0,0,0,.15);
+}
+
+body.mobile-page > header::before {
+  color: var(--andalus-gold-soft) !important;
+  opacity: .76 !important;
+}
+
+body.mobile-page #gallery-btn {
+  color: #F5EBDD !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.08);
+}
+body.mobile-page #gallery-btn:active { background: rgba(255,255,255,.13) !important; }
+
+body.mobile-page #app-version-badge-btn {
+  background: rgba(245,235,221,.10) !important;
+  border-color: rgba(216,190,128,.42) !important;
+  color: #F4DFAC !important;
+}
+body.mobile-page #version-status-dot {
+  background: #5BC2B5 !important;
+}
+
+/* Workspace becomes airy plaster instead of dark glass. */
+body.mobile-page > main {
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,.82), transparent 46%),
+    linear-gradient(180deg, #F8F1E5 0%, var(--andalus-bg) 100%) !important;
+}
+
+body.mobile-page #canvas-container {
+  background: #FFFDF8 !important;
+  border: 1px solid rgba(111,74,55,.24) !important;
+  outline: 3px solid rgba(47,93,140,.07) !important;
+  box-shadow:
+    0 16px 35px rgba(111,74,55,.15),
+    0 0 0 1px rgba(255,255,255,.88) inset !important;
+}
+
+/* Horizontal nib controls: carved-plaster surface with ceramic accents. */
+body.mobile-page main > aside {
+  color: var(--andalus-text) !important;
+  background:
+    linear-gradient(180deg, rgba(251,247,239,.985), rgba(240,226,201,.985)) !important;
+  border: 1px solid rgba(111,74,55,.20) !important;
+  box-shadow: 0 10px 24px rgba(111,74,55,.14) !important;
+}
+
+body.mobile-page main > aside span {
+  color: var(--andalus-muted) !important;
+}
+body.mobile-page main > aside #slider-size-val,
+body.mobile-page main > aside #slider-opacity-val {
+  color: var(--andalus-blue) !important;
+}
+
+body.mobile-page .procreate-vertical-slider {
+  background: rgba(47,93,140,.09) !important;
+  border-color: rgba(47,93,140,.18) !important;
+}
+body.mobile-page .procreate-vertical-slider::-webkit-slider-thumb {
+  background: #FFFDF8 !important;
+  border-color: var(--andalus-turquoise) !important;
+  box-shadow: 0 2px 8px rgba(35,57,91,.18) !important;
+}
+body.mobile-page .procreate-vertical-slider::-moz-range-thumb {
+  background: #FFFDF8 !important;
+  border-color: var(--andalus-turquoise) !important;
+}
+
+body.mobile-page #fit-screen-btn,
+body.mobile-page #undo-btn,
+body.mobile-page #redo-btn {
+  background: rgba(47,93,140,.07) !important;
+  border: 1px solid rgba(47,93,140,.10) !important;
+  color: var(--andalus-indigo) !important;
+}
+
+/* Mobile navigation = ivory carved panel, indigo labels, turquoise active state. */
+#mobile-bottom-dock {
+  color: var(--andalus-indigo) !important;
+  background:
+    linear-gradient(180deg, rgba(251,247,239,.99), rgba(237,221,194,.99)) !important;
+  border: 1px solid rgba(111,74,55,.22) !important;
+  box-shadow:
+    0 -12px 28px rgba(111,74,55,.13),
+    0 1px 0 rgba(255,255,255,.75) inset !important;
+}
+
+#mobile-bottom-dock::before {
+  background: linear-gradient(90deg, transparent, rgba(182,138,60,.36), transparent) !important;
+}
+
+.mobile-dock-btn {
+  color: #5D6470 !important;
+}
+.mobile-dock-btn i {
+  color: var(--andalus-indigo) !important;
+}
+.mobile-dock-btn.is-active {
+  color: #174F49 !important;
+  background: rgba(45,140,130,.12) !important;
+  box-shadow: inset 0 0 0 1px rgba(45,140,130,.22) !important;
+}
+.mobile-dock-btn.is-active i {
+  color: var(--andalus-turquoise) !important;
+}
+
+.mobile-dock-btn[data-proxy="tool-eraser"].is-active {
+  color: var(--andalus-terracotta-dark) !important;
+  background: rgba(184,92,56,.10) !important;
+  box-shadow: inset 0 0 0 1px rgba(184,92,56,.20) !important;
+}
+.mobile-dock-btn[data-proxy="tool-eraser"].is-active i {
+  color: var(--andalus-terracotta) !important;
+}
+
+/* Recorder focal button: terracotta tile, not gold. */
+.mobile-recorder-orb,
+body.mobile-page.mobile-recorder-open .mobile-recorder-orb {
+  background:
+    radial-gradient(circle at 38% 30%, #CE7A59, var(--andalus-terracotta) 58%, var(--andalus-terracotta-dark) 100%) !important;
+  color: #FFF8EA !important;
+  border: 2px solid #F8E7D0 !important;
+  box-shadow:
+    0 5px 14px rgba(143,67,43,.26),
+    0 0 0 4px rgba(184,92,56,.08) !important;
+}
+.mobile-recorder-orb i { color: #FFF8EA !important; }
+
+/* Menu / sheets: plaster cards with indigo typography and ceramic icons. */
+#mobile-more-sheet {
+  color: var(--andalus-text) !important;
+  background:
+    linear-gradient(180deg, rgba(251,247,239,.995), rgba(239,225,201,.995)) !important;
+  border-color: rgba(111,74,55,.24) !important;
+  box-shadow: 0 24px 55px rgba(62,44,34,.18) !important;
+}
+
+#mobile-more-sheet::before {
+  border-color: rgba(47,93,140,.07) !important;
+}
+.mobile-sheet-handle {
+  background: rgba(35,57,91,.26) !important;
+}
+
+.mobile-menu-emblem {
+  color: var(--andalus-blue) !important;
+  border-color: rgba(47,93,140,.18) !important;
+  background: rgba(47,93,140,.06) !important;
+}
+.mobile-menu-title {
+  color: var(--andalus-indigo) !important;
+}
+.mobile-menu-subtitle {
+  color: var(--andalus-muted) !important;
+}
+.mobile-menu-heading {
+  border-bottom-color: rgba(111,74,55,.12) !important;
+}
+.mobile-section-title {
+  color: var(--andalus-wood) !important;
+}
+.mobile-section-title::before,
+.mobile-section-title::after {
+  background: linear-gradient(90deg, transparent, rgba(182,138,60,.26)) !important;
+}
+.mobile-section-title::after {
+  background: linear-gradient(90deg, rgba(182,138,60,.26), transparent) !important;
+}
+
+.mobile-more-btn {
+  color: #3C3834 !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.54), rgba(231,214,184,.32)) !important;
+  border-color: rgba(111,74,55,.14) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,.65) inset !important;
+}
+.mobile-more-btn i {
+  color: var(--andalus-blue) !important;
+}
+.mobile-more-btn:active {
+  background: rgba(45,140,130,.10) !important;
+}
+.mobile-more-btn.mobile-accent {
+  color: var(--andalus-indigo) !important;
+  background: rgba(47,93,140,.08) !important;
+  border-color: rgba(47,93,140,.20) !important;
+}
+.mobile-more-btn.mobile-accent i { color: var(--andalus-indigo) !important; }
+
+.mobile-more-btn.mobile-record-action {
+  color: var(--andalus-terracotta-dark) !important;
+  background: rgba(184,92,56,.09) !important;
+  border-color: rgba(184,92,56,.24) !important;
+}
+.mobile-more-btn.mobile-record-action i {
+  color: var(--andalus-terracotta) !important;
+}
+.mobile-more-btn.mobile-danger {
+  color: #95452F !important;
+}
+.mobile-menu-color-dot,
+#mobile-color-dot {
+  border-color: rgba(182,138,60,.70) !important;
+}
+
+/* Original popovers restyled as Andalusian plaster panels. */
+body.mobile-page #brush-library-popover,
+body.mobile-page #layers-panel,
+body.mobile-page #grid-settings-popover,
+body.mobile-page #color-panel,
+body.mobile-page #actions-panel,
+body.mobile-page #nib-studio-popover,
+body.mobile-page #eraser-studio-popover {
+  color: var(--andalus-text) !important;
+  background:
+    linear-gradient(180deg, rgba(251,247,239,.998), rgba(240,226,201,.998)) !important;
+  border: 1px solid rgba(111,74,55,.22) !important;
+  box-shadow: 0 20px 50px rgba(62,44,34,.20) !important;
+}
+
+/* Tailwind dark utility colors inside mobile sheets need readable contrast. */
+body.mobile-page #brush-library-popover .text-white,
+body.mobile-page #layers-panel .text-white,
+body.mobile-page #grid-settings-popover .text-white,
+body.mobile-page #color-panel .text-white,
+body.mobile-page #actions-panel .text-white,
+body.mobile-page #nib-studio-popover .text-white,
+body.mobile-page #eraser-studio-popover .text-white {
+  color: var(--andalus-text) !important;
+}
+
+body.mobile-page #brush-library-popover .text-gray-200,
+body.mobile-page #brush-library-popover .text-gray-300,
+body.mobile-page #brush-library-popover .text-gray-400,
+body.mobile-page #layers-panel .text-gray-200,
+body.mobile-page #layers-panel .text-gray-300,
+body.mobile-page #layers-panel .text-gray-400,
+body.mobile-page #grid-settings-popover .text-gray-200,
+body.mobile-page #grid-settings-popover .text-gray-300,
+body.mobile-page #grid-settings-popover .text-gray-400,
+body.mobile-page #color-panel .text-gray-200,
+body.mobile-page #color-panel .text-gray-300,
+body.mobile-page #color-panel .text-gray-400,
+body.mobile-page #actions-panel .text-gray-200,
+body.mobile-page #actions-panel .text-gray-300,
+body.mobile-page #actions-panel .text-gray-400,
+body.mobile-page #nib-studio-popover .text-gray-200,
+body.mobile-page #nib-studio-popover .text-gray-300,
+body.mobile-page #nib-studio-popover .text-gray-400,
+body.mobile-page #eraser-studio-popover .text-gray-200,
+body.mobile-page #eraser-studio-popover .text-gray-300,
+body.mobile-page #eraser-studio-popover .text-gray-400 {
+  color: var(--andalus-muted) !important;
+}
+
+body.mobile-page #brush-library-popover .bg-white\/5,
+body.mobile-page #layers-panel .bg-white\/5,
+body.mobile-page #grid-settings-popover .bg-white\/5,
+body.mobile-page #color-panel .bg-white\/5,
+body.mobile-page #actions-panel .bg-white\/5,
+body.mobile-page #nib-studio-popover .bg-white\/5,
+body.mobile-page #eraser-studio-popover .bg-white\/5 {
+  background: rgba(47,93,140,.055) !important;
+}
+
+/* Brush studio full-screen shell: indigo title band over plaster content. */
+body.mobile-page #brush-studio-modal,
+body.mobile-page #calligraphy-guide-modal {
+  background: rgba(35,57,91,.42) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Recorder becomes a light Andalusian instrument panel. */
+body.mobile-page.mobile-recorder-open #studio-tape-recorder > div {
+  color: var(--andalus-text) !important;
+  background:
+    linear-gradient(180deg, #F7EDDD 0%, #E8D7B9 100%) !important;
+  border: 1px solid rgba(111,74,55,.24) !important;
+  box-shadow:
+    0 -14px 34px rgba(86,59,43,.16),
+    0 1px 0 rgba(255,255,255,.75) inset !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-top-bar {
+  background: rgba(35,57,91,.07) !important;
+  border-color: rgba(47,93,140,.15) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-lcd-screen {
+  color: #EAF6F3 !important;
+  background:
+    linear-gradient(180deg, #173D46 0%, #102E35 100%) !important;
+  border-color: rgba(45,140,130,.34) !important;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,.24) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-session-title {
+  color: #D6F0EA !important;
+}
+body.mobile-page.mobile-recorder-open #tape-time-counter {
+  color: #77D1C4 !important;
+}
+body.mobile-page.mobile-recorder-open #tape-mode-label {
+  color: #B9D8D4 !important;
+}
+
+/* Transport controls: semantic colors, restrained and historically warm. */
+body.mobile-page.mobile-recorder-open #tape-btn-rec {
+  background: rgba(184,92,56,.12) !important;
+  border-color: rgba(184,92,56,.38) !important;
+  color: var(--andalus-terracotta-dark) !important;
+}
+body.mobile-page.mobile-recorder-open #tape-btn-rec i {
+  color: var(--andalus-terracotta) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-btn-play {
+  background: rgba(45,140,130,.12) !important;
+  border-color: rgba(45,140,130,.32) !important;
+  color: #1D625B !important;
+}
+body.mobile-page.mobile-recorder-open #tape-btn-play i {
+  color: var(--andalus-turquoise) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-btn-stop,
+body.mobile-page.mobile-recorder-open #tape-btn-pause,
+body.mobile-page.mobile-recorder-open #tape-btn-rewind,
+body.mobile-page.mobile-recorder-open #tape-btn-loop,
+body.mobile-page.mobile-recorder-open #tape-btn-toggle-nib {
+  background: rgba(255,255,255,.42) !important;
+  border-color: rgba(111,74,55,.16) !important;
+  color: var(--andalus-indigo) !important;
+}
+
+body.mobile-page.mobile-recorder-open #tape-speed-group {
+  background: rgba(47,93,140,.08) !important;
+  border-color: rgba(47,93,140,.20) !important;
+}
+body.mobile-page.mobile-recorder-open #tape-btn-speed,
+body.mobile-page.mobile-recorder-open #tape-btn-speed-down,
+body.mobile-page.mobile-recorder-open #tape-btn-speed-up {
+  color: var(--andalus-blue) !important;
+}
+
+/* Recorder mini header controls use carved ivory with indigo symbols. */
+body.mobile-page.mobile-recorder-open #tape-top-bar > div:last-child button {
+  color: var(--andalus-indigo) !important;
+  background: rgba(255,255,255,.40) !important;
+  border-color: rgba(111,74,55,.14) !important;
+}
+body.mobile-page.mobile-recorder-open #tape-top-bar > div:last-child button i {
+  color: var(--andalus-blue) !important;
+}
+
+/* Speed popover follows the same plaster/indigo language. */
+body.mobile-page.mobile-recorder-open #tape-speed-popover {
+  color: var(--andalus-text) !important;
+  background: rgba(251,247,239,.995) !important;
+  border-color: rgba(47,93,140,.22) !important;
+  box-shadow: 0 18px 44px rgba(62,44,34,.20) !important;
+}
+
+/* Training and simulation banners remain semantic but harmonized. */
+body.mobile-page #training-active-banner {
+  background: rgba(251,247,239,.96) !important;
+  color: var(--andalus-text) !important;
+  border-color: rgba(182,138,60,.30) !important;
+}
+body.mobile-page #sim-active-bar {
+  background: rgba(251,247,239,.96) !important;
+  color: var(--andalus-text) !important;
+  border-color: rgba(45,140,130,.30) !important;
+}
+
+/* Orientation hint uses terracotta as a warm architectural accent. */
+#mobile-orientation-hint {
+  color: #6E3B2D !important;
+  background: rgba(251,247,239,.97) !important;
+  border-color: rgba(184,92,56,.26) !important;
+  box-shadow: 0 10px 24px rgba(86,59,43,.14) !important;
+}
+#mobile-orientation-hint button {
+  color: var(--andalus-indigo) !important;
+  background: rgba(47,93,140,.07) !important;
+}
+
+/* Focus exit: indigo ceramic tile. */
+#mobile-focus-exit {
+  color: #FFF9EE !important;
+  background: rgba(35,57,91,.92) !important;
+  border-color: rgba(216,190,128,.30) !important;
+}
+
+/* Selection/accessibility treatment. */
+body.mobile-page button:focus-visible,
+body.mobile-page input:focus-visible {
+  outline: 2px solid var(--andalus-turquoise) !important;
+  outline-offset: 2px;
+}
+
+/* Gold remains ornamental only: never a major filled surface. */
+body.mobile-page .text-amber-300,
+body.mobile-page .text-amber-400 {
+  color: var(--andalus-gold) !important;
+}
