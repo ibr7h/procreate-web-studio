@@ -7412,7 +7412,7 @@
           }
 
           // 2. Query mobile-version.json with cache buster
-          const response = await fetch(`./mobile-mobile-version.json?_t=${Date.now()}`, {
+          const response = await fetch(`./mobile-version.json?_t=${Date.now()}`, {
             cache: 'no-store',
             headers: {
               'Cache-Control': 'no-cache',
