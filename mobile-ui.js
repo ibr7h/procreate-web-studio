@@ -125,9 +125,26 @@
       });
     }
 
+    if (orientationHint) {
+      try {
+        const dismissed = localStorage.getItem('diwan_orientation_hint_dismissed') === '1';
+        if (dismissed) orientationHint.classList.add('dismissed');
+      } catch (e) {}
+
+      // Keep the hint useful but never let it sit over the writing area.
+      if (!orientationHint.classList.contains('dismissed')) {
+        window.setTimeout(() => {
+          orientationHint.classList.add('dismissed');
+        }, 4200);
+      }
+    }
+
     if (orientationDismiss) {
       orientationDismiss.addEventListener('click', () => {
         if (orientationHint) orientationHint.classList.add('dismissed');
+        try {
+          localStorage.setItem('diwan_orientation_hint_dismissed', '1');
+        } catch (e) {}
       });
     }
 
