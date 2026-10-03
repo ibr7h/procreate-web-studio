@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Procreate Web Studio Mobile - واجهة الجوال</title>
+  <title>ديوان الخط — استوديو الخط العربي</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +21,9 @@
   <meta name="theme-color" content="#16161b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Procreate Web">
+  <meta name="apple-mobile-web-app-title" content="ديوان الخط">
+  <meta name="application-name" content="ديوان الخط">
+  <meta name="description" content="ديوان الخط — استوديو عربي للخط والتدريب والتسجيل الرقمي">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
@@ -448,7 +450,7 @@
       align-items: center !important;
     }
   </style>
-  <link rel="stylesheet" href="mobile.css?v=2.12.0">
+  <link rel="stylesheet" href="mobile.css?v=2.12.1">
 </head>
 <body class="mobile-page h-screen w-screen flex flex-col justify-between select-none">
 
@@ -465,7 +467,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.12.0</span>
+        <span id="header-version-label">v2.12.1</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -2074,7 +2076,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.12.0</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.12.1</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -2128,7 +2130,7 @@
             </div>
             <div>
               <h3 class="font-bold text-sm text-white">حول استوديو الخط العربي والتحديثات</h3>
-              <p class="text-[10px] text-gray-400">Procreate Web Studio Calligraphy PWA</p>
+              <p class="text-[10px] text-gray-400">ديوان الخط — تطبيق الخط العربي</p>
             </div>
           </div>
           <button id="close-about-modal-btn" class="w-8 h-8 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition">
@@ -2143,7 +2145,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.12.0</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.12.1</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2183,7 +2185,7 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.12.0):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.12.1):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
               <li><strong class="text-white">تثبيت الموقع الأصلي الدقيق للكلمات والمحفوظات:</strong> تم حل مشكلة انزياح الكلمات عند تشغيلها من المكتبة؛ حيث أصبحت المحفوظات تحتفظ بإحداثياتها وموقعها الحقيقي الصريح على اللوحة (Raw Screen Coordinates)، وتُكتب بدقة متناهية في نفس الموضع الذي خطته يدك دون أي توسيط أو قفز إلى المنتصف.</li>
@@ -7050,7 +7052,7 @@
     safeBind('export-png-btn', 'click', () => {
       if (!displayCanvas) return;
       const link = document.createElement('a');
-      link.download = `Procreate-Artwork-${Date.now()}.png`;
+      link.download = `Diwan-Al-Khatt-${Date.now()}.png`;
       link.href = displayCanvas.toDataURL('image/png');
       link.click();
       if (actionsPanel) actionsPanel.classList.add('hidden');
@@ -7060,7 +7062,7 @@
     safeBind('export-jpg-btn', 'click', () => {
       if (!displayCanvas) return;
       const link = document.createElement('a');
-      link.download = `Procreate-Artwork-${Date.now()}.jpg`;
+      link.download = `Diwan-Al-Khatt-${Date.now()}.jpg`;
       link.href = displayCanvas.toDataURL('image/jpeg', 0.95);
       link.click();
       if (actionsPanel) actionsPanel.classList.add('hidden');
@@ -7652,6 +7654,6 @@
 
   <button id="mobile-focus-exit" aria-label="الخروج من وضع التركيز"><i class="fa-solid fa-compress"></i></button>
 
-  <script src="mobile-ui.js?v=2.12.0"></script>
+  <script src="mobile-ui.js?v=2.12.1"></script>
 </body>
 </html>
