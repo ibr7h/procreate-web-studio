@@ -2324,9 +2324,21 @@
         badge: "فارسي",
         angleDeg: 65,
         roundness: 0.09,
-        smoothness: 0.28,       // Balanced Farsi
-        defaultSize: 32,        // Farsi default: 32px
+        smoothness: 0.28,
+        defaultSize: 32,
         ascenderPts: 4.5,
+        meanPts: 2,
+        descenderPts: 3
+      },
+      round: {
+        name: "الفرشاة الدائرية",
+        badge: "دائرية",
+        brushType: "round",
+        angleDeg: 0,
+        roundness: 1.0,
+        smoothness: 0.22,
+        defaultSize: 28,
+        ascenderPts: 5,
         meanPts: 2,
         descenderPts: 3
       }
@@ -2336,7 +2348,7 @@
     // 2. APPLICATION STATE
     // ----------------------------------------------------
     const state = {
-      tool: 'brush', // 'brush', 'smudge', 'eraser'
+      tool: 'brush', // 'brush', 'smudge', 'eraser', 'lasso'
       activePresetKey: 'naskh',
       
       // Active Nib Geometry & Brush Studio Settings
@@ -2403,6 +2415,9 @@
     const nibPreviewCtx = nibPreviewCanvas ? nibPreviewCanvas.getContext('2d') : null;
     const studioPadCanvas = document.getElementById('studio-pad-canvas');
     const studioPadCtx = studioPadCanvas ? studioPadCanvas.getContext('2d') : null;
+    const selectionCanvas = document.getElementById('selection-canvas');
+    const selectionCtx = selectionCanvas ? selectionCanvas.getContext('2d') : null;
+    const lassoActionBar = document.getElementById('lasso-action-bar');
 
     // Modals & Popovers
     const calligraphyGuideModal = document.getElementById('calligraphy-guide-modal');
@@ -2419,6 +2434,7 @@
     const toolBrushBtn = document.getElementById('tool-brush');
     const toolSmudgeBtn = document.getElementById('tool-smudge');
     const toolEraserBtn = document.getElementById('tool-eraser');
+    const toolLassoBtn = document.getElementById('tool-lasso');
     const eraserBadge = document.getElementById('eraser-badge');
     const eraserSizeDecBtn = document.getElementById('eraser-size-dec-btn');
     const eraserSizeIncBtn = document.getElementById('eraser-size-inc-btn');
@@ -2611,8 +2627,61 @@
       };
     }
 
+    function renderRoundBrushSegment(ctx, p0, p1, customSize = null, customColor = null, customOpacity = null) {
+      if (!ctx) return;
+
+      const pres0 = state.usePressure ? (p0.pressure || 0.65) : 1.0;
+      const pres1 = state.usePressure ? (p1.pressure || 0.65) : 1.0;
+      const effSize = customSize || state.size;
+      const influence = state.pressureSize / 100;
+      const width0 = Math.max(2, effSize * ((1 - influence * 0.55) + (influence * 0.85) * pres0));
+      const width1 = Math.max(2, effSize * ((1 - influence * 0.55) + (influence * 0.85) * pres1));
+      const dx = p1.x - p0.x;
+      const dy = p1.y - p0.y;
+      const dist = Math.hypot(dx, dy);
+
+      ctx.save();
+      ctx.fillStyle = customColor || state.color;
+      let alpha = customOpacity !== null ? customOpacity : state.opacity;
+      if (state.inkFlowPhysics && customOpacity === null && state.tool === 'brush') {
+        alpha *= (0.90 + 0.10 * (state.currentInkLevel || 1.0));
+      }
+      ctx.globalAlpha = alpha;
+
+      if (dist < 0.6) {
+        ctx.beginPath();
+        ctx.arc(p1.x, p1.y, width1 / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        return;
+      }
+
+      const nx = -dy / dist;
+      const ny = dx / dist;
+      const r0 = width0 / 2;
+      const r1 = width1 / 2;
+
+      ctx.beginPath();
+      ctx.moveTo(p0.x + nx * r0, p0.y + ny * r0);
+      ctx.lineTo(p1.x + nx * r1, p1.y + ny * r1);
+      ctx.lineTo(p1.x - nx * r1, p1.y - ny * r1);
+      ctx.lineTo(p0.x - nx * r0, p0.y - ny * r0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(p1.x, p1.y, r1, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
     function renderCalligraphicSegment(ctx, p0, p1, customSize = null, customColor = null, customOpacity = null) {
       if (!ctx) return;
+      const brushSpec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+      if (brushSpec.brushType === 'round') {
+        renderRoundBrushSegment(ctx, p0, p1, customSize, customColor, customOpacity);
+        return;
+      }
       
       const pres0 = state.usePressure ? (p0.pressure || 0.65) : 1.0;
       const pres1 = state.usePressure ? (p1.pressure || 0.65) : 1.0;
@@ -2710,6 +2779,13 @@
         if (p && !p.classList.contains('hidden')) p.classList.add('hidden');
       });
 
+      if (state.tool === 'lasso') {
+        state.isDrawing = true;
+        cachedCanvasRect = displayCanvas.getBoundingClientRect();
+        LassoManager.pointerDown(getPointerPos(e));
+        return;
+      }
+
       state.isDrawing = true;
       state.currentStrokeDist = 0;
       state.currentInkLevel = 1.0;
@@ -2748,6 +2824,11 @@
     function continueStroke(e) {
       if (!state.isDrawing) return;
       e.preventDefault();
+
+      if (state.tool === 'lasso') {
+        LassoManager.pointerMove(getPointerPos(e));
+        return;
+      }
 
       if (state.falloff > 0 && state.currentStrokeDist >= state.falloff * 15) {
         return;
@@ -2825,6 +2906,15 @@
 
     function endStroke(e) {
       if (!state.isDrawing) return;
+
+      if (state.tool === 'lasso') {
+        const pos = getPointerPos(e);
+        state.isDrawing = false;
+        cachedCanvasRect = null;
+        LassoManager.pointerUp(pos);
+        return;
+      }
+
       state.isDrawing = false;
       cachedCanvasRect = null;
       
@@ -5890,10 +5980,442 @@
     }
 
     // ----------------------------------------------------------------------
+    // 6.B FREEHAND LASSO SELECTION ENGINE
+    // ----------------------------------------------------------------------
+    const LassoManager = {
+      mode: 'idle',
+      points: [],
+      selection: null,
+      clipboard: null,
+      dragStart: null,
+      dashOffset: 0,
+      raf: 0,
+
+      activeLayerForSelection() {
+        if (!this.selection) return getActiveLayer();
+        return state.layers.find(l => l.id === this.selection.layerId) || getActiveLayer();
+      },
+
+      snapshotLayer(layer) {
+        const c = document.createElement('canvas');
+        c.width = state.canvasWidth;
+        c.height = state.canvasHeight;
+        c.getContext('2d').drawImage(layer.canvas, 0, 0);
+        return c;
+      },
+
+      showOverlay() {
+        if (selectionCanvas) selectionCanvas.classList.remove('hidden');
+      },
+
+      showBar(show) {
+        if (!lassoActionBar) return;
+        lassoActionBar.classList.toggle('hidden', !show);
+        lassoActionBar.classList.toggle('flex', show);
+      },
+
+      clearOverlay() {
+        if (selectionCtx) selectionCtx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      },
+
+      beginAnimation() {
+        cancelAnimationFrame(this.raf);
+        const tick = () => {
+          if (this.mode === 'idle') return;
+          this.dashOffset = (this.dashOffset - 1) % 40;
+          this.render();
+          this.raf = requestAnimationFrame(tick);
+        };
+        this.raf = requestAnimationFrame(tick);
+      },
+
+      stopAnimation() {
+        cancelAnimationFrame(this.raf);
+        this.raf = 0;
+      },
+
+      pointerDown(pos) {
+        if (this.selection && this.hitTest(pos)) {
+          this.mode = 'moving';
+          this.dragStart = {
+            x: pos.x,
+            y: pos.y,
+            dx: this.selection.dx,
+            dy: this.selection.dy
+          };
+          this.beginAnimation();
+          return;
+        }
+
+        if (this.selection) this.commit(true);
+        this.mode = 'drawing';
+        this.points = [pos];
+        this.selection = null;
+        this.showOverlay();
+        this.showBar(false);
+        this.beginAnimation();
+        this.render();
+      },
+
+      pointerMove(pos) {
+        if (this.mode === 'drawing') {
+          const last = this.points[this.points.length - 1];
+          if (!last || Math.hypot(pos.x - last.x, pos.y - last.y) >= 3) {
+            this.points.push(pos);
+          }
+          this.render();
+          return;
+        }
+
+        if (this.mode === 'moving' && this.selection && this.dragStart) {
+          let dx = this.dragStart.dx + (pos.x - this.dragStart.x);
+          let dy = this.dragStart.dy + (pos.y - this.dragStart.y);
+          const halfW = this.selection.w * this.selection.scale / 2;
+          const halfH = this.selection.h * this.selection.scale / 2;
+          const cx0 = this.selection.x + this.selection.w / 2;
+          const cy0 = this.selection.y + this.selection.h / 2;
+          dx = Math.max(-cx0 + halfW, Math.min(state.canvasWidth - cx0 - halfW, dx));
+          dy = Math.max(-cy0 + halfH, Math.min(state.canvasHeight - cy0 - halfH, dy));
+          this.selection.dx = dx;
+          this.selection.dy = dy;
+          this.render();
+        }
+      },
+
+      pointerUp(pos) {
+        if (this.mode === 'drawing') {
+          if (pos) this.points.push(pos);
+          this.finishSelection();
+          return;
+        }
+        if (this.mode === 'moving') {
+          this.mode = 'selected';
+          this.dragStart = null;
+          this.render();
+        }
+      },
+
+      finishSelection() {
+        if (this.points.length < 4) {
+          this.resetVisuals();
+          showToast('ارسم مسارًا مغلقًا حول الجزء المراد تحديده');
+          return;
+        }
+
+        const xs = this.points.map(p => p.x);
+        const ys = this.points.map(p => p.y);
+        let minX = Math.max(0, Math.floor(Math.min.apply(null, xs)));
+        let minY = Math.max(0, Math.floor(Math.min.apply(null, ys)));
+        let maxX = Math.min(state.canvasWidth, Math.ceil(Math.max.apply(null, xs)));
+        let maxY = Math.min(state.canvasHeight, Math.ceil(Math.max.apply(null, ys)));
+        const w = Math.max(1, maxX - minX);
+        const h = Math.max(1, maxY - minY);
+
+        if (w < 8 || h < 8) {
+          this.resetVisuals();
+          showToast('مساحة التحديد صغيرة جدًا');
+          return;
+        }
+
+        const layer = getActiveLayer();
+        if (!layer || !layer.visible) {
+          this.resetVisuals();
+          showToast('الطبقة النشطة غير متاحة للتحديد');
+          return;
+        }
+
+        const originalSnapshot = this.snapshotLayer(layer);
+        const content = document.createElement('canvas');
+        content.width = w;
+        content.height = h;
+        const cctx = content.getContext('2d');
+        cctx.drawImage(layer.canvas, minX, minY, w, h, 0, 0, w, h);
+        cctx.globalCompositeOperation = 'destination-in';
+        cctx.beginPath();
+        this.points.forEach((p, i) => {
+          const px = p.x - minX;
+          const py = p.y - minY;
+          if (i === 0) cctx.moveTo(px, py);
+          else cctx.lineTo(px, py);
+        });
+        cctx.closePath();
+        cctx.fillStyle = '#000';
+        cctx.fill();
+        cctx.globalCompositeOperation = 'source-over';
+
+        layer.ctx.save();
+        layer.ctx.globalCompositeOperation = 'destination-out';
+        layer.ctx.beginPath();
+        this.points.forEach((p, i) => {
+          if (i === 0) layer.ctx.moveTo(p.x, p.y);
+          else layer.ctx.lineTo(p.x, p.y);
+        });
+        layer.ctx.closePath();
+        layer.ctx.fill();
+        layer.ctx.restore();
+
+        this.selection = {
+          layerId: layer.id,
+          x: minX,
+          y: minY,
+          w,
+          h,
+          path: this.points.map(p => ({ x: p.x - minX, y: p.y - minY })),
+          content,
+          originalSnapshot,
+          dx: 0,
+          dy: 0,
+          scale: 1,
+          rotation: 0,
+          sourceRestored: false
+        };
+
+        this.points = [];
+        this.mode = 'selected';
+        renderComposite();
+        this.showBar(true);
+        this.showOverlay();
+        this.beginAnimation();
+        this.render();
+        showToast('تم التحديد — اسحب المحدد لتحريكه');
+      },
+
+      transformedContext(ctx, sel, drawFn) {
+        const cx = sel.x + sel.w / 2 + sel.dx;
+        const cy = sel.y + sel.h / 2 + sel.dy;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(sel.rotation);
+        ctx.scale(sel.scale, sel.scale);
+        drawFn(ctx, -sel.w / 2, -sel.h / 2);
+        ctx.restore();
+      },
+
+      render() {
+        if (!selectionCtx || !selectionCanvas) return;
+        this.clearOverlay();
+        this.showOverlay();
+
+        if (this.mode === 'drawing' && this.points.length) {
+          selectionCtx.save();
+          selectionCtx.lineWidth = 4;
+          selectionCtx.setLineDash([14, 10]);
+          selectionCtx.lineDashOffset = this.dashOffset;
+          selectionCtx.strokeStyle = '#0f766e';
+          selectionCtx.beginPath();
+          this.points.forEach((p, i) => {
+            if (i === 0) selectionCtx.moveTo(p.x, p.y);
+            else selectionCtx.lineTo(p.x, p.y);
+          });
+          selectionCtx.stroke();
+          selectionCtx.restore();
+          return;
+        }
+
+        const sel = this.selection;
+        if (!sel) return;
+
+        this.transformedContext(selectionCtx, sel, (ctx, ox, oy) => {
+          ctx.globalAlpha = 1;
+          ctx.drawImage(sel.content, ox, oy);
+
+          ctx.lineWidth = 5 / sel.scale;
+          ctx.setLineDash([14 / sel.scale, 10 / sel.scale]);
+          ctx.lineDashOffset = this.dashOffset / sel.scale;
+          ctx.strokeStyle = '#ffffff';
+          ctx.beginPath();
+          sel.path.forEach((p, i) => {
+            const x = ox + p.x;
+            const y = oy + p.y;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          ctx.closePath();
+          ctx.stroke();
+
+          ctx.lineWidth = 2 / sel.scale;
+          ctx.strokeStyle = '#0f766e';
+          ctx.stroke();
+        });
+      },
+
+      hitTest(pos) {
+        const sel = this.selection;
+        if (!sel) return false;
+        const cx = sel.x + sel.w / 2 + sel.dx;
+        const cy = sel.y + sel.h / 2 + sel.dy;
+        const cos = Math.cos(-sel.rotation);
+        const sin = Math.sin(-sel.rotation);
+        const rx = pos.x - cx;
+        const ry = pos.y - cy;
+        const lx = (rx * cos - ry * sin) / sel.scale;
+        const ly = (rx * sin + ry * cos) / sel.scale;
+        return Math.abs(lx) <= sel.w / 2 && Math.abs(ly) <= sel.h / 2;
+      },
+
+      drawSelectionToLayer(layer) {
+        const sel = this.selection;
+        if (!sel || !layer) return;
+        this.transformedContext(layer.ctx, sel, (ctx, ox, oy) => {
+          ctx.drawImage(sel.content, ox, oy);
+        });
+      },
+
+      saveForLayer(layerId) {
+        const previous = state.activeLayerId;
+        state.activeLayerId = layerId;
+        saveState();
+        state.activeLayerId = previous;
+      },
+
+      commit(silent = false) {
+        if (!this.selection) {
+          if (this.mode === 'drawing') this.cancel();
+          return;
+        }
+        const sel = this.selection;
+        const layer = this.activeLayerForSelection();
+        if (layer) {
+          this.drawSelectionToLayer(layer);
+          renderComposite();
+          this.saveForLayer(layer.id);
+        }
+        this.resetVisuals();
+        if (!silent) showToast('تم تثبيت التحديد');
+      },
+
+      cancel() {
+        const sel = this.selection;
+        if (sel) {
+          const layer = this.activeLayerForSelection();
+          if (layer && sel.originalSnapshot) {
+            layer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+            layer.ctx.drawImage(sel.originalSnapshot, 0, 0);
+            renderComposite();
+          }
+        }
+        this.resetVisuals();
+        showToast('تم إلغاء التحديد');
+      },
+
+      deleteSelection() {
+        if (!this.selection) return;
+        const sel = this.selection;
+        const layer = this.activeLayerForSelection();
+        if (layer) {
+          if (sel.sourceRestored && sel.originalSnapshot) {
+            layer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+            layer.ctx.drawImage(sel.originalSnapshot, 0, 0);
+          }
+          renderComposite();
+          this.saveForLayer(layer.id);
+        }
+        this.resetVisuals();
+        showToast('تم حذف الجزء المحدد');
+      },
+
+      copySelection() {
+        if (!this.selection) return;
+        const sel = this.selection;
+        const copy = document.createElement('canvas');
+        copy.width = sel.content.width;
+        copy.height = sel.content.height;
+        copy.getContext('2d').drawImage(sel.content, 0, 0);
+        this.clipboard = copy;
+
+        try {
+          if (navigator.clipboard && window.ClipboardItem && copy.toBlob) {
+            copy.toBlob(blob => {
+              if (!blob) return;
+              navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).catch(() => {});
+            }, 'image/png');
+          }
+        } catch (e) {}
+
+        showToast('تم نسخ التحديد');
+      },
+
+      duplicateSelection() {
+        if (!this.selection) return;
+        const sel = this.selection;
+        const layer = this.activeLayerForSelection();
+        if (!layer) return;
+
+        if (!sel.sourceRestored) {
+          layer.ctx.drawImage(sel.content, sel.x, sel.y);
+          sel.sourceRestored = true;
+          renderComposite();
+          sel.dx += 24;
+          sel.dy += 24;
+          this.render();
+          showToast('تم إنشاء نسخة — اسحبها إلى الموضع المطلوب');
+        } else {
+          showToast('النسخة الحالية جاهزة للتحريك ثم التثبيت');
+        }
+      },
+
+      cutSelection() {
+        if (!this.selection) return;
+        this.copySelection();
+        const sel = this.selection;
+        const layer = this.activeLayerForSelection();
+        if (layer) {
+          if (sel.sourceRestored && sel.originalSnapshot) {
+            layer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+            layer.ctx.drawImage(sel.originalSnapshot, 0, 0);
+          }
+          renderComposite();
+          this.saveForLayer(layer.id);
+        }
+        this.resetVisuals();
+        showToast('تم قص التحديد ونسخه');
+      },
+
+      scaleBy(delta) {
+        if (!this.selection) return;
+        this.selection.scale = Math.max(0.2, Math.min(4, this.selection.scale + delta));
+        this.render();
+      },
+
+      rotateBy(deg) {
+        if (!this.selection) return;
+        this.selection.rotation += deg * Math.PI / 180;
+        this.render();
+      },
+
+      resetVisuals() {
+        this.stopAnimation();
+        this.mode = 'idle';
+        this.points = [];
+        this.selection = null;
+        this.dragStart = null;
+        this.clearOverlay();
+        if (selectionCanvas) selectionCanvas.classList.add('hidden');
+        this.showBar(false);
+      }
+    };
+
+    safeBind('lasso-confirm-btn', 'click', () => LassoManager.commit());
+    safeBind('lasso-copy-btn', 'click', () => LassoManager.copySelection());
+    safeBind('lasso-duplicate-btn', 'click', () => LassoManager.duplicateSelection());
+    safeBind('lasso-cut-btn', 'click', () => LassoManager.cutSelection());
+    safeBind('lasso-scale-down-btn', 'click', () => LassoManager.scaleBy(-0.10));
+    safeBind('lasso-scale-up-btn', 'click', () => LassoManager.scaleBy(0.10));
+    safeBind('lasso-rotate-left-btn', 'click', () => LassoManager.rotateBy(-15));
+    safeBind('lasso-rotate-right-btn', 'click', () => LassoManager.rotateBy(15));
+    safeBind('lasso-delete-btn', 'click', () => LassoManager.deleteSelection());
+    safeBind('lasso-cancel-btn', 'click', () => LassoManager.cancel());
+
+
+    // ----------------------------------------------------------------------
     // 7. MATHEMATICAL GUIDELINES & DIAMOND SCALE DOTS ENGINE
     // ----------------------------------------------------------------------
     function getCalligraphyPointUnit() {
       if (state.syncGuidelinesToBrush) {
+        const spec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+        if (spec.brushType === 'round') {
+          return Math.max(12, state.size * 0.75);
+        }
         const rad = (state.nibAngleDeg * Math.PI) / 180;
         return Math.max(12, state.size * Math.sin(rad));
       } else {
@@ -6291,7 +6813,10 @@
       setText('label-nib-angle', `${state.nibAngleDeg}°`);
       setText('label-nib-roundness', `${Math.round(state.nibRoundness * 100)}%`);
       setText('label-nib-smoothness', `${Math.round(state.nibSmoothness * 100)}%`);
-      setText('header-geometry-badge', `${state.nibAngleDeg}° / ${Math.round(state.nibRoundness * 100)}%`);
+      const currentSpec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+      setText('header-geometry-badge', currentSpec.brushType === 'round'
+        ? 'دائري 100%'
+        : `${state.nibAngleDeg}° / ${Math.round(state.nibRoundness * 100)}%`);
       
       setVal('input-shape-angle', state.nibAngleDeg);
       setText('val-shape-angle', `${state.nibAngleDeg}°`);
@@ -6341,7 +6866,12 @@
       const applyBtn = document.getElementById('apply-default-size-btn');
       if (applyBtn) applyBtn.textContent = `تطبيق ${preset.defaultSize}px`;
       const ptHeight = Math.round(preset.defaultSize * Math.sin((preset.angleDeg * Math.PI) / 180));
-      setText('current-default-size-txt', `${preset.name}: ${preset.defaultSize}px (نقطة = ${ptHeight}px)`);
+      setText('current-default-size-txt', preset.brushType === 'round'
+        ? `${preset.name}: ${preset.defaultSize}px — رأس دائري مستقل عن زاوية القصبة`
+        : `${preset.name}: ${preset.defaultSize}px (نقطة = ${ptHeight}px)`);
+      setText('header-geometry-badge', preset.brushType === 'round'
+        ? 'دائري 100%'
+        : `${preset.angleDeg}° / ${Math.round(preset.roundness * 100)}%`);
 
       updateNibPreview();
 
@@ -6543,8 +7073,12 @@
     function selectTool(toolName) {
       const isAlreadyEraser = (state.tool === 'eraser' && toolName === 'eraser');
       const isAlreadyBrush = (state.tool === 'brush' && toolName === 'brush');
+      const previousTool = state.tool;
+      if (previousTool === 'lasso' && toolName !== 'lasso' && typeof LassoManager !== 'undefined') {
+        LassoManager.commit(true);
+      }
       state.tool = toolName;
-      [toolBrushBtn, toolSmudgeBtn, toolEraserBtn].forEach(b => {
+      [toolBrushBtn, toolSmudgeBtn, toolEraserBtn, toolLassoBtn].forEach(b => {
         if (b) b.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition';
       });
 
@@ -6552,6 +7086,11 @@
       const sliderVal = document.getElementById('slider-size-val');
       const slider = document.getElementById('slider-size');
       const badge = document.getElementById('eraser-badge');
+
+      if (slider) {
+        slider.disabled = toolName === 'lasso';
+        slider.style.opacity = toolName === 'lasso' ? '0.35' : '';
+      }
 
       if (toolName === 'brush') {
         if (toolBrushBtn) toolBrushBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-blue-400 bg-blue-600/20 border border-blue-500/40 transition relative shadow';
@@ -6597,6 +7136,18 @@
           showToast(`الممحاة: ${state.eraserSize}px`);
         }
       }
+
+      if (toolName === 'lasso') {
+        if (toolLassoBtn) toolLassoBtn.className = 'tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-cyan-400 bg-cyan-600/20 border border-cyan-500/40 transition relative shadow';
+        if (sliderLabel) sliderLabel.innerHTML = '<span class="text-[10px] font-bold text-cyan-500 mb-2">التحديد الحر</span>';
+        if (sliderVal) {
+          sliderVal.textContent = 'Lasso';
+          sliderVal.className = 'text-[10px] font-mono font-bold text-cyan-500 mt-2';
+        }
+        if (badge) badge.classList.add('hidden');
+        if (eraserStudioPopover) eraserStudioPopover.classList.add('hidden');
+        showToast('أداة التحديد الحر: ارسم حول الجزء المطلوب');
+      }
     }
 
     // النقر على زر أداة الفرشاة: تفعيل الفرشاة وإظهار/إخفاء مكتبة الفُرش
@@ -6615,6 +7166,7 @@
 
     if (toolSmudgeBtn) toolSmudgeBtn.addEventListener('click', () => selectTool('smudge'));
     if (toolEraserBtn) toolEraserBtn.addEventListener('click', () => selectTool('eraser'));
+    if (toolLassoBtn) toolLassoBtn.addEventListener('click', () => selectTool('lasso'));
 
     // Dedicated Eraser Direct Stepper Controls
     safeBind('eraser-size-dec-btn', 'click', (e) => {
@@ -7071,6 +7623,8 @@
         selectTool('eraser');
       } else if (e.key.toLowerCase() === 's' && !e.ctrlKey) {
         selectTool('smudge');
+      } else if (e.key.toLowerCase() === 'l' && !e.ctrlKey && !e.metaKey) {
+        selectTool('lasso');
       } else if (e.key === '[') {
         if (state.tool === 'eraser') stepEraserSize(-5);
         else setBrushSize(state.size - 2);
