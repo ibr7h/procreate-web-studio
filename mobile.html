@@ -6135,7 +6135,6 @@
       state.layers[index - 1] = temp;
       renderLayersUI();
       renderComposite();
-      saveState();
       showToast(`تم تحريك "${temp.name}" للأعلى`);
     }
 
@@ -6146,7 +6145,6 @@
       state.layers[index + 1] = temp;
       renderLayersUI();
       renderComposite();
-      saveState();
       showToast(`تم تحريك "${temp.name}" للأسفل`);
     }
 
@@ -7775,6 +7773,12 @@
      * @param {string} toolName - اسم الأداة المراد تفعيلها ('brush' | 'smudge' | 'eraser')
      */
     function selectTool(toolName) {
+      const currentLayer = ensureLayerState(getActiveLayer());
+      if (currentLayer && currentLayer.kind === 'trainingText' && ['brush', 'eraser', 'smudge', 'lasso'].includes(toolName)) {
+        const paintLayer = state.layers.find(layer => ensureLayerState(layer)?.kind === 'paint');
+        if (paintLayer) activateLayer(paintLayer.id);
+      }
+
       const isAlreadyEraser = (state.tool === 'eraser' && toolName === 'eraser');
       const isAlreadyBrush = (state.tool === 'brush' && toolName === 'brush');
       const previousTool = state.tool;
