@@ -450,7 +450,7 @@
       align-items: center !important;
     }
   </style>
-  <link rel="stylesheet" href="mobile.css?v=2.14.1">
+  <link rel="stylesheet" href="mobile.css?v=2.15.0">
 </head>
 <body class="mobile-page h-screen w-screen flex flex-col justify-between select-none">
 
@@ -467,7 +467,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.14.1</span>
+        <span id="header-version-label">v2.15.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -2076,7 +2076,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.14.1</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.15.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -2145,7 +2145,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.14.1</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.15.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2185,7 +2185,7 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.14.1):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.15.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
               <li><strong class="text-white">تثبيت الموقع الأصلي الدقيق للكلمات والمحفوظات:</strong> تم حل مشكلة انزياح الكلمات عند تشغيلها من المكتبة؛ حيث أصبحت المحفوظات تحتفظ بإحداثياتها وموقعها الحقيقي الصريح على اللوحة (Raw Screen Coordinates)، وتُكتب بدقة متناهية في نفس الموضع الذي خطته يدك دون أي توسيط أو قفز إلى المنتصف.</li>
@@ -7281,7 +7281,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.14.1';
+    const APP_VERSION = '2.15.0';
     const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
@@ -7667,8 +7667,76 @@
     </div>
   </section>
 
+  <!-- Landscape Floating Calligraphy Toolbar (mobile.html only) -->
+  <aside id="landscape-floating-toolbar" class="landscape-floating-toolbar" aria-label="شريط أدوات الخط العائم">
+    <button id="landscape-toolbar-grip" class="landscape-toolbar-grip" type="button" aria-label="اسحب لتحريك شريط الأدوات" title="اسحب لتحريك الشريط">
+      <i class="fa-solid fa-grip-lines"></i>
+    </button>
+
+    <div id="landscape-toolbar-tools" class="landscape-toolbar-tools">
+      <button class="landscape-tool-btn" type="button" data-float-tool="brush" data-proxy="tool-brush" aria-label="القلم" title="القلم">
+        <i class="fa-solid fa-pen-nib"></i><span>القلم</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="eraser" data-proxy="tool-eraser" aria-label="الممحاة" title="الممحاة">
+        <i class="fa-solid fa-eraser"></i><span>الممحاة</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="undo" data-proxy="undo-btn" aria-label="تراجع" title="تراجع">
+        <i class="fa-solid fa-arrow-rotate-left"></i><span>تراجع</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="redo" data-proxy="redo-btn" aria-label="إعادة" title="إعادة">
+        <i class="fa-solid fa-arrow-rotate-right"></i><span>إعادة</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="layers" data-proxy="layers-btn" aria-label="الطبقات" title="الطبقات">
+        <i class="fa-solid fa-layer-group"></i><span>الطبقات</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="color" data-proxy="color-btn" aria-label="لون الحبر" title="لون الحبر">
+        <span class="landscape-color-dot" id="landscape-color-dot"></span><span>اللون</span>
+      </button>
+      <button class="landscape-tool-btn landscape-tool-recorder" type="button" data-float-tool="recorder" data-proxy="tape-recorder-btn" aria-label="مسجل الخط" title="مسجل الخط">
+        <i class="fa-solid fa-record-vinyl"></i><span>المسجل</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="fit" data-proxy="fit-screen-btn" aria-label="ملاءمة اللوحة" title="ملاءمة اللوحة">
+        <i class="fa-solid fa-expand"></i><span>ملاءمة</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="more" data-landscape-action="more" aria-label="المزيد" title="المزيد">
+        <i class="fa-solid fa-ellipsis"></i><span>المزيد</span>
+      </button>
+    </div>
+
+    <div class="landscape-toolbar-actions">
+      <button id="landscape-toolbar-collapse" type="button" aria-label="تصغير شريط الأدوات" title="تصغير/توسيع">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <button id="landscape-toolbar-customize" type="button" aria-label="تخصيص شريط الأدوات" title="تخصيص">
+        <i class="fa-solid fa-sliders"></i>
+      </button>
+    </div>
+
+    <section id="landscape-toolbar-config" class="landscape-toolbar-config" aria-label="تخصيص شريط الأدوات">
+      <div class="landscape-config-head">
+        <div>
+          <strong>تخصيص الشريط</strong>
+          <small>إظهار، إخفاء وترتيب الأدوات</small>
+        </div>
+        <button id="landscape-config-close" type="button" aria-label="إغلاق التخصيص"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="landscape-config-mode">
+        <button type="button" data-toolbar-layout="horizontal"><i class="fa-solid fa-grip"></i><span>أفقي</span></button>
+        <button type="button" data-toolbar-layout="vertical"><i class="fa-solid fa-grip-vertical"></i><span>عمودي</span></button>
+      </div>
+
+      <div id="landscape-config-tools" class="landscape-config-tools"></div>
+
+      <div class="landscape-config-footer">
+        <button id="landscape-toolbar-reset-position" type="button"><i class="fa-solid fa-location-crosshairs"></i><span>إعادة الموضع</span></button>
+        <button id="landscape-toolbar-reset-all" type="button"><i class="fa-solid fa-rotate-left"></i><span>الإعداد الافتراضي</span></button>
+      </div>
+    </section>
+  </aside>
+
   <button id="mobile-focus-exit" aria-label="الخروج من وضع التركيز"><i class="fa-solid fa-compress"></i></button>
 
-  <script src="mobile-ui.js?v=2.14.1"></script>
+  <script src="mobile-ui.js?v=2.15.0"></script>
 </body>
 </html>
