@@ -2538,6 +2538,7 @@
     const colorPanel = document.getElementById('color-panel');
     const actionsPanel = document.getElementById('actions-panel');
     const eraserStudioPopover = document.getElementById('eraser-studio-popover');
+    const trainingTextPopover = document.getElementById('training-text-popover');
 
     // Header buttons & Eraser Controls
     const toolBrushBtn = document.getElementById('tool-brush');
@@ -2877,9 +2878,21 @@
      */
     function startStroke(e) {
       e.preventDefault();
-      const activeLayer = getActiveLayer();
+      const activeLayer = ensureLayerState(getActiveLayer());
       if (!activeLayer || !activeLayer.visible) {
         showToast('الطبقة المحددة غير مرئية!');
+        return;
+      }
+
+      if (activeLayer.kind === 'trainingText') {
+        state.isDrawing = true;
+        cachedCanvasRect = displayCanvas.getBoundingClientRect();
+        TrainingTextManager.pointerDown(getPointerPos(e), activeLayer);
+        return;
+      }
+
+      if (activeLayer.locked) {
+        showToast('هذه الطبقة مقفلة — افتح القفل من إعدادات الطبقات');
         return;
       }
 
@@ -2933,6 +2946,12 @@
     function continueStroke(e) {
       if (!state.isDrawing) return;
       e.preventDefault();
+
+      const activeLayer = ensureLayerState(getActiveLayer());
+      if (activeLayer && activeLayer.kind === 'trainingText' && TrainingTextManager.dragging) {
+        TrainingTextManager.pointerMove(getPointerPos(e), activeLayer);
+        return;
+      }
 
       if (state.tool === 'lasso') {
         LassoManager.pointerMove(getPointerPos(e));
@@ -3015,6 +3034,15 @@
 
     function endStroke(e) {
       if (!state.isDrawing) return;
+
+      const activeLayer = ensureLayerState(getActiveLayer());
+      if (activeLayer && activeLayer.kind === 'trainingText' && TrainingTextManager.dragging) {
+        const pos = getPointerPos(e);
+        state.isDrawing = false;
+        cachedCanvasRect = null;
+        TrainingTextManager.pointerUp(pos, activeLayer);
+        return;
+      }
 
       if (state.tool === 'lasso') {
         const pos = getPointerPos(e);
@@ -5885,26 +5913,208 @@
     // ----------------------------------------------------
     // 6. LAYER ENGINE (WITH MOVE UP/DOWN & RENAME)
     // ----------------------------------------------------
-    function createLayer(name = null) {
+
+    function captureLayerToolSettings() {
+      return {
+        activePresetKey: state.activePresetKey,
+        nibAngleDeg: state.nibAngleDeg,
+        nibRoundness: state.nibRoundness,
+        nibSmoothness: state.nibSmoothness,
+        spacing: state.spacing,
+        jitter: state.jitter,
+        falloff: state.falloff,
+        pressureSize: state.pressureSize,
+        usePressure: state.usePressure,
+        color: state.color,
+        rgb: { ...state.rgb },
+        hsv: { ...state.hsv },
+        size: state.size,
+        opacity: state.opacity,
+        eraserSize: state.eraserSize,
+        eraserOpacity: state.eraserOpacity
+      };
+    }
+
+    function ensureLayerState(layer) {
+      if (!layer) return null;
+      if (!layer.kind) layer.kind = 'paint';
+      if (typeof layer.opacity !== 'number') layer.opacity = 1;
+      if (typeof layer.locked !== 'boolean') layer.locked = false;
+      if (!Array.isArray(layer.history)) layer.history = [];
+      if (!Array.isArray(layer.redoStack)) layer.redoStack = [];
+      if (layer.kind === 'paint' && !layer.toolSettings) {
+        layer.toolSettings = captureLayerToolSettings();
+      }
+      return layer;
+    }
+
+    function syncBrushPresetSelection(key) {
+      document.querySelectorAll('.brush-preset').forEach(btn => {
+        const selected = btn.dataset.preset === key;
+        btn.classList.toggle('is-selected', selected);
+        btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+    }
+
+    function applyLayerToolSettings(settings) {
+      if (!settings) return;
+
+      state.activePresetKey = SCRIPT_METRICS[settings.activePresetKey] ? settings.activePresetKey : 'naskh';
+      state.nibAngleDeg = Number.isFinite(settings.nibAngleDeg) ? settings.nibAngleDeg : 72;
+      state.nibRoundness = Number.isFinite(settings.nibRoundness) ? settings.nibRoundness : 0.12;
+      state.nibSmoothness = Number.isFinite(settings.nibSmoothness) ? settings.nibSmoothness : 0.28;
+      state.spacing = Number.isFinite(settings.spacing) ? settings.spacing : 0;
+      state.jitter = Number.isFinite(settings.jitter) ? settings.jitter : 0;
+      state.falloff = Number.isFinite(settings.falloff) ? settings.falloff : 0;
+      state.pressureSize = Number.isFinite(settings.pressureSize) ? settings.pressureSize : 65;
+      state.usePressure = settings.usePressure !== false;
+      state.size = Number.isFinite(settings.size) ? settings.size : 34;
+      state.opacity = Number.isFinite(settings.opacity) ? settings.opacity : 1;
+      state.eraserSize = Number.isFinite(settings.eraserSize) ? settings.eraserSize : 45;
+      state.eraserOpacity = Number.isFinite(settings.eraserOpacity) ? settings.eraserOpacity : 1;
+      state.hsv = settings.hsv ? { ...settings.hsv } : state.hsv;
+      state.rgb = settings.rgb ? { ...settings.rgb } : state.rgb;
+
+      setColor(settings.color || '#1e293b');
+      updateCachedAngles();
+      updateNibPreview();
+
+      const setVal = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+      };
+      const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = value;
+      };
+
+      const activeSize = state.tool === 'eraser' ? state.eraserSize : state.size;
+      setVal('slider-size', activeSize);
+      setText('slider-size-val', activeSize + 'px');
+      setVal('slider-opacity', Math.round(state.opacity * 100));
+      setText('slider-opacity-val', Math.round(state.opacity * 100) + '%');
+      setVal('input-nib-angle', state.nibAngleDeg);
+      setVal('input-nib-roundness', Math.round(state.nibRoundness * 100));
+      setVal('input-nib-smoothness', Math.round(state.nibSmoothness * 100));
+      setVal('input-spacing', state.spacing);
+      setVal('input-streamline', Math.round(state.nibSmoothness * 100));
+      setVal('input-jitter', state.jitter);
+      setVal('input-falloff', state.falloff);
+      setVal('input-pressure-size', state.pressureSize);
+
+      const pressureToggle = document.getElementById('toggle-pressure');
+      if (pressureToggle) pressureToggle.checked = state.usePressure;
+
+      const preset = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+      setText('brush-badge', preset.badge);
+      setText('header-active-brush-title', 'فرشاة ' + preset.name);
+      setText('studio-active-brush-badge', preset.name);
+      setText('header-geometry-badge', preset.brushType === 'round'
+        ? 'دائري 100%'
+        : state.nibAngleDeg + '° / ' + Math.round(state.nibRoundness * 100) + '%');
+
+      syncBrushPresetSelection(state.activePresetKey);
+
+      const roundMode = preset.brushType === 'round';
+      ['input-nib-angle', 'input-nib-roundness', 'input-shape-angle', 'input-shape-roundness'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.disabled = roundMode;
+          el.style.opacity = roundMode ? '0.4' : '';
+        }
+      });
+
+      if (state.showGrid) drawGuidelinesAndGrid();
+    }
+
+    function syncActiveLayerSettingsUI() {
+      const layer = ensureLayerState(getActiveLayer());
+      if (!layer) return;
+
+      const name = document.getElementById('active-layer-settings-name');
+      const kind = document.getElementById('active-layer-settings-kind');
+      const badge = document.getElementById('active-layer-tool-badge');
+      const opacity = document.getElementById('active-layer-opacity');
+      const opacityValue = document.getElementById('active-layer-opacity-value');
+      const lock = document.getElementById('active-layer-lock');
+      const note = document.getElementById('active-layer-settings-note');
+
+      if (name) name.textContent = layer.name;
+      if (kind) kind.textContent = layer.kind === 'trainingText' ? 'طبقة نص تدريب' : 'طبقة رسم';
+      if (badge) {
+        const spec = SCRIPT_METRICS[layer.toolSettings && layer.toolSettings.activePresetKey] || SCRIPT_METRICS.naskh;
+        badge.textContent = layer.kind === 'trainingText' ? 'نص مستقل' : 'فرشاة: ' + spec.badge;
+      }
+      if (opacity) opacity.value = Math.round(layer.opacity * 100);
+      if (opacityValue) opacityValue.textContent = Math.round(layer.opacity * 100) + '%';
+      if (lock) {
+        lock.checked = !!layer.locked;
+        lock.disabled = layer.kind === 'trainingText';
+      }
+      if (note) note.textContent = layer.kind === 'trainingText'
+        ? 'شفافية النص وموقعه وإعداداته محفوظة داخل هذه الطبقة بصورة مستقلة. اسحب النص على اللوحة لتحريكه.'
+        : 'تحفظ هذه الطبقة الفرشاة واللون والحجم والشفافية وسجل التراجع الخاص بها بصورة مستقلة.';
+    }
+
+    function activateLayer(layerId) {
+      const outgoing = ensureLayerState(getActiveLayer());
+      if (outgoing && outgoing.kind === 'paint') {
+        outgoing.toolSettings = captureLayerToolSettings();
+      }
+
+      if (typeof LassoManager !== 'undefined' && LassoManager.selection) {
+        LassoManager.commit(true);
+      }
+
+      const incoming = ensureLayerState(state.layers.find(l => l.id === layerId));
+      if (!incoming) return;
+
+      state.activeLayerId = incoming.id;
+      if (incoming.kind === 'paint') {
+        applyLayerToolSettings(incoming.toolSettings);
+      }
+
+      renderLayersUI();
+      syncActiveLayerSettingsUI();
+
+      if (typeof TrainingTextManager !== 'undefined') {
+        TrainingTextManager.loadLayerIntoControls(incoming.kind === 'trainingText' ? incoming : null);
+      }
+    }
+
+    function createLayer(name = null, options = {}) {
       const id = 'layer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
       const canvas = document.createElement('canvas');
       canvas.width = state.canvasWidth;
       canvas.height = state.canvasHeight;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
+      const kind = options.kind || 'paint';
       const newLayer = {
         id,
-        name: name || `طبقة ${state.layers.length + 1}`,
+        name: name || (kind === 'trainingText' ? 'نص التدريب' : 'طبقة ' + (state.layers.length + 1)),
         canvas,
         ctx,
+        kind,
         visible: true,
-        opacity: 1.0
+        opacity: Number.isFinite(options.opacity) ? options.opacity : 1.0,
+        locked: kind === 'trainingText' ? true : !!options.locked,
+        toolSettings: kind === 'paint' ? captureLayerToolSettings() : null,
+        textSettings: kind === 'trainingText' ? { ...(options.textSettings || {}) } : null,
+        history: [],
+        redoStack: []
       };
 
       state.layers.unshift(newLayer);
       state.activeLayerId = id;
+
+      if (kind === 'trainingText' && typeof renderTrainingTextLayer === 'function') {
+        renderTrainingTextLayer(newLayer);
+      }
+
       renderLayersUI();
       renderComposite();
+      syncActiveLayerSettingsUI();
       saveState();
       return newLayer;
     }
@@ -5967,7 +6177,10 @@
           </button>
 
           <div class="flex-1 flex items-center gap-1.5 overflow-hidden cursor-pointer layer-title-wrap">
+            <i class="fa-solid ${layer.kind === 'trainingText' ? 'fa-font' : 'fa-pen-nib'} layer-kind-icon"></i>
             <span class="layer-name-label text-xs font-semibold text-gray-200 truncate select-none">${layer.name}</span>
+            <span class="layer-opacity-mini">${Math.round(layer.opacity * 100)}%</span>
+            ${layer.locked ? '<i class="fa-solid fa-lock layer-lock-mini"></i>' : ''}
             <input type="text" class="layer-name-input hidden bg-black/70 border border-blue-400 rounded-lg px-2 py-0.5 text-xs text-white outline-none w-28 font-medium" value="${layer.name}">
             <button class="layer-rename-btn text-gray-400 hover:text-blue-300 text-[11px] p-1 rounded hover:bg-white/10 transition" title="تعديل اسم الطبقة">
               <i class="fa-solid fa-pen"></i>
@@ -5997,8 +6210,7 @@
 
         div.querySelector('.layer-title-wrap').addEventListener('click', (e) => {
           if (e.target === renameBtn || e.target.closest('.layer-rename-btn') || e.target === nameInput) return;
-          state.activeLayerId = layer.id;
-          renderLayersUI();
+          activateLayer(layer.id);
         });
 
         function startRenaming(e) {
@@ -6051,6 +6263,7 @@
           layer.visible = !layer.visible;
           renderLayersUI();
           renderComposite();
+          syncActiveLayerSettingsUI();
         });
 
         div.querySelector('.layer-del-btn').addEventListener('click', (e) => {
@@ -6060,11 +6273,14 @@
             return;
           }
           state.layers = state.layers.filter(l => l.id !== layer.id);
-          if (state.activeLayerId === layer.id) {
+          if (state.activeLayerId === layer.id && state.layers[0]) {
             state.activeLayerId = state.layers[0].id;
+            const nextLayer = ensureLayerState(state.layers[0]);
+            if (nextLayer && nextLayer.kind === 'paint') applyLayerToolSettings(nextLayer.toolSettings);
           }
           renderLayersUI();
           renderComposite();
+          syncActiveLayerSettingsUI();
           saveState();
           showToast('تم حذف الطبقة');
         });
@@ -6072,6 +6288,30 @@
         list.appendChild(div);
       });
     }
+
+
+    safeBind('active-layer-opacity', 'input', (e) => {
+      const layer = ensureLayerState(getActiveLayer());
+      if (!layer) return;
+      layer.opacity = Math.max(0, Math.min(1, parseInt(e.target.value, 10) / 100));
+      const out = document.getElementById('active-layer-opacity-value');
+      if (out) out.textContent = Math.round(layer.opacity * 100) + '%';
+      renderComposite();
+    });
+
+    safeBind('active-layer-opacity', 'change', () => {
+      renderLayersUI();
+      saveState();
+    });
+
+    safeBind('active-layer-lock', 'change', (e) => {
+      const layer = ensureLayerState(getActiveLayer());
+      if (!layer || layer.kind === 'trainingText') return;
+      layer.locked = !!e.target.checked;
+      renderLayersUI();
+      syncActiveLayerSettingsUI();
+      showToast(layer.locked ? 'تم قفل الطبقة' : 'تم فتح قفل الطبقة');
+    });
 
     function renderComposite() {
       if (!displayCtx) return;
