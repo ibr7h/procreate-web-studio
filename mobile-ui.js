@@ -43,7 +43,7 @@
 
     const setActiveTool = (toolId) => {
       document.querySelectorAll('#mobile-bottom-dock .mobile-dock-btn[data-proxy], #landscape-floating-toolbar .landscape-tool-btn[data-proxy]').forEach(btn => {
-        const isTool = ['tool-brush', 'tool-eraser'].includes(btn.dataset.proxy);
+        const isTool = ['tool-brush', 'tool-eraser', 'tool-lasso'].includes(btn.dataset.proxy);
         if (isTool) btn.classList.toggle('is-active', btn.dataset.proxy === toolId);
       });
     };
@@ -92,7 +92,7 @@
           if (btn.closest('#mobile-more-sheet')) closeMore();
           target.click();
 
-          if (targetId === 'tool-brush' || targetId === 'tool-eraser') {
+          if (targetId === 'tool-brush' || targetId === 'tool-eraser' || targetId === 'tool-lasso') {
             setActiveTool(targetId);
           }
         }
@@ -225,7 +225,7 @@
       });
     }
 
-    ['tool-brush', 'tool-eraser'].forEach(id => {
+    ['tool-brush', 'tool-eraser', 'tool-lasso'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('click', () => setActiveTool(id));
     });
@@ -250,6 +250,7 @@
       const TOOL_META = {
         brush:    { label: 'القلم',      icon: 'fa-pen-nib' },
         eraser:   { label: 'الممحاة',    icon: 'fa-eraser' },
+        lasso:    { label: 'التحديد الحر', icon: 'fa-draw-polygon' },
         undo:     { label: 'تراجع',      icon: 'fa-arrow-rotate-left' },
         redo:     { label: 'إعادة',      icon: 'fa-arrow-rotate-right' },
         layers:   { label: 'الطبقات',    icon: 'fa-layer-group' },
@@ -261,10 +262,11 @@
 
       const ALL_TOOL_IDS = Object.keys(TOOL_META);
       const DEFAULT_CONFIG = {
-        order: ['brush', 'eraser', 'undo', 'redo', 'layers', 'recorder', 'more', 'color', 'fit'],
+        order: ['brush', 'eraser', 'lasso', 'undo', 'redo', 'layers', 'recorder', 'more', 'color', 'fit'],
         visible: {
           brush: true,
           eraser: true,
+          lasso: true,
           undo: true,
           redo: true,
           layers: true,
