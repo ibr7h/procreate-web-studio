@@ -2371,8 +2371,7 @@ body.mobile-page #slider-size:disabled {
 }
 
 /* Keep selection commands reachable in Focus mode. */
-body.mobile-page.mobile-focus #lasso-action-bar {
-  display: flex;
+body.mobile-page.mobile-focus #lasso-action-bar:not(.hidden) {
   z-index: 140;
 }
 
