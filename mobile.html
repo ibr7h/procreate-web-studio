@@ -6083,6 +6083,11 @@
     }
 
     function createLayer(name = null, options = {}) {
+      const outgoing = ensureLayerState(getActiveLayer());
+      if (outgoing && outgoing.kind === 'paint') {
+        outgoing.toolSettings = captureLayerToolSettings();
+      }
+
       const id = 'layer_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
       const canvas = document.createElement('canvas');
       canvas.width = state.canvasWidth;
