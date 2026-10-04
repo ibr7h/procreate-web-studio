@@ -2,7 +2,7 @@
   "name": "ديوان الخط — استوديو الخط العربي",
   "short_name": "ديوان الخط",
   "description": "استوديو عربي للخط والتدريب والتسجيل الرقمي",
-  "start_url": "./mobile.html?v=2.16.2",
+  "start_url": "./mobile.html?v=2.17.0",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
