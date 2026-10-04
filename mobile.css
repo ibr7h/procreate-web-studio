@@ -2402,3 +2402,110 @@ body.mobile-page.mobile-focus #lasso-action-bar:not(.hidden) {
     display: none;
   }
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.16.1 — Brush Library contrast/accessibility
+   WCAG-oriented readable typography on the light Andalusian sheet.
+   ============================================================ */
+
+body.mobile-page #brush-library-popover {
+  color: #2C2926 !important;
+  background:
+    linear-gradient(180deg, rgba(251,247,239,.998), rgba(240,226,201,.998)) !important;
+}
+
+/* Library heading */
+body.mobile-page #brush-library-popover > div:first-child .text-gray-200 {
+  color: #23395B !important;
+}
+body.mobile-page #brush-library-popover > div:first-child .text-amber-400 {
+  color: #6F4A37 !important;
+}
+body.mobile-page #close-brush-library {
+  color: #23395B !important;
+  background: rgba(47,93,140,.06) !important;
+}
+
+/* Every brush card gets one readable neutral baseline. */
+body.mobile-page #brush-library-popover .brush-preset {
+  position: relative;
+  color: #2C2926 !important;
+  background: #FBF7EF !important;
+  border: 1px solid rgba(111,74,55,.18) !important;
+  box-shadow: none !important;
+}
+
+body.mobile-page #brush-library-popover .brush-preset:hover {
+  background: #F5EBDD !important;
+  border-color: rgba(47,93,140,.24) !important;
+}
+
+/* Brush name — high contrast indigo. */
+body.mobile-page #brush-library-popover .brush-preset > div > div:last-child > div:first-child {
+  color: #23395B !important;
+}
+
+/* Technical description — darker muted brown/gray, still readable. */
+body.mobile-page #brush-library-popover .brush-preset > div > div:last-child > div:nth-child(2) {
+  color: #5F5A54 !important;
+}
+
+/* Size badge — warm cedar, not pale gray/amber. */
+body.mobile-page #brush-library-popover .brush-preset > span:last-child {
+  color: #6F4A37 !important;
+  background: #F4E8D1 !important;
+  border: 1px solid rgba(111,74,55,.14);
+  font-weight: 800 !important;
+}
+
+/* Icon tiles remain colored, but with sufficient foreground contrast. */
+body.mobile-page #brush-library-popover .brush-preset > div > div:first-child {
+  color: #2F5D8C !important;
+  background: rgba(47,93,140,.09) !important;
+}
+body.mobile-page #brush-library-popover .brush-preset[data-preset="round"] > div > div:first-child {
+  color: #176159 !important;
+  background: rgba(45,140,130,.11) !important;
+}
+
+/* Selected state: use surface + border + side marker, never pale text. */
+body.mobile-page #brush-library-popover .brush-preset.is-selected {
+  background: #E8F0E8 !important;
+  border-color: rgba(45,140,130,.58) !important;
+  box-shadow:
+    inset -4px 0 0 #2D8C82,
+    0 3px 10px rgba(45,140,130,.08) !important;
+}
+
+body.mobile-page #brush-library-popover .brush-preset.is-selected > div > div:last-child > div:first-child {
+  color: #174F49 !important;
+}
+
+body.mobile-page #brush-library-popover .brush-preset.is-selected > div > div:last-child > div:nth-child(2) {
+  color: #4E554F !important;
+}
+
+body.mobile-page #brush-library-popover .brush-preset.is-selected > span:last-child {
+  color: #174F49 !important;
+  background: #DCE9E3 !important;
+  border-color: rgba(45,140,130,.28) !important;
+}
+
+/* Final action remains visually distinct and readable. */
+body.mobile-page #open-studio-from-popover {
+  color: #23395B !important;
+  background: rgba(47,93,140,.09) !important;
+  border-color: rgba(47,93,140,.25) !important;
+}
+body.mobile-page #open-studio-from-popover:hover {
+  background: rgba(47,93,140,.14) !important;
+}
+
+/* Small phones: keep descriptions readable rather than fading them. */
+@media (max-width: 390px) {
+  body.mobile-page #brush-library-popover .brush-preset > div > div:last-child > div:nth-child(2) {
+    font-size: 9px !important;
+    line-height: 1.45 !important;
+  }
+}
