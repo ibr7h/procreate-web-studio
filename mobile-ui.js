@@ -25,6 +25,8 @@
     const landscapeToolbar = document.getElementById('landscape-floating-toolbar');
     const landscapeRecorderBtn = landscapeToolbar?.querySelector('[data-float-tool="recorder"]') || null;
     let landscapeToolbarManager = null;
+    let focusEnteredAutomatically = false;
+    let autoFocusSuppressedUntilPortrait = false;
 
     const closeMore = () => {
       if (moreSheet) moreSheet.classList.remove('is-open');
@@ -118,25 +120,66 @@
       }
     }, { passive: true });
 
-    document.querySelectorAll('[data-mobile-action="focus"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        closeMore();
+    const isLandscapeViewport = () => window.innerWidth > window.innerHeight;
 
-        // Focus mode and recorder mode are mutually exclusive on phones.
-        if (document.body.classList.contains('mobile-recorder-open')) {
-          document.getElementById('tape-deck-close-btn')?.click();
+    const enterFocusMode = (source = 'manual') => {
+      closeMore();
+
+      // Manual focus keeps the previous phone behavior: close the recorder.
+      // Automatic landscape focus keeps it open because the floating toolbar
+      // already has recorder-aware collision handling.
+      if (source === 'manual' && document.body.classList.contains('mobile-recorder-open')) {
+        document.getElementById('tape-deck-close-btn')?.click();
+      }
+
+      document.body.classList.add('mobile-focus');
+      focusEnteredAutomatically = source === 'auto';
+      window.setTimeout(() => document.getElementById('fit-screen-btn')?.click(), 50);
+      window.setTimeout(() => landscapeToolbarManager?.onViewportChange(), 80);
+    };
+
+    const exitFocusMode = (source = 'manual') => {
+      const wasAuto = focusEnteredAutomatically;
+      document.body.classList.remove('mobile-focus');
+      focusEnteredAutomatically = false;
+
+      // If the user manually exits auto-focus while still in landscape,
+      // respect that choice until the device returns to portrait.
+      if (source === 'manual' && wasAuto && isLandscapeViewport()) {
+        autoFocusSuppressedUntilPortrait = true;
+      }
+
+      window.setTimeout(() => document.getElementById('fit-screen-btn')?.click(), 50);
+      window.setTimeout(() => landscapeToolbarManager?.onViewportChange(), 80);
+    };
+
+    const syncOrientationFocus = () => {
+      const landscape = isLandscapeViewport();
+      const enabled = landscapeToolbarManager?.isAutoFocusEnabled?.() === true;
+
+      if (!landscape) {
+        autoFocusSuppressedUntilPortrait = false;
+        if (focusEnteredAutomatically && document.body.classList.contains('mobile-focus')) {
+          exitFocusMode('orientation');
         }
+        return;
+      }
 
-        document.body.classList.add('mobile-focus');
-        window.setTimeout(() => document.getElementById('fit-screen-btn')?.click(), 50);
-      });
+      if (enabled && !autoFocusSuppressedUntilPortrait && !document.body.classList.contains('mobile-focus')) {
+        enterFocusMode('auto');
+      }
+
+      if (!enabled && focusEnteredAutomatically && document.body.classList.contains('mobile-focus')) {
+        exitFocusMode('setting');
+      }
+    };
+
+    document.querySelectorAll('[data-mobile-action="focus"]').forEach(btn => {
+      btn.addEventListener('click', () => enterFocusMode('manual'));
     });
 
     if (focusExit) {
-      focusExit.addEventListener('click', () => {
-        document.body.classList.remove('mobile-focus');
-        window.setTimeout(() => document.getElementById('fit-screen-btn')?.click(), 50);
-      });
+      focusExit.addEventListener('click', () => exitFocusMode('manual'));
     }
 
     if (orientationHint) {
@@ -202,6 +245,7 @@
       const configTools = document.getElementById('landscape-config-tools');
       const resetPositionBtn = document.getElementById('landscape-toolbar-reset-position');
       const resetAllBtn = document.getElementById('landscape-toolbar-reset-all');
+      const autoFocusToggle = document.getElementById('landscape-auto-focus-toggle');
 
       const TOOL_META = {
         brush:    { label: 'القلم',      icon: 'fa-pen-nib' },
@@ -231,6 +275,7 @@
         },
         layout: 'horizontal',
         collapsed: false,
+        autoFocusLandscape: true,
         position: null
       };
 
@@ -265,6 +310,7 @@
           visible,
           layout: candidate.layout === 'vertical' ? 'vertical' : 'horizontal',
           collapsed: !!candidate.collapsed,
+          autoFocusLandscape: candidate.autoFocusLandscape !== false,
           position: candidate.position &&
                     Number.isFinite(candidate.position.x) &&
                     Number.isFinite(candidate.position.y)
@@ -443,6 +489,7 @@
 
         landscapeToolbar.classList.toggle('is-vertical', config.layout === 'vertical');
         landscapeToolbar.classList.toggle('is-collapsed', config.collapsed);
+        if (autoFocusToggle) autoFocusToggle.checked = config.autoFocusLandscape !== false;
 
         document.querySelectorAll('[data-toolbar-layout]').forEach(btn => {
           btn.classList.toggle('is-active', btn.dataset.toolbarLayout === config.layout);
@@ -527,6 +574,14 @@
         });
       });
 
+      autoFocusToggle?.addEventListener('change', () => {
+        config.autoFocusLandscape = autoFocusToggle.checked;
+        autoFocusSuppressedUntilPortrait = false;
+        saveConfig();
+        syncOrientationFocus();
+        wakeToolbar();
+      });
+
       resetPositionBtn?.addEventListener('click', () => {
         config.position = null;
         applyPosition(null, true);
@@ -556,6 +611,9 @@
       landscapeToolbar.addEventListener('pointermove', wakeToolbar, { passive: true });
 
       landscapeToolbarManager = {
+        isAutoFocusEnabled() {
+          return config.autoFocusLandscape !== false;
+        },
         onRecorderState(open) {
           recorderOpen = open;
           if (open) closeConfig();
@@ -563,6 +621,7 @@
           requestAnimationFrame(() => applyPosition(config.position, false));
         },
         onViewportChange() {
+          syncOrientationFocus();
           if (!isLandscape()) return;
           requestAnimationFrame(() => applyPosition(config.position, false));
         }
@@ -570,6 +629,7 @@
 
       loadConfig();
       applyConfig();
+      syncOrientationFocus();
       wakeToolbar();
     }
 
@@ -606,8 +666,10 @@
 
     const refit = () => {
       updateViewportUnit();
-      landscapeToolbarManager?.onViewportChange();
-      window.setTimeout(() => document.getElementById('fit-screen-btn')?.click(), 220);
+      window.setTimeout(() => {
+        landscapeToolbarManager?.onViewportChange();
+        document.getElementById('fit-screen-btn')?.click();
+      }, 220);
     };
 
     updateViewportUnit();
