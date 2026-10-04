@@ -2147,3 +2147,90 @@ body.mobile-page.mobile-recorder-open .landscape-tool-recorder i {
 body.mobile-page.mobile-focus .landscape-floating-toolbar {
   display: none !important;
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.15.1 — Focus-aware landscape workflow
+   ============================================================ */
+
+.landscape-config-behavior {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 9px;
+  padding: 8px 9px;
+  border: 1px solid rgba(111,74,55,.12);
+  border-radius: 10px;
+  background: rgba(47,93,140,.045);
+}
+
+.landscape-behavior-copy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.landscape-behavior-copy > i {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: var(--andalus-blue);
+  background: rgba(47,93,140,.07);
+}
+
+.landscape-behavior-copy strong {
+  display: block;
+  color: var(--andalus-indigo);
+  font-size: 10px;
+  font-family: 'Cairo', sans-serif;
+}
+
+.landscape-behavior-copy small {
+  display: block;
+  margin-top: 1px;
+  color: var(--andalus-muted);
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+/* Focus mode should remove chrome, not the primary landscape tool surface. */
+@media (orientation: landscape) and (max-height: 700px) {
+  body.mobile-page.mobile-focus .landscape-floating-toolbar {
+    display: flex !important;
+  }
+
+  body.mobile-page.mobile-focus > main {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+  }
+
+  body.mobile-page.mobile-focus #canvas-container {
+    width: min(100vw, calc(100dvh * 4 / 3)) !important;
+    max-width: min(100vw, calc(100dvh * 4 / 3)) !important;
+    height: auto !important;
+    max-height: 100dvh !important;
+    aspect-ratio: 4 / 3 !important;
+    border-radius: 0 !important;
+    margin: 0 auto !important;
+  }
+
+  /* The floating toolbar is the exit/command surface in landscape;
+     keep the legacy focus-exit button unobtrusive in the corner. */
+  body.mobile-page.mobile-focus #mobile-focus-exit {
+    width: 34px !important;
+    height: 34px !important;
+    top: max(6px, env(safe-area-inset-top)) !important;
+    right: max(6px, env(safe-area-inset-right)) !important;
+    border-radius: 10px !important;
+    opacity: .82;
+  }
+}
