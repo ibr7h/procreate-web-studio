@@ -2271,3 +2271,135 @@ body.mobile-page.mobile-focus .landscape-floating-toolbar {
   width: min(286px, calc(100vw - 16px)) !important;
   max-height: calc(100dvh - 16px) !important;
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.16 — Round Brush + Freehand Lasso UI
+   ============================================================ */
+
+body.mobile-page #selection-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  inset: 0 !important;
+  border-radius: inherit;
+  pointer-events: none !important;
+}
+
+#lasso-action-bar {
+  direction: rtl;
+  max-width: calc(100% - 14px);
+  min-height: 40px;
+  padding: 4px;
+  border: 1px solid rgba(35,57,91,.18);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(252,248,240,.98), rgba(237,221,194,.97));
+  box-shadow:
+    0 8px 22px rgba(62,44,34,.18),
+    inset 0 1px 0 rgba(255,255,255,.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+#lasso-action-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.lasso-action-btn {
+  height: 32px;
+  min-width: 32px;
+  flex: 0 0 auto;
+  padding: 0 8px;
+  border: 1px solid rgba(111,74,55,.12);
+  border-radius: 8px;
+  color: var(--andalus-indigo);
+  background: rgba(255,255,255,.34);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lasso-action-btn span {
+  white-space: nowrap;
+}
+
+.lasso-action-btn:active {
+  transform: scale(.94);
+  background: rgba(47,93,140,.09);
+}
+
+.lasso-action-btn.lasso-confirm {
+  color: #176159;
+  border-color: rgba(45,140,130,.24);
+  background: rgba(45,140,130,.11);
+}
+
+.lasso-action-btn.lasso-danger {
+  color: var(--andalus-terracotta-dark);
+  border-color: rgba(184,92,56,.20);
+  background: rgba(184,92,56,.08);
+}
+
+.mobile-more-btn.mobile-lasso-action {
+  color: #175F57 !important;
+  border-color: rgba(45,140,130,.20) !important;
+  background: rgba(45,140,130,.07) !important;
+}
+
+.mobile-more-btn.mobile-lasso-action i {
+  color: var(--andalus-turquoise) !important;
+}
+
+.landscape-tool-btn[data-float-tool="lasso"].is-active {
+  color: #175F57 !important;
+  background: rgba(45,140,130,.12) !important;
+  box-shadow: inset 0 0 0 1px rgba(45,140,130,.22) !important;
+}
+
+/* Lasso selection is an interaction mode, not a brush-size mode. */
+body.mobile-page #slider-size:disabled {
+  cursor: not-allowed;
+}
+
+/* Keep selection commands reachable in Focus mode. */
+body.mobile-page.mobile-focus #lasso-action-bar {
+  display: flex;
+  z-index: 140;
+}
+
+/* Short landscape phones need compact commands. */
+@media (orientation: landscape) and (max-height: 700px) {
+  #lasso-action-bar {
+    top: 6px !important;
+    max-width: min(78vw, 640px);
+    min-height: 36px;
+    padding: 3px;
+  }
+
+  .lasso-action-btn {
+    height: 29px;
+    min-width: 29px;
+    padding-inline: 7px;
+    font-size: 7px;
+  }
+
+  .lasso-action-btn span {
+    display: none;
+  }
+}
+
+/* Very narrow portrait: preserve tap targets but hide labels. */
+@media (orientation: portrait) and (max-width: 390px) {
+  .lasso-action-btn span {
+    display: none;
+  }
+}
