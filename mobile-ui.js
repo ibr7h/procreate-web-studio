@@ -9,7 +9,8 @@
     'color-panel',
     'actions-panel',
     'nib-studio-popover',
-    'eraser-studio-popover'
+    'eraser-studio-popover',
+    'training-text-popover'
   ];
 
   const init = () => {
