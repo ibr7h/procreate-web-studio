@@ -120,7 +120,9 @@
       }
     }, { passive: true });
 
-    const isLandscapeViewport = () => window.innerWidth > window.innerHeight;
+    const orientationMedia = window.matchMedia ? window.matchMedia('(orientation: landscape)') : null;
+    const isLandscapeViewport = () =>
+      (orientationMedia ? orientationMedia.matches : false) || window.innerWidth > window.innerHeight;
 
     const enterFocusMode = (source = 'manual') => {
       closeMore();
@@ -246,6 +248,8 @@
       const resetPositionBtn = document.getElementById('landscape-toolbar-reset-position');
       const resetAllBtn = document.getElementById('landscape-toolbar-reset-all');
       const autoFocusToggle = document.getElementById('landscape-auto-focus-toggle');
+      const autoFocusState = document.getElementById('landscape-auto-focus-state');
+      const autoFocusBehavior = autoFocusToggle?.closest('.landscape-config-behavior') || null;
 
       const TOOL_META = {
         brush:    { label: 'القلم',      icon: 'fa-pen-nib' },
@@ -285,7 +289,9 @@
       let idleTimer = null;
       let recorderOpen = false;
 
-      const isLandscape = () => window.innerWidth > window.innerHeight;
+      const isLandscape = () =>
+        (window.matchMedia ? window.matchMedia('(orientation: landscape)').matches : false) ||
+        window.innerWidth > window.innerHeight;
 
       const sanitizeConfig = (candidate) => {
         if (!candidate || typeof candidate !== 'object') return JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -490,6 +496,8 @@
         landscapeToolbar.classList.toggle('is-vertical', config.layout === 'vertical');
         landscapeToolbar.classList.toggle('is-collapsed', config.collapsed);
         if (autoFocusToggle) autoFocusToggle.checked = config.autoFocusLandscape !== false;
+        if (autoFocusState) autoFocusState.textContent = config.autoFocusLandscape !== false ? 'مفعّل' : 'متوقف';
+        autoFocusBehavior?.classList.toggle('is-off', config.autoFocusLandscape === false);
 
         document.querySelectorAll('[data-toolbar-layout]').forEach(btn => {
           btn.classList.toggle('is-active', btn.dataset.toolbarLayout === config.layout);
@@ -577,6 +585,8 @@
       autoFocusToggle?.addEventListener('change', () => {
         config.autoFocusLandscape = autoFocusToggle.checked;
         autoFocusSuppressedUntilPortrait = false;
+        if (autoFocusState) autoFocusState.textContent = config.autoFocusLandscape ? 'مفعّل' : 'متوقف';
+        autoFocusBehavior?.classList.toggle('is-off', !config.autoFocusLandscape);
         saveConfig();
         syncOrientationFocus();
         wakeToolbar();
@@ -678,6 +688,28 @@
       landscapeToolbarManager?.onViewportChange();
     }, { passive: true });
     window.addEventListener('orientationchange', refit, { passive: true });
+
+    // iOS can report stale innerWidth/innerHeight during rotation. Listen to
+    // the orientation media query as a second authoritative signal.
+    if (orientationMedia) {
+      const onOrientationMediaChange = () => {
+        window.setTimeout(() => {
+          landscapeToolbarManager?.onViewportChange();
+          document.getElementById('fit-screen-btn')?.click();
+        }, 120);
+      };
+      if (orientationMedia.addEventListener) {
+        orientationMedia.addEventListener('change', onOrientationMediaChange);
+      } else if (orientationMedia.addListener) {
+        orientationMedia.addListener(onOrientationMediaChange);
+      }
+    }
+
+    // Initial post-layout sync ensures installed PWAs entering already-landscape
+    // also honor the saved auto-focus preference.
+    window.setTimeout(() => {
+      landscapeToolbarManager?.onViewportChange();
+    }, 180);
 
     setActiveTool('tool-brush');
   };
