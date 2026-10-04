@@ -560,6 +560,11 @@
         <i class="fa-solid fa-hand-pointer text-sm"></i>
       </button>
 
+      <!-- Freehand Lasso Selection Tool -->
+      <button id="tool-lasso" title="التحديد الحر (Lasso)" class="tool-btn w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center active:scale-95 text-gray-400 hover:text-white hover:bg-white/10 transition relative">
+        <i class="fa-solid fa-draw-polygon text-sm"></i>
+      </button>
+
       <!-- Dedicated Eraser Cluster with Direct Size Stepper Buttons -->
       <div class="flex items-center bg-white/5 border border-white/10 rounded-xl p-0.5" id="eraser-cluster">
         <!-- Main Eraser Tool Button -->
@@ -645,6 +650,22 @@
       <canvas id="display-canvas" width="1600" height="1200" class="absolute inset-0 z-0 block w-full h-full"></canvas>
       <canvas id="grid-canvas" width="1600" height="1200" class="absolute inset-0 z-10 block w-full h-full pointer-events-none hidden"></canvas>
       <canvas id="training-ghost-canvas" width="1600" height="1200" class="absolute inset-0 z-15 block w-full h-full pointer-events-none hidden"></canvas>
+
+      <!-- Lasso selection overlay: visual only; pointer events remain on display-canvas -->
+      <canvas id="selection-canvas" width="1600" height="1200" class="absolute inset-0 z-[24] block w-full h-full pointer-events-none hidden"></canvas>
+
+      <div id="lasso-action-bar" class="absolute top-2 left-1/2 -translate-x-1/2 z-[35] hidden items-center gap-1" role="toolbar" aria-label="أوامر التحديد الحر">
+        <button id="lasso-confirm-btn" class="lasso-action-btn lasso-confirm" title="تثبيت التحديد"><i class="fa-solid fa-check"></i><span>تثبيت</span></button>
+        <button id="lasso-copy-btn" class="lasso-action-btn" title="نسخ التحديد"><i class="fa-regular fa-copy"></i><span>نسخ</span></button>
+        <button id="lasso-duplicate-btn" class="lasso-action-btn" title="تكرار التحديد"><i class="fa-solid fa-clone"></i><span>تكرار</span></button>
+        <button id="lasso-cut-btn" class="lasso-action-btn" title="قص التحديد"><i class="fa-solid fa-scissors"></i><span>قص</span></button>
+        <button id="lasso-scale-down-btn" class="lasso-action-btn" title="تصغير"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+        <button id="lasso-scale-up-btn" class="lasso-action-btn" title="تكبير"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+        <button id="lasso-rotate-left-btn" class="lasso-action-btn" title="تدوير يسار"><i class="fa-solid fa-rotate-left"></i></button>
+        <button id="lasso-rotate-right-btn" class="lasso-action-btn" title="تدوير يمين"><i class="fa-solid fa-rotate-right"></i></button>
+        <button id="lasso-delete-btn" class="lasso-action-btn lasso-danger" title="حذف المحدد"><i class="fa-solid fa-trash-can"></i></button>
+        <button id="lasso-cancel-btn" class="lasso-action-btn" title="إلغاء التحديد"><i class="fa-solid fa-xmark"></i></button>
+      </div>
       
       <!-- Simulated Virtual Calligraphy Pen Tip Cursor -->
       <div id="simulated-nib-pointer" class="absolute pointer-events-none z-20 hidden transition-transform duration-75" style="transform: translate(-50%, -50%);">
@@ -1777,6 +1798,20 @@
             </div>
           </div>
           <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-gray-400 font-mono">32px</span>
+        </button>
+
+        <!-- Round Brush -->
+        <button class="brush-preset text-right p-2.5 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 text-gray-300 flex items-center justify-between group transition active:scale-[0.98]" data-preset="round">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-circle"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-gray-200">الفرشاة الدائرية (Round Brush)</div>
+              <div class="text-[10px] text-gray-400">رأس دائري مستقل عن زاوية القصبة | ضغط وتنعيم ديناميكي</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 font-mono">28px</span>
         </button>
       </div>
 
@@ -7648,6 +7683,7 @@
       <div class="mobile-section-title"><span>أدوات الخط</span></div>
       <button class="mobile-more-btn mobile-accent" data-proxy="open-studio-btn"><i class="fa-solid fa-sliders"></i><span>استوديو القلم</span></button>
       <button class="mobile-more-btn" data-proxy="nib-settings-btn"><i class="fa-solid fa-compass-drafting"></i><span>قَطّة القلم</span></button>
+      <button class="mobile-more-btn mobile-lasso-action" data-proxy="tool-lasso"><i class="fa-solid fa-draw-polygon"></i><span>التحديد الحر</span></button>
       <button class="mobile-more-btn" data-proxy="grid-settings-btn"><i class="fa-solid fa-ruler-combined"></i><span>ميزان السطور</span></button>
       <button class="mobile-more-btn" data-proxy="color-btn"><span class="mobile-menu-color-dot" id="mobile-color-dot"></span><span>لون الحبر</span></button>
 
@@ -7679,6 +7715,9 @@
       </button>
       <button class="landscape-tool-btn" type="button" data-float-tool="eraser" data-proxy="tool-eraser" aria-label="الممحاة" title="الممحاة">
         <i class="fa-solid fa-eraser"></i><span>الممحاة</span>
+      </button>
+      <button class="landscape-tool-btn" type="button" data-float-tool="lasso" data-proxy="tool-lasso" aria-label="التحديد الحر" title="التحديد الحر">
+        <i class="fa-solid fa-draw-polygon"></i><span>لاسو</span>
       </button>
       <button class="landscape-tool-btn" type="button" data-float-tool="undo" data-proxy="undo-btn" aria-label="تراجع" title="تراجع">
         <i class="fa-solid fa-arrow-rotate-left"></i><span>تراجع</span>
