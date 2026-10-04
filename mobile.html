@@ -450,7 +450,7 @@
       align-items: center !important;
     }
   </style>
-  <link rel="stylesheet" href="mobile.css?v=2.15.1">
+  <link rel="stylesheet" href="mobile.css?v=2.15.2">
 </head>
 <body class="mobile-page h-screen w-screen flex flex-col justify-between select-none">
 
@@ -467,7 +467,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.15.1</span>
+        <span id="header-version-label">v2.15.2</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -2076,7 +2076,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.15.1</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.15.2</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -2145,7 +2145,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.15.1</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.15.2</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2185,7 +2185,7 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.15.1):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.15.2):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
               <li><strong class="text-white">تثبيت الموقع الأصلي الدقيق للكلمات والمحفوظات:</strong> تم حل مشكلة انزياح الكلمات عند تشغيلها من المكتبة؛ حيث أصبحت المحفوظات تحتفظ بإحداثياتها وموقعها الحقيقي الصريح على اللوحة (Raw Screen Coordinates)، وتُكتب بدقة متناهية في نفس الموضع الذي خطته يدك دون أي توسيط أو قفز إلى المنتصف.</li>
@@ -7281,7 +7281,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.15.1';
+    const APP_VERSION = '2.15.2';
     const BUILD_DATE = '2026-10-03';
 
     const UpdateManager = {
@@ -7707,8 +7707,8 @@
       <button id="landscape-toolbar-collapse" type="button" aria-label="تصغير شريط الأدوات" title="تصغير/توسيع">
         <i class="fa-solid fa-chevron-left"></i>
       </button>
-      <button id="landscape-toolbar-customize" type="button" aria-label="تخصيص شريط الأدوات" title="تخصيص">
-        <i class="fa-solid fa-sliders"></i>
+      <button id="landscape-toolbar-customize" class="landscape-settings-btn" type="button" aria-label="إعدادات شريط الأدوات" title="إعدادات الشريط">
+        <i class="fa-solid fa-gear"></i><span>إعدادات</span>
       </button>
     </div>
 
@@ -7734,7 +7734,10 @@
             <small>عند تدوير الجهاز إلى الوضع الأفقي</small>
           </div>
         </div>
-        <input id="landscape-auto-focus-toggle" class="tool-toggle" type="checkbox" aria-label="تفعيل وضع التركيز تلقائيًا في الوضع الأفقي" checked>
+        <div class="landscape-auto-focus-control">
+          <span id="landscape-auto-focus-state">مفعّل</span>
+          <input id="landscape-auto-focus-toggle" class="tool-toggle" type="checkbox" aria-label="تفعيل وضع التركيز تلقائيًا في الوضع الأفقي" checked>
+        </div>
       </div>
 
       <div id="landscape-config-tools" class="landscape-config-tools"></div>
@@ -7748,6 +7751,6 @@
 
   <button id="mobile-focus-exit" aria-label="الخروج من وضع التركيز"><i class="fa-solid fa-compress"></i></button>
 
-  <script src="mobile-ui.js?v=2.15.1"></script>
+  <script src="mobile-ui.js?v=2.15.2"></script>
 </body>
 </html>
