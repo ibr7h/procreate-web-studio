@@ -6859,6 +6859,16 @@
       setVal('input-nib-angle', preset.angleDeg);
       setVal('input-nib-roundness', Math.round(preset.roundness * 100));
       setVal('input-nib-smoothness', Math.round(preset.smoothness * 100));
+
+      const roundMode = preset.brushType === 'round';
+      ['input-nib-angle', 'input-nib-roundness', 'input-shape-angle', 'input-shape-roundness'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.disabled = roundMode;
+          el.style.opacity = roundMode ? '0.4' : '';
+          el.title = roundMode ? 'الفرشاة الدائرية لا تتأثر بزاوية القصبة' : '';
+        }
+      });
       setText('brush-badge', preset.badge);
       setText('header-active-brush-title', `فرشاة ${preset.name}`);
       setText('studio-active-brush-badge', preset.name);
@@ -7566,6 +7576,9 @@
     }
 
     function undo() {
+      if (typeof LassoManager !== 'undefined' && (LassoManager.selection || LassoManager.mode === 'drawing' || LassoManager.mode === 'moving')) {
+        LassoManager.cancel();
+      }
       if (state.history.length <= 1) {
         showToast('لا يوجد تراجع إضافي');
         return;
@@ -7588,6 +7601,9 @@
     }
 
     function redo() {
+      if (typeof LassoManager !== 'undefined' && (LassoManager.selection || LassoManager.mode === 'drawing' || LassoManager.mode === 'moving')) {
+        LassoManager.cancel();
+      }
       if (state.redoStack.length === 0) {
         showToast('لا يوجد أمر للإعادة');
         return;
