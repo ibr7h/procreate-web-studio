@@ -2253,3 +2253,72 @@ body.mobile-page.mobile-focus .landscape-floating-toolbar {
     z-index: 132 !important;
   }
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.15.2 — discoverable landscape focus setting
+   ============================================================ */
+
+.landscape-settings-btn {
+  width: auto !important;
+  min-width: 72px;
+  padding: 0 9px !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--andalus-indigo) !important;
+  background: rgba(47,93,140,.07) !important;
+  border: 1px solid rgba(47,93,140,.12) !important;
+}
+
+.landscape-settings-btn span {
+  display: inline !important;
+  font-family: 'Cairo', sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.landscape-floating-toolbar.is-collapsed .landscape-settings-btn {
+  display: none !important;
+}
+
+.landscape-auto-focus-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+}
+
+#landscape-auto-focus-state {
+  min-width: 34px;
+  text-align: center;
+  font-family: 'Cairo', sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  color: #176159;
+  background: rgba(45,140,130,.09);
+  border: 1px solid rgba(45,140,130,.18);
+  border-radius: 999px;
+  padding: 3px 6px;
+}
+
+.landscape-config-behavior.is-off #landscape-auto-focus-state {
+  color: var(--andalus-terracotta-dark);
+  background: rgba(184,92,56,.08);
+  border-color: rgba(184,92,56,.18);
+}
+
+/* Make the focus preference the first obvious control in the settings panel. */
+.landscape-config-behavior {
+  order: -1;
+  box-shadow: inset 3px 0 0 rgba(45,140,130,.22);
+}
+
+/* Settings panel should always remain fully reachable in focus mode. */
+@media (orientation: landscape) and (max-height: 700px) {
+  body.mobile-page.mobile-focus .landscape-toolbar-config {
+    max-height: min(76dvh, 420px) !important;
+  }
+}
