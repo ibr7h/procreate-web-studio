@@ -1735,3 +1735,415 @@ body.mobile-page #training-ghost-canvas {
   padding: 7px 10px !important;
   font-size: 11px !important;
 }
+
+
+/* ============================================================
+   Diwan Al-Khatt v2.15 — Landscape Floating Calligraphy Toolbar
+   Draggable, customizable, persistent and recorder-aware.
+   ============================================================ */
+
+.landscape-floating-toolbar {
+  display: none;
+  position: fixed;
+  top: calc(var(--mobile-topbar-h) + 10px);
+  left: max(10px, env(safe-area-inset-left, 0px));
+  z-index: 96;
+  direction: rtl;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  min-height: 46px;
+  max-width: calc(100vw - 20px);
+  border: 1px solid rgba(111,74,55,.22);
+  border-radius: 14px;
+  color: var(--andalus-indigo);
+  background:
+    linear-gradient(180deg, rgba(252,248,240,.97), rgba(237,221,194,.96));
+  box-shadow:
+    0 9px 24px rgba(70,48,35,.16),
+    inset 0 1px 0 rgba(255,255,255,.76);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: opacity .2s ease, box-shadow .2s ease;
+}
+
+.landscape-floating-toolbar::before {
+  content: "";
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  top: 1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(182,138,60,.34), transparent);
+  pointer-events: none;
+}
+
+.landscape-floating-toolbar.is-idle:not(.is-dragging):not(.is-config-open) {
+  opacity: .62;
+}
+.landscape-floating-toolbar.is-idle:hover,
+.landscape-floating-toolbar.is-idle:focus-within {
+  opacity: 1;
+}
+
+.landscape-toolbar-grip {
+  width: 28px;
+  height: 34px;
+  flex: 0 0 28px;
+  border: 0;
+  border-left: 1px solid rgba(111,74,55,.12);
+  border-radius: 8px;
+  color: var(--andalus-wood);
+  background: rgba(182,138,60,.055);
+  display: grid;
+  place-items: center;
+  cursor: grab;
+  touch-action: none;
+}
+.landscape-toolbar-grip:active,
+.landscape-floating-toolbar.is-dragging .landscape-toolbar-grip {
+  cursor: grabbing;
+  color: var(--andalus-terracotta);
+  background: rgba(184,92,56,.08);
+}
+
+.landscape-toolbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.landscape-tool-btn,
+.landscape-toolbar-actions > button {
+  position: relative;
+  width: 38px;
+  height: 36px;
+  flex: 0 0 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  color: var(--andalus-indigo);
+  background: transparent;
+  display: grid;
+  place-items: center;
+  font-family: 'Cairo', sans-serif;
+  transition: transform .12s ease, background .12s ease, color .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.landscape-tool-btn > i,
+.landscape-toolbar-actions > button > i {
+  font-size: 14px;
+}
+.landscape-tool-btn > span:not(.landscape-color-dot) {
+  display: none;
+}
+
+.landscape-tool-btn:active,
+.landscape-toolbar-actions > button:active {
+  transform: scale(.92);
+}
+
+.landscape-tool-btn.is-active {
+  color: #176159;
+  background: rgba(45,140,130,.11);
+  box-shadow: inset 0 0 0 1px rgba(45,140,130,.18);
+}
+.landscape-tool-btn[data-float-tool="eraser"].is-active {
+  color: var(--andalus-terracotta-dark);
+  background: rgba(184,92,56,.10);
+  box-shadow: inset 0 0 0 1px rgba(184,92,56,.18);
+}
+
+.landscape-tool-recorder {
+  color: var(--andalus-terracotta-dark);
+  background: rgba(184,92,56,.08);
+}
+.landscape-tool-recorder i {
+  color: var(--andalus-terracotta);
+}
+body.mobile-page.mobile-recorder-open .landscape-tool-recorder {
+  color: #FFF8EA;
+  background: var(--andalus-terracotta);
+}
+body.mobile-page.mobile-recorder-open .landscape-tool-recorder i {
+  color: #FFF8EA;
+}
+
+.landscape-color-dot {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 2px solid rgba(182,138,60,.64);
+  box-shadow: 0 1px 4px rgba(35,57,91,.16);
+}
+
+.landscape-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding-right: 3px;
+  border-right: 1px solid rgba(111,74,55,.12);
+}
+.landscape-toolbar-actions > button {
+  width: 30px;
+  height: 34px;
+  flex-basis: 30px;
+  color: var(--andalus-muted);
+}
+#landscape-toolbar-customize {
+  color: var(--andalus-blue);
+}
+
+.landscape-floating-toolbar.is-collapsed .landscape-toolbar-tools,
+.landscape-floating-toolbar.is-collapsed #landscape-toolbar-customize {
+  display: none !important;
+}
+.landscape-floating-toolbar.is-collapsed {
+  gap: 2px;
+  padding-inline: 4px;
+}
+.landscape-floating-toolbar.is-collapsed #landscape-toolbar-collapse i {
+  transform: rotate(180deg);
+}
+
+/* Vertical user-selected orientation. */
+.landscape-floating-toolbar.is-vertical {
+  flex-direction: column;
+  max-width: 48px;
+  padding: 5px 4px;
+}
+.landscape-floating-toolbar.is-vertical .landscape-toolbar-tools,
+.landscape-floating-toolbar.is-vertical .landscape-toolbar-actions {
+  flex-direction: column;
+}
+.landscape-floating-toolbar.is-vertical .landscape-toolbar-actions {
+  padding-right: 0;
+  padding-top: 3px;
+  border-right: 0;
+  border-top: 1px solid rgba(111,74,55,.12);
+}
+.landscape-floating-toolbar.is-vertical .landscape-toolbar-grip {
+  width: 36px;
+  height: 26px;
+  flex-basis: 26px;
+  border-left: 0;
+  border-bottom: 1px solid rgba(111,74,55,.12);
+}
+
+/* Customization panel */
+.landscape-toolbar-config {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 286px;
+  max-height: min(72vh, 390px);
+  overflow: auto;
+  padding: 10px;
+  direction: rtl;
+  color: var(--andalus-text);
+  border: 1px solid rgba(111,74,55,.22);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(252,248,240,.995), rgba(239,224,199,.995));
+  box-shadow: 0 18px 44px rgba(62,44,34,.22);
+  touch-action: pan-y;
+}
+.landscape-floating-toolbar.is-config-open .landscape-toolbar-config {
+  display: block;
+}
+.landscape-toolbar-config.place-left {
+  right: auto;
+  left: 0;
+}
+.landscape-toolbar-config.place-up {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+
+.landscape-config-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(111,74,55,.12);
+}
+.landscape-config-head strong {
+  display: block;
+  color: var(--andalus-indigo);
+  font-family: 'Amiri', 'Cairo', serif;
+  font-size: 15px;
+}
+.landscape-config-head small {
+  display: block;
+  margin-top: 1px;
+  color: var(--andalus-muted);
+  font-size: 9px;
+}
+.landscape-config-head button {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--andalus-indigo);
+  background: rgba(47,93,140,.07);
+}
+
+.landscape-config-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 9px 0;
+}
+.landscape-config-mode button,
+.landscape-config-footer button {
+  min-height: 34px;
+  border: 1px solid rgba(111,74,55,.14);
+  border-radius: 9px;
+  color: var(--andalus-text);
+  background: rgba(255,255,255,.36);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-family: 'Cairo', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+}
+.landscape-config-mode button.is-active {
+  color: #175F57;
+  border-color: rgba(45,140,130,.30);
+  background: rgba(45,140,130,.10);
+}
+
+.landscape-config-tools {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.landscape-config-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 4px;
+  min-height: 36px;
+  padding: 4px 6px;
+  border: 1px solid rgba(111,74,55,.10);
+  border-radius: 9px;
+  background: rgba(255,255,255,.26);
+}
+.landscape-config-row .tool-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: #443F39;
+  font-size: 10px;
+  font-weight: 700;
+}
+.landscape-config-row .tool-label i {
+  width: 15px;
+  text-align: center;
+  color: var(--andalus-blue);
+}
+.landscape-config-row .tool-toggle {
+  width: 30px;
+  height: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 999px;
+  background: rgba(111,74,55,.16);
+  position: relative;
+  transition: background .15s ease;
+}
+.landscape-config-row .tool-toggle::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 2px;
+  left: 2px;
+  border-radius: 50%;
+  background: #FFFDF8;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+  transition: transform .15s ease;
+}
+.landscape-config-row .tool-toggle:checked {
+  background: var(--andalus-turquoise);
+}
+.landscape-config-row .tool-toggle:checked::after {
+  transform: translateX(10px);
+}
+.landscape-config-row .reorder-btn {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 7px;
+  color: var(--andalus-indigo);
+  background: rgba(47,93,140,.06);
+}
+
+.landscape-config-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 9px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(111,74,55,.12);
+}
+
+/* Landscape mode: floating bar replaces the fixed bottom app dock. */
+@media (orientation: landscape) and (max-height: 700px) {
+  body.mobile-page {
+    --mobile-dock-h: 0px;
+  }
+
+  #mobile-bottom-dock {
+    display: none !important;
+  }
+
+  .landscape-floating-toolbar {
+    display: flex;
+  }
+
+  body.mobile-page > main {
+    padding-bottom: calc(var(--mobile-controls-h) + var(--safe-bottom) + 8px) !important;
+  }
+
+  /* Precision rail remains available at the bottom while main actions float. */
+  body.mobile-page main > aside {
+    bottom: max(4px, var(--safe-bottom)) !important;
+    width: min(720px, calc(100vw - 22px)) !important;
+  }
+
+  /* Avoid the hint competing with the new primary floating control surface. */
+  #mobile-orientation-hint {
+    display: none !important;
+  }
+}
+
+/* Recorder-aware compact toolbar: keep only writing recovery controls. */
+@media (orientation: landscape) and (max-height: 700px) {
+  body.mobile-page.mobile-recorder-open .landscape-tool-btn:not([data-float-tool="brush"]):not([data-float-tool="eraser"]):not([data-float-tool="undo"]):not([data-float-tool="redo"]):not([data-float-tool="recorder"]) {
+    display: none !important;
+  }
+
+  body.mobile-page.mobile-recorder-open #landscape-toolbar-customize {
+    display: none !important;
+  }
+
+  body.mobile-page.mobile-recorder-open .landscape-floating-toolbar {
+    z-index: 118;
+  }
+}
+
+body.mobile-page.mobile-focus .landscape-floating-toolbar {
+  display: none !important;
+}
