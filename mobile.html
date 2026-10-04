@@ -450,7 +450,7 @@
       align-items: center !important;
     }
   </style>
-  <link rel="stylesheet" href="mobile.css?v=2.16.2">
+  <link rel="stylesheet" href="mobile.css?v=2.17.0">
 </head>
 <body class="mobile-page h-screen w-screen flex flex-col justify-between select-none">
 
@@ -467,7 +467,7 @@
       <!-- App Version Badge Button (Opens Updates & About Modal) -->
       <button id="app-version-badge-btn" title="رقم الإصدار والتحقق من التحديثات" class="px-2 py-1 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-mono font-bold text-[11px] flex items-center gap-1.5 transition active:scale-95 shadow-sm">
         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" id="version-status-dot"></span>
-        <span id="header-version-label">v2.16.2</span>
+        <span id="header-version-label">v2.17.0</span>
       </button>
 
       <div class="h-5 w-px bg-white/10 mx-1"></div>
@@ -2220,7 +2220,7 @@
           <i class="fa-solid fa-arrows-rotate text-emerald-400" id="actions-update-icon"></i>
           <span>التحقق من وجود تحديثات</span>
         </div>
-        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.16.2</span>
+        <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">v2.17.0</span>
       </button>
 
       <!-- About Studio & Version Info Button -->
@@ -2289,7 +2289,7 @@
             <div class="space-y-1">
               <div class="flex items-center gap-2">
                 <span class="font-bold text-white text-sm">الإصدار الحالي:</span>
-                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.16.2</span>
+                <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-bold text-xs" id="modal-app-version">v2.17.0</span>
                 <span class="px-1.5 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono text-[10px]">مستقر (Stable)</span>
               </div>
               <div class="text-[11px] text-gray-400 flex items-center gap-1.5">
@@ -2329,7 +2329,7 @@
           <div>
             <h4 class="font-bold text-gray-200 mb-2 flex items-center gap-1.5">
               <i class="fa-solid fa-list-check text-amber-400"></i>
-              <span>ما الجديد في الإصدار الحالي (v2.16.2):</span>
+              <span>ما الجديد في الإصدار الحالي (v2.17.0):</span>
             </h4>
             <ul class="space-y-1.5 text-gray-300 text-[11px] list-disc list-inside bg-white/5 p-3 rounded-2xl border border-white/5">
               <li><strong class="text-white">تثبيت الموقع الأصلي الدقيق للكلمات والمحفوظات:</strong> تم حل مشكلة انزياح الكلمات عند تشغيلها من المكتبة؛ حيث أصبحت المحفوظات تحتفظ بإحداثياتها وموقعها الحقيقي الصريح على اللوحة (Raw Screen Coordinates)، وتُكتب بدقة متناهية في نفس الموضع الذي خطته يدك دون أي توسيط أو قفز إلى المنتصف.</li>
@@ -2897,7 +2897,7 @@
       }
 
       // إغلاق أي نوافذ منبثقة مفتوحة عند بدء الرسم لتفريغ مساحة الرؤية
-      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover, eraserStudioPopover].forEach(p => {
+      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover, eraserStudioPopover, trainingTextPopover].forEach(p => {
         if (p && !p.classList.contains('hidden')) p.classList.add('hidden');
       });
 
@@ -6328,6 +6328,345 @@
       displayCtx.globalAlpha = 1.0;
     }
 
+
+    // ----------------------------------------------------------------------
+    // 6.B FREE TRAINING TEXT ENGINE
+    // ----------------------------------------------------------------------
+    function getCalligraphyBaselines() {
+      const spec = SCRIPT_METRICS[state.activePresetKey] || SCRIPT_METRICS.naskh;
+      const pointUnit = getCalligraphyPointUnit();
+      const ascenderDist = spec.ascenderPts * pointUnit;
+      const descenderDist = spec.descenderPts * pointUnit;
+      const rowTotalHeight = ascenderDist + descenderDist + 75;
+      const startY = Math.max(160, ascenderDist + 50);
+      const lines = [];
+      for (let y = startY; y < state.canvasHeight - descenderDist - 25; y += rowTotalHeight) {
+        lines.push(Math.round(y));
+      }
+      return lines.length ? lines : [Math.round(state.canvasHeight / 2)];
+    }
+
+    function nearestCalligraphyBaseline(y) {
+      const lines = getCalligraphyBaselines();
+      return lines.reduce((best, current) =>
+        Math.abs(current - y) < Math.abs(best - y) ? current : best, lines[0]);
+    }
+
+    function normalizeTrainingTextSettings(settings = {}) {
+      return {
+        text: typeof settings.text === 'string' ? settings.text : '',
+        fontFamily: settings.fontFamily || 'Amiri',
+        fontSize: Math.max(24, Math.min(220, Number(settings.fontSize) || 84)),
+        color: settings.color || '#7C5A3A',
+        x: Math.max(0, Math.min(state.canvasWidth, Number(settings.x) || 1350)),
+        baselineY: Math.max(0, Math.min(state.canvasHeight, Number(settings.baselineY) || nearestCalligraphyBaseline(420))),
+        lineHeight: Math.max(1.0, Math.min(2.0, Number(settings.lineHeight) || 1.28))
+      };
+    }
+
+    function renderTrainingTextLayer(layer) {
+      if (!layer || layer.kind !== 'trainingText' || !layer.ctx) return;
+      layer.textSettings = normalizeTrainingTextSettings(layer.textSettings);
+      const t = layer.textSettings;
+      const ctx = layer.ctx;
+
+      ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      if (!t.text.trim()) return;
+
+      ctx.save();
+      ctx.direction = 'rtl';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = t.color;
+      ctx.font = '700 ' + t.fontSize + 'px "' + t.fontFamily + '", serif';
+
+      const lines = t.text.split(/\n/);
+      const step = t.fontSize * t.lineHeight;
+      lines.forEach((line, index) => {
+        ctx.fillText(line || ' ', t.x, t.baselineY + index * step);
+      });
+      ctx.restore();
+    }
+
+    const TrainingTextManager = {
+      dragging: false,
+      dragOffset: null,
+
+      getActiveTextLayer() {
+        const layer = ensureLayerState(getActiveLayer());
+        return layer && layer.kind === 'trainingText' ? layer : null;
+      },
+
+      getControlSettings() {
+        return normalizeTrainingTextSettings({
+          text: document.getElementById('training-text-input')?.value || '',
+          fontFamily: document.getElementById('training-text-font')?.value || 'Amiri',
+          fontSize: parseInt(document.getElementById('training-text-size')?.value || '84', 10),
+          color: document.getElementById('training-text-color')?.value || '#7C5A3A',
+          x: parseFloat(document.getElementById('training-text-x')?.value || '1350'),
+          baselineY: parseFloat(document.getElementById('training-text-baseline-y')?.value || '420')
+        });
+      },
+
+      setControlValue(id, value) {
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+      },
+
+      loadLayerIntoControls(layer) {
+        const t = layer && layer.kind === 'trainingText'
+          ? normalizeTrainingTextSettings(layer.textSettings)
+          : normalizeTrainingTextSettings({ baselineY: nearestCalligraphyBaseline(420) });
+
+        this.setControlValue('training-text-input', layer && layer.kind === 'trainingText' ? t.text : '');
+        this.setControlValue('training-text-font', t.fontFamily);
+        this.setControlValue('training-text-size', t.fontSize);
+        this.setControlValue('training-text-color', t.color);
+        this.setControlValue('training-text-x', Math.round(t.x));
+        this.setControlValue('training-text-baseline-y', Math.round(t.baselineY));
+
+        const sizeOut = document.getElementById('training-text-size-value');
+        if (sizeOut) sizeOut.textContent = Math.round(t.fontSize) + 'px';
+
+        const opacity = layer && layer.kind === 'trainingText'
+          ? Math.round(layer.opacity * 100)
+          : 32;
+        this.setControlValue('training-text-opacity', opacity);
+        const opacityOut = document.getElementById('training-text-opacity-value');
+        if (opacityOut) opacityOut.textContent = opacity + '%';
+
+        const applyText = document.querySelector('#training-text-apply-btn span');
+        if (applyText) applyText.textContent = layer && layer.kind === 'trainingText' ? 'تحديث النص' : 'إضافة النص';
+      },
+
+      open() {
+        this.loadLayerIntoControls(this.getActiveTextLayer());
+        togglePopover(trainingTextPopover);
+      },
+
+      applyFromControls(save = true) {
+        let layer = this.getActiveTextLayer();
+        const settings = this.getControlSettings();
+        const opacityValue = Math.max(0.05, Math.min(1, parseInt(document.getElementById('training-text-opacity')?.value || '32', 10) / 100));
+
+        if (!layer) {
+          layer = createLayer('نص التدريب', {
+            kind: 'trainingText',
+            opacity: opacityValue,
+            textSettings: settings
+          });
+        } else {
+          layer.textSettings = settings;
+          layer.opacity = opacityValue;
+          renderTrainingTextLayer(layer);
+          renderComposite();
+          renderLayersUI();
+          syncActiveLayerSettingsUI();
+          if (save) saveState();
+        }
+
+        this.loadLayerIntoControls(layer);
+        return layer;
+      },
+
+      liveUpdate() {
+        const layer = this.getActiveTextLayer();
+        if (!layer) return;
+        layer.textSettings = this.getControlSettings();
+        layer.opacity = Math.max(0.05, Math.min(1, parseInt(document.getElementById('training-text-opacity')?.value || '32', 10) / 100));
+        renderTrainingTextLayer(layer);
+        renderComposite();
+        syncActiveLayerSettingsUI();
+      },
+
+      saveLiveChange() {
+        const layer = this.getActiveTextLayer();
+        if (!layer) return;
+        layer.textSettings = this.getControlSettings();
+        layer.opacity = Math.max(0.05, Math.min(1, parseInt(document.getElementById('training-text-opacity')?.value || '32', 10) / 100));
+        renderTrainingTextLayer(layer);
+        renderComposite();
+        renderLayersUI();
+        syncActiveLayerSettingsUI();
+        saveState();
+      },
+
+      newText() {
+        const baseline = nearestCalligraphyBaseline(420);
+        this.setControlValue('training-text-input', '');
+        this.setControlValue('training-text-font', 'Amiri');
+        this.setControlValue('training-text-size', 84);
+        this.setControlValue('training-text-color', '#7C5A3A');
+        this.setControlValue('training-text-opacity', 32);
+        this.setControlValue('training-text-x', 1350);
+        this.setControlValue('training-text-baseline-y', baseline);
+        const sizeOut = document.getElementById('training-text-size-value');
+        const opacityOut = document.getElementById('training-text-opacity-value');
+        if (sizeOut) sizeOut.textContent = '84px';
+        if (opacityOut) opacityOut.textContent = '32%';
+
+        const active = this.getActiveTextLayer();
+        if (active) {
+          const paint = state.layers.find(l => l.kind !== 'trainingText');
+          if (paint) activateLayer(paint.id);
+        }
+        const applyText = document.querySelector('#training-text-apply-btn span');
+        if (applyText) applyText.textContent = 'إضافة النص';
+      },
+
+      deleteActive() {
+        const layer = this.getActiveTextLayer();
+        if (!layer) {
+          showToast('اختر طبقة نص تدريب أولاً');
+          return;
+        }
+
+        state.layers = state.layers.filter(l => l.id !== layer.id);
+        const next = state.layers[0];
+        if (next) {
+          state.activeLayerId = next.id;
+          ensureLayerState(next);
+          if (next.kind === 'paint') applyLayerToolSettings(next.toolSettings);
+        }
+        renderLayersUI();
+        renderComposite();
+        syncActiveLayerSettingsUI();
+        this.newText();
+        showToast('تم حذف نص التدريب');
+      },
+
+      textBounds(layer) {
+        const t = normalizeTrainingTextSettings(layer.textSettings);
+        const ctx = layer.ctx;
+        ctx.save();
+        ctx.font = '700 ' + t.fontSize + 'px "' + t.fontFamily + '", serif';
+        const lines = t.text.split(/\n/);
+        const widths = lines.map(line => ctx.measureText(line || ' ').width);
+        ctx.restore();
+
+        const width = Math.max(40, ...widths);
+        const step = t.fontSize * t.lineHeight;
+        const height = Math.max(t.fontSize * 1.25, (lines.length - 1) * step + t.fontSize * 1.25);
+        return {
+          left: t.x - width - 20,
+          right: t.x + 20,
+          top: t.baselineY - t.fontSize - 20,
+          bottom: t.baselineY - t.fontSize + height + 20
+        };
+      },
+
+      pointerDown(pos, layer) {
+        if (!layer || layer.kind !== 'trainingText') return;
+        const b = this.textBounds(layer);
+        if (pos.x < b.left || pos.x > b.right || pos.y < b.top || pos.y > b.bottom) {
+          this.dragging = false;
+          state.isDrawing = false;
+          showToast('المس النص نفسه واسحبه لتحريكه');
+          return;
+        }
+
+        const t = normalizeTrainingTextSettings(layer.textSettings);
+        this.dragging = true;
+        this.dragOffset = {
+          x: pos.x - t.x,
+          y: pos.y - t.baselineY
+        };
+      },
+
+      pointerMove(pos, layer) {
+        if (!this.dragging || !layer) return;
+        const t = normalizeTrainingTextSettings(layer.textSettings);
+        t.x = Math.max(0, Math.min(state.canvasWidth, pos.x - this.dragOffset.x));
+        t.baselineY = Math.max(0, Math.min(state.canvasHeight, pos.y - this.dragOffset.y));
+        layer.textSettings = t;
+        renderTrainingTextLayer(layer);
+        renderComposite();
+        this.loadLayerIntoControls(layer);
+      },
+
+      pointerUp(pos, layer) {
+        if (!this.dragging || !layer) return;
+        this.dragging = false;
+        this.dragOffset = null;
+        renderTrainingTextLayer(layer);
+        renderComposite();
+        renderLayersUI();
+        syncActiveLayerSettingsUI();
+        saveState();
+      },
+
+      snapToBaseline(mode = 'nearest') {
+        let layer = this.getActiveTextLayer();
+        if (!layer) layer = this.applyFromControls(false);
+        if (!layer) return;
+
+        const lines = getCalligraphyBaselines();
+        const current = normalizeTrainingTextSettings(layer.textSettings).baselineY;
+        let target = nearestCalligraphyBaseline(current);
+
+        if (mode === 'prev') {
+          target = lines.filter(y => y < current - 2).pop() ?? lines[0];
+        } else if (mode === 'next') {
+          target = lines.find(y => y > current + 2) ?? lines[lines.length - 1];
+        }
+
+        layer.textSettings = normalizeTrainingTextSettings(layer.textSettings);
+        layer.textSettings.baselineY = target;
+        renderTrainingTextLayer(layer);
+        renderComposite();
+        this.loadLayerIntoControls(layer);
+        saveState();
+        showToast('تمت محاذاة النص على خط الارتكاز');
+      },
+
+      nudge(dx, dy) {
+        let layer = this.getActiveTextLayer();
+        if (!layer) layer = this.applyFromControls(false);
+        if (!layer) return;
+
+        const t = normalizeTrainingTextSettings(layer.textSettings);
+        t.x = Math.max(0, Math.min(state.canvasWidth, t.x + dx));
+        t.baselineY = Math.max(0, Math.min(state.canvasHeight, t.baselineY + dy));
+        layer.textSettings = t;
+        renderTrainingTextLayer(layer);
+        renderComposite();
+        this.loadLayerIntoControls(layer);
+      }
+    };
+
+    safeBind('training-text-btn', 'click', () => TrainingTextManager.open());
+    safeBind('close-training-text-btn', 'click', () => trainingTextPopover?.classList.add('hidden'));
+    safeBind('training-text-apply-btn', 'click', () => {
+      TrainingTextManager.applyFromControls(true);
+      showToast('تم تطبيق نص التدريب');
+    });
+    safeBind('training-text-new-btn', 'click', () => TrainingTextManager.newText());
+    safeBind('training-text-delete-btn', 'click', () => TrainingTextManager.deleteActive());
+    safeBind('training-text-snap-baseline', 'click', () => TrainingTextManager.snapToBaseline('nearest'));
+    safeBind('training-text-baseline-prev', 'click', () => TrainingTextManager.snapToBaseline('prev'));
+    safeBind('training-text-baseline-next', 'click', () => TrainingTextManager.snapToBaseline('next'));
+
+    ['training-text-input', 'training-text-font', 'training-text-color', 'training-text-size',
+     'training-text-opacity', 'training-text-x', 'training-text-baseline-y'].forEach(id => {
+      safeBind(id, 'input', () => {
+        const size = document.getElementById('training-text-size');
+        const opacity = document.getElementById('training-text-opacity');
+        const sizeOut = document.getElementById('training-text-size-value');
+        const opacityOut = document.getElementById('training-text-opacity-value');
+        if (size && sizeOut) sizeOut.textContent = size.value + 'px';
+        if (opacity && opacityOut) opacityOut.textContent = opacity.value + '%';
+        TrainingTextManager.liveUpdate();
+      });
+      safeBind(id, 'change', () => TrainingTextManager.saveLiveChange());
+    });
+
+    document.querySelectorAll('[data-training-nudge]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parts = String(btn.dataset.trainingNudge || '0,0').split(',').map(Number);
+        TrainingTextManager.nudge(parts[0] || 0, parts[1] || 0);
+      });
+    });
+
     // ----------------------------------------------------------------------
     // 6.B FREEHAND LASSO SELECTION ENGINE
     // ----------------------------------------------------------------------
@@ -7602,7 +7941,7 @@
     function togglePopover(panel) {
       if (!panel) return;
       const isHidden = panel.classList.contains('hidden');
-      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover, eraserStudioPopover].forEach(p => {
+      [colorPanel, layersPanel, actionsPanel, brushLibraryPopover, nibStudioPopover, gridSettingsPopover, eraserStudioPopover, trainingTextPopover].forEach(p => {
         if (p) p.classList.add('hidden');
       });
       if (isHidden) panel.classList.remove('hidden');
@@ -7622,6 +7961,9 @@
     });
 
     safeBind('layers-btn', 'click', () => {
+      const active = ensureLayerState(getActiveLayer());
+      if (active && active.kind === 'paint') active.toolSettings = captureLayerToolSettings();
+      syncActiveLayerSettingsUI();
       togglePopover(layersPanel);
     });
 
@@ -7919,75 +8261,78 @@
     // 12. UNDO / REDO & ACTIONS MENU
     // ----------------------------------------------------
     function saveState() {
-      const activeLayer = getActiveLayer();
+      const activeLayer = ensureLayerState(getActiveLayer());
       if (!activeLayer) return;
 
-      // High-performance GPU-friendly snapshot via offscreen canvas (eliminates heavy 7.7MB getImageData pipeline stall)
       const snapshot = document.createElement('canvas');
       snapshot.width = state.canvasWidth;
       snapshot.height = state.canvasHeight;
       const sCtx = snapshot.getContext('2d');
-      if (sCtx) {
-        sCtx.drawImage(activeLayer.canvas, 0, 0);
-      }
+      if (sCtx) sCtx.drawImage(activeLayer.canvas, 0, 0);
 
-      state.history.push({
-        layerId: activeLayer.id,
-        canvas: snapshot
+      activeLayer.history.push({
+        canvas: snapshot,
+        opacity: activeLayer.opacity,
+        locked: activeLayer.locked,
+        textSettings: activeLayer.kind === 'trainingText' && activeLayer.textSettings
+          ? JSON.parse(JSON.stringify(activeLayer.textSettings))
+          : null
       });
 
-      if (state.history.length > state.maxHistory) {
-        state.history.shift();
+      if (activeLayer.history.length > state.maxHistory) {
+        activeLayer.history.shift();
       }
-      state.redoStack = [];
+      activeLayer.redoStack = [];
+    }
+
+    function restoreLayerSnapshot(layer, snapshot) {
+      if (!layer || !snapshot) return;
+      layer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
+      if (snapshot.canvas) layer.ctx.drawImage(snapshot.canvas, 0, 0);
+      if (typeof snapshot.opacity === 'number') layer.opacity = snapshot.opacity;
+      if (typeof snapshot.locked === 'boolean') layer.locked = snapshot.locked;
+      if (layer.kind === 'trainingText' && snapshot.textSettings) {
+        layer.textSettings = JSON.parse(JSON.stringify(snapshot.textSettings));
+      }
+      renderComposite();
+      renderLayersUI();
+      syncActiveLayerSettingsUI();
+      if (layer.kind === 'trainingText') TrainingTextManager.loadLayerIntoControls(layer);
     }
 
     function undo() {
       if (typeof LassoManager !== 'undefined' && (LassoManager.selection || LassoManager.mode === 'drawing' || LassoManager.mode === 'moving')) {
         LassoManager.cancel();
       }
-      if (state.history.length <= 1) {
-        showToast('لا يوجد تراجع إضافي');
+
+      const layer = ensureLayerState(getActiveLayer());
+      if (!layer || layer.history.length <= 1) {
+        showToast('لا يوجد تراجع إضافي في هذه الطبقة');
         return;
       }
-      const current = state.history.pop();
-      state.redoStack.push(current);
 
-      const previous = state.history[state.history.length - 1];
-      const targetLayer = state.layers.find(l => l.id === previous.layerId) || getActiveLayer();
-      if (targetLayer && previous) {
-        targetLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
-        if (previous.canvas) {
-          targetLayer.ctx.drawImage(previous.canvas, 0, 0);
-        } else if (previous.data) {
-          targetLayer.ctx.putImageData(previous.data, 0, 0);
-        }
-        renderComposite();
-        showToast('تراجع (Undo)');
-      }
+      const current = layer.history.pop();
+      layer.redoStack.push(current);
+      const previous = layer.history[layer.history.length - 1];
+      restoreLayerSnapshot(layer, previous);
+      showToast('تراجع في الطبقة النشطة');
     }
 
     function redo() {
       if (typeof LassoManager !== 'undefined' && (LassoManager.selection || LassoManager.mode === 'drawing' || LassoManager.mode === 'moving')) {
         LassoManager.cancel();
       }
-      if (state.redoStack.length === 0) {
-        showToast('لا يوجد أمر للإعادة');
+
+      const layer = ensureLayerState(getActiveLayer());
+      if (!layer || layer.redoStack.length === 0) {
+        showToast('لا يوجد أمر للإعادة في هذه الطبقة');
         return;
       }
-      const next = state.redoStack.pop();
-      state.history.push(next);
-      const targetLayer = state.layers.find(l => l.id === next.layerId) || getActiveLayer();
-      if (targetLayer && next) {
-        targetLayer.ctx.clearRect(0, 0, state.canvasWidth, state.canvasHeight);
-        if (next.canvas) {
-          targetLayer.ctx.drawImage(next.canvas, 0, 0);
-        } else if (next.data) {
-          targetLayer.ctx.putImageData(next.data, 0, 0);
-        }
-        renderComposite();
-        showToast('إعادة (Redo)');
-      }
+
+      const next = layer.redoStack.pop();
+      layer.history.push(next);
+      restoreLayerSnapshot(layer, next);
+      showToast('إعادة في الطبقة النشطة');
     }
 
     safeBind('undo-btn', 'click', undo);
@@ -8253,7 +8598,7 @@
 
   <!-- PWA Service Worker Registration & Version / Update Management Engine -->
   <script>
-    const APP_VERSION = '2.16.2';
+    const APP_VERSION = '2.17.0';
     const BUILD_DATE = '2026-10-04';
 
     const UpdateManager = {
@@ -8725,6 +9070,6 @@
 
   <button id="mobile-focus-exit" aria-label="الخروج من وضع التركيز"><i class="fa-solid fa-compress"></i></button>
 
-  <script src="mobile-ui.js?v=2.16.2"></script>
+  <script src="mobile-ui.js?v=2.17.0"></script>
 </body>
 </html>
