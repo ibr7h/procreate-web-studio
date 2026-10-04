@@ -1821,6 +1821,86 @@
       </button>
     </div>
 
+    <button id="training-text-btn" type="button" class="hidden" aria-label="نص تدريب حر"></button>
+
+    <!-- ========================================== -->
+    <!-- FREE TRAINING TEXT POPOVER                 -->
+    <!-- ========================================== -->
+    <div id="training-text-popover" class="fixed top-16 right-3 sm:right-24 w-96 max-w-[calc(100vw-1.5rem)] procreate-popover rounded-3xl p-4 hidden z-50 flex-col gap-3 shadow-2xl">
+      <div class="training-text-head">
+        <div class="training-text-head-icon"><i class="fa-solid fa-font"></i></div>
+        <div class="flex-1">
+          <div class="training-text-title">نص التدريب الحر</div>
+          <div class="training-text-subtitle">اكتب أي نص وضعه على خط الارتكاز ثم تتبّعه بالقلم</div>
+        </div>
+        <button id="close-training-text-btn" class="training-text-close" type="button" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <textarea id="training-text-input" rows="2" class="training-text-input" dir="rtl" placeholder="اكتب النص الذي تريد التدريب عليه…"></textarea>
+
+      <div class="training-text-grid">
+        <label>
+          <span>الخط</span>
+          <select id="training-text-font">
+            <option value="Amiri">Amiri — نسخ عربي</option>
+            <option value="Cairo">Cairo — واضح</option>
+            <option value="serif">Serif — افتراضي</option>
+          </select>
+        </label>
+        <label>
+          <span>اللون</span>
+          <input id="training-text-color" type="color" value="#7C5A3A">
+        </label>
+      </div>
+
+      <label class="training-range-row">
+        <span>حجم النص</span>
+        <input id="training-text-size" type="range" min="24" max="220" step="2" value="84">
+        <output id="training-text-size-value">84px</output>
+      </label>
+
+      <label class="training-range-row">
+        <span>شفافية النص</span>
+        <input id="training-text-opacity" type="range" min="5" max="100" step="1" value="32">
+        <output id="training-text-opacity-value">32%</output>
+      </label>
+
+      <div class="training-position-grid">
+        <label>
+          <span>الموضع الأفقي X</span>
+          <input id="training-text-x" type="number" min="0" max="1600" step="5" value="1350">
+        </label>
+        <label>
+          <span>خط الارتكاز Y</span>
+          <input id="training-text-baseline-y" type="number" min="0" max="1200" step="5" value="420">
+        </label>
+      </div>
+
+      <div class="training-baseline-actions">
+        <button id="training-text-baseline-prev" type="button"><i class="fa-solid fa-arrow-up"></i><span>السطر السابق</span></button>
+        <button id="training-text-snap-baseline" class="primary" type="button"><i class="fa-solid fa-ruler-horizontal"></i><span>محاذاة على خط الارتكاز</span></button>
+        <button id="training-text-baseline-next" type="button"><i class="fa-solid fa-arrow-down"></i><span>السطر التالي</span></button>
+      </div>
+
+      <div class="training-nudge-grid" aria-label="تحريك النص">
+        <button type="button" data-training-nudge="0,-10" title="أعلى"><i class="fa-solid fa-arrow-up"></i></button>
+        <button type="button" data-training-nudge="-10,0" title="يمين"><i class="fa-solid fa-arrow-right"></i></button>
+        <button type="button" data-training-nudge="10,0" title="يسار"><i class="fa-solid fa-arrow-left"></i></button>
+        <button type="button" data-training-nudge="0,10" title="أسفل"><i class="fa-solid fa-arrow-down"></i></button>
+      </div>
+
+      <div class="training-text-hint">
+        <i class="fa-solid fa-hand-pointer"></i>
+        عند تفعيل طبقة نص التدريب يمكنك سحب النص مباشرة على اللوحة لتغيير مكانه.
+      </div>
+
+      <div class="training-text-footer">
+        <button id="training-text-new-btn" type="button"><i class="fa-solid fa-plus"></i><span>نص جديد</span></button>
+        <button id="training-text-apply-btn" class="primary" type="button"><i class="fa-solid fa-check"></i><span>إضافة / تحديث</span></button>
+        <button id="training-text-delete-btn" class="danger" type="button"><i class="fa-solid fa-trash-can"></i><span>حذف</span></button>
+      </div>
+    </div>
+
     <!-- ========================================== -->
     <!-- LAYERS DRAWER MODAL                        -->
     <!-- ========================================== -->
@@ -1841,6 +1921,35 @@
       </div>
 
       <div id="layers-list" class="flex flex-col gap-2 max-h-72 overflow-y-auto pr-1"></div>
+
+      <!-- Active layer independent settings -->
+      <div id="active-layer-settings" class="layer-independent-settings">
+        <div class="layer-independent-head">
+          <div>
+            <strong id="active-layer-settings-name">الطبقة النشطة</strong>
+            <small id="active-layer-settings-kind">طبقة رسم</small>
+          </div>
+          <span id="active-layer-tool-badge">إعدادات مستقلة</span>
+        </div>
+
+        <label class="layer-setting-row">
+          <span><i class="fa-solid fa-circle-half-stroke"></i> شفافية الطبقة</span>
+          <div>
+            <input id="active-layer-opacity" type="range" min="0" max="100" value="100">
+            <output id="active-layer-opacity-value">100%</output>
+          </div>
+        </label>
+
+        <label class="layer-lock-row">
+          <span>
+            <i class="fa-solid fa-lock"></i>
+            قفل الطبقة ومنع الرسم عليها
+          </span>
+          <input id="active-layer-lock" type="checkbox">
+        </label>
+
+        <p id="active-layer-settings-note">تحفظ هذه الطبقة إعدادات الفرشاة واللون والحجم وسجل التراجع الخاص بها بصورة مستقلة.</p>
+      </div>
 
       <!-- Paper Textures & Materials Selection -->
       <div class="p-2.5 rounded-2xl bg-white/5 border border-white/10 space-y-2">
@@ -8278,6 +8387,7 @@
       <div class="mobile-section-title"><span>التدريب والتسجيل</span></div>
       <button class="mobile-more-btn mobile-record-action" data-proxy="tape-recorder-btn"><i class="fa-solid fa-record-vinyl"></i><span>مسجل الخط</span></button>
       <button class="mobile-more-btn" data-proxy="auto-write-btn"><i class="fa-solid fa-wand-magic-sparkles"></i><span>التدريب</span></button>
+      <button class="mobile-more-btn mobile-training-text-action" data-proxy="training-text-btn"><i class="fa-solid fa-font"></i><span>نص تدريب حر</span></button>
       <button class="mobile-more-btn" data-proxy="reed-sound-btn"><i class="fa-solid fa-volume-high"></i><span>صوت القصبة</span></button>
       <button class="mobile-more-btn" data-proxy="fit-screen-btn"><i class="fa-solid fa-expand"></i><span>ملاءمة اللوحة</span></button>
 
