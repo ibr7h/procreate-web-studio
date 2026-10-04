@@ -2234,3 +2234,22 @@ body.mobile-page.mobile-focus .landscape-floating-toolbar {
     opacity: .82;
   }
 }
+
+
+/* Focus-mode overlays remain reachable from the floating toolbar. */
+@media (orientation: landscape) and (max-height: 700px) {
+  body.mobile-page.mobile-focus #mobile-more-sheet.is-open {
+    display: block !important;
+    z-index: 130 !important;
+  }
+
+  body.mobile-page.mobile-focus #brush-library-popover:not(.hidden),
+  body.mobile-page.mobile-focus #layers-panel:not(.hidden),
+  body.mobile-page.mobile-focus #grid-settings-popover:not(.hidden),
+  body.mobile-page.mobile-focus #color-panel:not(.hidden),
+  body.mobile-page.mobile-focus #actions-panel:not(.hidden),
+  body.mobile-page.mobile-focus #nib-studio-popover:not(.hidden),
+  body.mobile-page.mobile-focus #eraser-studio-popover:not(.hidden) {
+    z-index: 132 !important;
+  }
+}
